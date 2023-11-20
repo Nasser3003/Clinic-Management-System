@@ -1,5 +1,6 @@
 package com.almoatasem.demo.service;
 
+import com.almoatasem.demo.exception.RequestValidationException;
 import com.almoatasem.demo.model.entitiy.UserInfo;
 import com.almoatasem.demo.model.requests.RegisterUserRequest;
 import com.almoatasem.demo.repository.UserRepository;
@@ -9,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.almoatasem.demo.utils.DateManipulation.parseDate;
@@ -34,7 +36,7 @@ public class UserService {
         }
     }
     public UserInfo selectUser(UUID id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new RequestValidationException("No user with that id"));
     }
 
 }
