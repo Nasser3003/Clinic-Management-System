@@ -1,7 +1,7 @@
-package com.almoatasem.demo.model;
+package com.almoatasem.demo.model.entitiy;
 
+import com.almoatasem.demo.model.enums.GENDER;
 import jakarta.persistence.*;
-import com.almoatasem.demo.enums.GENDER;
 
 import java.sql.Date;
 import java.util.Objects;
