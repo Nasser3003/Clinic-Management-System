@@ -1,7 +1,7 @@
-package org.rarbg.Project1.Entities;
+package com.almoatasem.demo.model;
 
 import jakarta.persistence.*;
-import org.rarbg.Project1.enums.GENDER;
+import com.almoatasem.demo.enums.GENDER;
 
 import java.sql.Date;
 import java.util.Objects;
@@ -15,7 +15,7 @@ public class UserInfo {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;
@@ -24,7 +24,8 @@ public class UserInfo {
 
     public UserInfo() {}
 
-    public UserInfo(String firstName, String lastName, String email, Date dateOfBirth, GENDER gender) {
+    public UserInfo(UUID id, String firstName, String lastName, String email, Date dateOfBirth, GENDER gender) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

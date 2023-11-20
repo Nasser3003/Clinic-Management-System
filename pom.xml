@@ -17,6 +17,7 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
 		<dependency>
 			<!-- Spring Boot Starter Data JPA -->
 			<groupId>org.springframework.boot</groupId>
@@ -42,14 +43,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- UUID Library -->
-<!--		it worked while commented-->
-<!--		<dependency>-->
-<!--			<groupId>com.fasterxml.uuid</groupId>-->
-<!--			<artifactId>java-uuid-generator</artifactId>-->
-<!--			<version>4.0</version> &lt;!&ndash; Use the latest version available &ndash;&gt;-->
-<!--		</dependency>-->
 
 	</dependencies>
 
