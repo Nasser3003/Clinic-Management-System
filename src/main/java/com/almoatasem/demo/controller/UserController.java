@@ -7,22 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1")
 public class UserController {
 
-    @Autowired
+
     private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/all")
     public List<UserInfo> getAllUsers() {
         return userService.selectAllUsers();
     }
-    @GetMapping("/{userId}")
-    public UserInfo getUser (@PathVariable("userId") UUID id) {
-        return userService.selectUser(id);
+    @GetMapping("/{email}")
+    public UserInfo getUser (@PathVariable("email") String email) {
+        return userService.selectUser(email);
     }
     @PostMapping("/register")
     public void registerUser(@RequestBody RegisterUserRequest registerUserRequest) {

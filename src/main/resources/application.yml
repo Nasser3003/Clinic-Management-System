@@ -1,18 +1,27 @@
-# listening port
+# conf port
 server:
   port: 3000
 
-# running server or no server
+# conf server or no server
 spring:
   main:
     web-application-type: servlet
 
+  # conf database address and auth
   datasource:
     url: jdbc:postgresql://localhost:5432/db
     username: postgres
     password: postgres
+
+  # forgot what that is
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  # conf spring secruity auth
+  security:
+    user:
+      name: spring
+      password: spring

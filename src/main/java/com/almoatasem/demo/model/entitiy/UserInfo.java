@@ -3,7 +3,7 @@ package com.almoatasem.demo.model.entitiy;
 import com.almoatasem.demo.model.enums.GENDER;
 import jakarta.persistence.*;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -18,6 +18,7 @@ public class UserInfo {
     @Column(nullable = false, unique = true)
     private String email;
     @Column(name = "date_of_birth", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
     @Enumerated(EnumType.STRING)
     private GENDER gender;
