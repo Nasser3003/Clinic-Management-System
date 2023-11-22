@@ -27,9 +27,15 @@ public class UserService {
     }
     public void saveUser(RegisterUserRequest registerUserRequest) throws RequestValidationException {
         try {
-            UserInfo user = new UserInfo(registerUserRequest.firstName(),
-                    registerUserRequest.lastName(), registerUserRequest.email(),
-                    registerUserRequest.dateOfBirth(), GENDER.valueOf(registerUserRequest.gender()));
+            UserInfo user = new UserInfo(
+                    registerUserRequest.firstName(),
+                    registerUserRequest.lastName(),
+                    registerUserRequest.email(),
+                    registerUserRequest.dateOfBirth(),
+                    GENDER.valueOf(registerUserRequest.gender()),
+                    registerUserRequest.username(),
+                    registerUserRequest.password()
+            );
             userRepository.save(user);
         } catch (DataAccessException e) {
             e.printStackTrace();

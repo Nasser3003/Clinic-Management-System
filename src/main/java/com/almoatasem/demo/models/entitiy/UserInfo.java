@@ -1,10 +1,10 @@
 package com.almoatasem.demo.models.entitiy;
 
+import com.almoatasem.demo.models.Role;
 import com.almoatasem.demo.models.enums.GENDER;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,13 +15,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class UserInfo implements UserDetails {
-    public UserInfo() {}
+    public UserInfo() {
+        super();
+        this.authorities = new HashSet<Role>();
+    }
+
 
     @Getter
     @Id
@@ -64,9 +69,18 @@ public class UserInfo implements UserDetails {
     private String password;
 
 //    @Getter
-//    @Setter
-//    private Set<Role> authorities;
+    @Setter
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role_junction",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")}
+    )
+    private Set<Role> authorities;
 
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.authorities;
+    }
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
@@ -76,12 +90,14 @@ public class UserInfo implements UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedDate;
 
-    public UserInfo(String firstName, String lastName, String email, LocalDate dateOfBirth, GENDER gender) {
+    public UserInfo(String firstName, String lastName, String email, LocalDate dateOfBirth, GENDER gender, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+        this.username = username;
+        this.password = password;
     }
 
     @Override
@@ -111,23 +127,18 @@ public class UserInfo implements UserDetails {
 
     @Getter
     @Setter
-    private boolean isAccountNonExpired;
+    private boolean isAccountNonExpired = true;
 
     @Getter
     @Setter
-    private boolean isAccountNonLocked;
+    private boolean isAccountNonLocked = true;
 
     @Getter
     @Setter
-    private boolean isCredentialsNonExpired;
+    private boolean isCredentialsNonExpired = true;
 
     @Getter
     @Setter
-    private boolean isEnabled;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    private boolean isEnabled = true;
 
 }
