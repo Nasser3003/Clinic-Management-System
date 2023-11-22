@@ -1,4 +1,4 @@
-package com.almoatasem.demo.model.enums;
+package com.almoatasem.demo.models.enums;
 
 public enum GENDER {
     MALE,

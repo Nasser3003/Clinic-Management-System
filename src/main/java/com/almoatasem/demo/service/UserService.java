@@ -1,18 +1,15 @@
 package com.almoatasem.demo.service;
 
 import com.almoatasem.demo.exception.RequestValidationException;
-import com.almoatasem.demo.model.entitiy.UserInfo;
-import com.almoatasem.demo.model.enums.GENDER;
-import com.almoatasem.demo.model.requests.RegisterUserRequest;
+import com.almoatasem.demo.models.entitiy.UserInfo;
+import com.almoatasem.demo.models.enums.GENDER;
+import com.almoatasem.demo.models.requests.RegisterUserRequest;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
-
-import static com.almoatasem.demo.utils.DateManipulation.parseDate;
 
 
 @Service
@@ -30,12 +27,12 @@ public class UserService {
     }
     public void saveUser(RegisterUserRequest registerUserRequest) throws RequestValidationException {
         try {
-            UserInfo user = new UserInfo(UUID.randomUUID(), registerUserRequest.firstName(),
+            UserInfo user = new UserInfo(registerUserRequest.firstName(),
                     registerUserRequest.lastName(), registerUserRequest.email(),
-                    parseDate(registerUserRequest.dateOfBirth()), GENDER.valueOf(registerUserRequest.gender()));
+                    registerUserRequest.dateOfBirth(), GENDER.valueOf(registerUserRequest.gender()));
             userRepository.save(user);
         } catch (DataAccessException e) {
-            throw new RequestValidationException("Error1Error2Error3: UserService >> saveUser");
+            e.printStackTrace();
         }
     }
     public UserInfo selectUser(String email) {
