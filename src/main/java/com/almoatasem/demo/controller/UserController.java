@@ -29,7 +29,7 @@ public class UserController {
         return userService.selectUser(email);
     }
     @PostMapping("/register")
-    public void registerUser(@RequestBody RegisterUserRequest registerUserRequest) {
+    public void registerUser(@RequestBody RegisterUserRequest registerUserRequest) throws Exception {
         userService.saveUser(registerUserRequest);
     }
 }

@@ -27,7 +27,6 @@ public class UserInfo implements UserDetails {
         this.authorities = new HashSet<Role>();
     }
 
-
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,7 +122,6 @@ public class UserInfo implements UserDetails {
                 ", gender=" + gender +
                 '}';
     }
-
 
     @Getter
     @Setter
