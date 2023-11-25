@@ -25,7 +25,8 @@ public class UserInfo implements UserDetails {
         this.authorities = new HashSet<Role>();
     }
 
-    public UserInfo(String email, String password, Set<Role> authorities) {
+    public UserInfo(String username, String email, String password, Set<Role> authorities) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
@@ -63,6 +64,7 @@ public class UserInfo implements UserDetails {
 
     @Getter
     @Setter
+    @Column(unique = true)
     private String username;
 
     @Getter

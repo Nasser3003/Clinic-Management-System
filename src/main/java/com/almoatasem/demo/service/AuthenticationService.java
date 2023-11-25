@@ -27,13 +27,13 @@ public class AuthenticationService {
         this.encoder = encoder;
     }
 
-    public UserInfo registerUser(String email, String password) {
+    public UserInfo registerUser(String username, String email, String password) {
         String encodedPassword = encoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
 
-        return userRepository.save(new UserInfo("User1@gmail.com", encodedPassword, authorities));
+        return userRepository.save(new UserInfo(username, email, encodedPassword, authorities));
     }
 }

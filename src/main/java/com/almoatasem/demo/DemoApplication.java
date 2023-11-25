@@ -1,15 +1,13 @@
 package com.almoatasem.demo;
 
 import com.almoatasem.demo.models.entitiy.Role;
-import com.almoatasem.demo.models.entitiy.UserInfo;
 import com.almoatasem.demo.repository.RoleRepository;
-import com.almoatasem.demo.repository.UserRepository;
+import com.almoatasem.demo.service.AuthenticationService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,9 +21,8 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
-
 	@Bean
-	CommandLineRunner runner(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
+	CommandLineRunner runner(AuthenticationService authenticationService, RoleRepository roleRepository) {
 		return args -> {
 			if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
 
@@ -36,9 +33,7 @@ public class DemoApplication {
 			roles.add(createAdminRole);
 			roles.add(createUserRole);
 
-			UserInfo admin = new UserInfo("admin@gmail.com"
-					, encoder.encode("admin"), roles);
-			userRepository.save(admin);
+			authenticationService.registerUser("admin", "admin@gmail.com", "admin");
 		};
 	}
 }
