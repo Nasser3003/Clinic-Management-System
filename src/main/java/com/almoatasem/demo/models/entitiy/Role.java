@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
@@ -18,13 +19,11 @@ public class Role implements GrantedAuthority {
         super();
     }
 
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id")
     private Long id;
 
-    @Setter
     @Column(unique = true)
     private String authority;
 

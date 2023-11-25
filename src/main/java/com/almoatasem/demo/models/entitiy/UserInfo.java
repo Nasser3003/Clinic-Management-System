@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 public class UserInfo implements UserDetails {
@@ -32,47 +33,38 @@ public class UserInfo implements UserDetails {
         this.authorities = authorities;
     }
 
-    @Getter
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Getter
     @Setter
     private String firstName;
 
-    @Getter
     @Setter
     private String lastName;
 
-    @Getter
     @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Getter
     @Setter
     @Column(name = "date_of_birth")
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     private LocalDate dateOfBirth;
 
-    @Getter
     @Setter
     @Enumerated(EnumType.STRING)
     private GENDER gender;
 
-    @Getter
     @Setter
     @Column(unique = true)
     private String username;
 
-    @Getter
     @Setter
     @Column(nullable = false)
     private String password;
 
-    @Getter
     @Setter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -114,19 +106,15 @@ public class UserInfo implements UserDetails {
                 '}';
     }
 
-    @Getter
     @Setter
     private boolean isAccountNonExpired = true;
 
-    @Getter
     @Setter
     private boolean isAccountNonLocked = true;
 
-    @Getter
     @Setter
     private boolean isCredentialsNonExpired = true;
 
-    @Getter
     @Setter
     private boolean isEnabled = true;
 
