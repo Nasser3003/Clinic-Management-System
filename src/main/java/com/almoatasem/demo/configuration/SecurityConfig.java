@@ -7,6 +7,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,22 +20,20 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public AuthenticationManager authManager(UserDetailsService detailsService) {
         DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
         daoProvider.setUserDetailsService(detailsService);
         return new ProviderManager(daoProvider);
     }
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.csrf(csrf -> csrf.disable())
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
-                .httpBasic(Customizer.withDefaults())
-                .build();
+                .httpBasic(Customizer.withDefaults()).build();
     }
 }

@@ -22,7 +22,7 @@ import java.util.Set;
 public class UserInfo implements UserDetails {
     public UserInfo() {
         super();
-        this.authorities = new HashSet<Role>();
+        this.authorities = new HashSet<>();
     }
 
     public UserInfo(String username, String email, String password, Set<Role> authorities) {

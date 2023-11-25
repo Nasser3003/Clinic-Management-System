@@ -10,17 +10,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @CrossOrigin("*") // need to change in the future
 public class AuthenticationController {
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
     @PostMapping("/register")
-    public UserInfo registerUser(@RequestBody RegistrationDTO registrationDTO) throws Exception {
-        return authenticationService.registerUser(
+    public String registerUser(@RequestBody RegistrationDTO registrationDTO) {
+        authenticationService.registerUser(
                 registrationDTO.username()
                 ,registrationDTO.email()
                 ,registrationDTO.password());
+        return "User Created Successfully";
     }
 }

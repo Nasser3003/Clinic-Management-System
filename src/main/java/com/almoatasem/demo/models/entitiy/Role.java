@@ -5,14 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
+@Getter
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-
-    public Role(Long id, String authority) {
-        this.id = id;
-        this.authority = authority;
-    }
 
     public Role(String authority) {
         this.authority = authority;
@@ -22,14 +18,12 @@ public class Role implements GrantedAuthority {
         super();
     }
 
-    @Getter
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id")
     private Long id;
 
-    @Getter
     @Setter
     @Column(unique = true)
     private String authority;
