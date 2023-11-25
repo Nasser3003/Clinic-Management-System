@@ -1,6 +1,5 @@
 package com.almoatasem.demo.models.entitiy;
 
-import com.almoatasem.demo.models.Role;
 import com.almoatasem.demo.models.enums.GENDER;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,37 +8,41 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "users")
 public class UserInfo implements UserDetails {
     public UserInfo() {
         super();
         this.authorities = new HashSet<Role>();
     }
 
+    public UserInfo(String email, String password, Set<Role> authorities) {
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
     @Getter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @Getter
     @Setter
-    @Column(nullable = false)
     private String firstName;
 
     @Getter
     @Setter
-    @Column(nullable = false)
     private String lastName;
 
     @Getter
@@ -49,7 +52,7 @@ public class UserInfo implements UserDetails {
 
     @Getter
     @Setter
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth")
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     private LocalDate dateOfBirth;
 
@@ -64,10 +67,10 @@ public class UserInfo implements UserDetails {
 
     @Getter
     @Setter
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String password;
 
-//    @Getter
+    @Getter
     @Setter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -77,10 +80,6 @@ public class UserInfo implements UserDetails {
     )
     private Set<Role> authorities;
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
-
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createDate;
@@ -88,16 +87,6 @@ public class UserInfo implements UserDetails {
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedDate;
-
-    public UserInfo(String firstName, String lastName, String email, LocalDate dateOfBirth, GENDER gender, String username, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.username = username;
-        this.password = password;
-    }
 
     @Override
     public boolean equals(Object o) {

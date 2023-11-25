@@ -1,4 +1,4 @@
-package com.almoatasem.demo.models;
+package com.almoatasem.demo.models.entitiy;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
 
-    public Role(int id, String authority) {
+    public Role(Long id, String authority) {
         this.id = id;
         this.authority = authority;
     }
@@ -25,12 +25,13 @@ public class Role implements GrantedAuthority {
     @Getter
     @Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id")
-    private long id;
+    private Long id;
 
     @Getter
     @Setter
+    @Column(unique = true)
     private String authority;
 
 }
