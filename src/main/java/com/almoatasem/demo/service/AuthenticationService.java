@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +37,10 @@ public class AuthenticationService {
         this.tokenService = tokenService;
     }
     public String registerUser(String username, String email, String password) {
-        String encodedPassword = encoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
-        userRepository.save(new UserInfo(username, email, encodedPassword, authorities));
+        userRepository.save(new UserInfo(username, email, encoder.encode(password), authorities));
         return "User Created Successfully";
     }
 
@@ -51,7 +51,7 @@ public class AuthenticationService {
             );
             String token = tokenService.generateJWT(auth);
             return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             e.printStackTrace();
             return new LoginResponseDTO(null, "Issue in loginUser");
         }
