@@ -36,7 +36,8 @@ public class DemoApplication {
 			roles.add(createUserRole);
 
 
-			UserInfo admin = new UserInfo("admin", "admin@gmail.com", encoder.encode("admin"), roles);
+			UserInfo admin = new UserInfo("admin", "admin@gmail.com", encoder.encode("admin"),
+					"Admin", roles);
 			userRepository.save(admin);
 
 		};

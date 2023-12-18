@@ -40,7 +40,7 @@ public class AuthenticationService {
         Role userRole = roleRepository.findByAuthority("USER").get();
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
-        userRepository.save(new UserInfo(username, email, encoder.encode(password), authorities));
+        userRepository.save(new UserInfo(username, email, encoder.encode(password), "Patient",  authorities));
         return "User Created Successfully";
     }
 

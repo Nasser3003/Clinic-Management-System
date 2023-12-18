@@ -26,10 +26,11 @@ public class UserInfo implements UserDetails {
         this.authorities = new HashSet<>();
     }
 
-    public UserInfo(String username, String email, String password, Set<Role> authorities) {
+    public UserInfo(String username, String email, String password, String title, Set<Role> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.title = title;
         this.authorities = authorities;
     }
 
@@ -37,6 +38,9 @@ public class UserInfo implements UserDetails {
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Setter
+    private String title;
 
     @Setter
     private String firstName;
@@ -95,16 +99,9 @@ public class UserInfo implements UserDetails {
         return Objects.hash(id);
     }
 
-    @Override
-    public String toString() {
-        return "UserTable{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", age=" + dateOfBirth +
-                ", gender=" + gender +
-                '}';
-    }
+
+
+
 
     @Setter
     private boolean isAccountNonExpired = true;
