@@ -1,8 +1,8 @@
 package com.almoatasem.demo.service;
 
 import com.almoatasem.demo.DTO.LoginResponseDTO;
-import com.almoatasem.demo.models.entitiy.Role;
-import com.almoatasem.demo.models.entitiy.user.Patient;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
+import com.almoatasem.demo.models.entitiy.user.PatientEntity;
 import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +37,10 @@ public class AuthenticationService {
         this.tokenService = tokenService;
     }
     public String registerUser(String username, String email, String password) {
-        Role userRole = roleRepository.findByAuthority("USER").get();
-        Set<Role> authorities = new HashSet<>();
-        authorities.add(userRole);
-        userRepository.save(new Patient(username, email, encoder.encode(password),  authorities));
+        RoleEntity userRoleEntity = roleRepository.findByAuthority("USER").get();
+        Set<RoleEntity> authorities = new HashSet<>();
+        authorities.add(userRoleEntity);
+        userRepository.save(new PatientEntity(username, email, encoder.encode(password),  authorities));
         return "User Created Successfully";
     }
 

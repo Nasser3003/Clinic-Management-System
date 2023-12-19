@@ -1,15 +1,12 @@
 package com.almoatasem.demo.models.entitiy.user;
 
-import com.almoatasem.demo.models.entitiy.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
+import com.almoatasem.demo.models.entitiy.AppointmentEntity;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,9 +16,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @DiscriminatorValue("doctor")
 @Entity
-public class Doctor extends UserInfo {
+public class DoctorEntity extends AbstractUserEntity {
 
-    public Doctor(String username, String email, String password, Set<Role> authorities, double salary) {
+    public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities) {
+        super(username, email, password, authorities);
+    }
+
+    public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities, double salary) {
         super(username, email, password, authorities);
         this.salary = salary;
     }
@@ -29,13 +30,10 @@ public class Doctor extends UserInfo {
     private double salary;
 
     @OneToMany(mappedBy = "doctor")
-    private Set<Patient> patients = new HashSet<>();
+    private Set<PatientEntity> patients = new HashSet<>();
 
-    @Column(name = "scheduled_start_time")
-    private LocalDateTime scheduledStartTime;
-
-    @Column(name = "scheduled_end_time")
-    private LocalDateTime scheduledEndTime;
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private Set<AppointmentEntity> schedule = new HashSet<>(); ;
 
     @Override
     public String toString() {
@@ -47,17 +45,14 @@ public class Doctor extends UserInfo {
         return "Doctor{" +
                 "salary=" + salary +
                 ", patients=" + patientNames +
-                ", scheduledStartTime=" + scheduledStartTime +
-                ", scheduledEndTime=" + scheduledEndTime +
                 '}' +
                 super.toString();
     }
 
-    public void addPatient(Patient patient) {
-        patients.add(patient);
+    public void addPatient(PatientEntity patientEntity) {
+        patients.add(patientEntity);
     }
-    public void removePatient(Patient patient) {
-        patients.remove(patient);
+    public void removePatient(PatientEntity patientEntity) {
+        patients.remove(patientEntity);
     }
-
 }

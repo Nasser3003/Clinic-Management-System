@@ -1,7 +1,7 @@
 package com.almoatasem.demo.models.entitiy;
 
-import com.almoatasem.demo.models.entitiy.user.Doctor;
-import com.almoatasem.demo.models.entitiy.user.Patient;
+import com.almoatasem.demo.models.entitiy.user.DoctorEntity;
+import com.almoatasem.demo.models.entitiy.user.PatientEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,8 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "treatment")
-public class Treatment {
+public class TreatmentEntity {
 
     private static List<String> treatments = new ArrayList<>();
     {
@@ -56,14 +58,14 @@ public class Treatment {
 
     }
 
-    public Treatment(Doctor doctor, Patient patient, String treatment, long cost) {
+    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost) {
         this.doctor = doctor;
         this.patient = patient;
         this.treatment = treatment;
         this.cost = cost;
     }
 
-    public Treatment(Doctor doctor, Patient patient, String treatment, long cost, int installementPeriodInMonths) {
+    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost, int installementPeriodInMonths) {
         this.doctor = doctor;
         this.patient = patient;
         this.treatment = treatment;
@@ -78,11 +80,11 @@ public class Treatment {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    private DoctorEntity doctor;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private PatientEntity patient;
 
     private String treatment;
 

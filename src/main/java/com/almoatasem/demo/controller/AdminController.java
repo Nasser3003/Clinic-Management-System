@@ -1,6 +1,6 @@
 package com.almoatasem.demo.controller;
 
-import com.almoatasem.demo.models.entitiy.user.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 import com.almoatasem.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +21,13 @@ public class AdminController {
 
 //    NEED TO MAKE THIS ONLY FOR ADMIN
     @GetMapping("/all")
-    public List<UserInfo> getAllUsers() {
+    public List<AbstractUserEntity> getAllUsers() {
         return userService.selectAllUsers();
     }
 
     //    NEED TO MAKE THIS ONLY FOR ADMIN
     @GetMapping("/{email}")
-    public UserInfo getUser (@PathVariable("email") String email) {
+    public AbstractUserEntity getUser (@PathVariable("email") String email) {
         return userService.selectUserByEmail(email);
     }
 

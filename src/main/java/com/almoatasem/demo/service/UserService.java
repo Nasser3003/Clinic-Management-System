@@ -1,7 +1,7 @@
 package com.almoatasem.demo.service;
 
 import com.almoatasem.demo.exception.RequestValidationException;
-import com.almoatasem.demo.models.entitiy.user.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,11 +20,11 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public List<UserInfo> selectAllUsers() {
+    public List<AbstractUserEntity> selectAllUsers() {
         return userRepository.findAll();
     }
 
-    public UserInfo selectUserByEmail(String email) {
+    public AbstractUserEntity selectUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new RequestValidationException("No user with that email"));
     }
     @Override

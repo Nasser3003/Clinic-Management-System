@@ -11,9 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @NoArgsConstructor
 @Table(name = "roles")
-public class Role implements GrantedAuthority {
+public class RoleEntity implements GrantedAuthority {
 
-    public Role(String authority) {
+    public RoleEntity(String authority) {
         this.authority = authority;
     }
 

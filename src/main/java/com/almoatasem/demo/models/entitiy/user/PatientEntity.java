@@ -1,7 +1,7 @@
 package com.almoatasem.demo.models.entitiy.user;
 
-import com.almoatasem.demo.models.entitiy.Role;
-import com.almoatasem.demo.models.entitiy.Treatment;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
+import com.almoatasem.demo.models.entitiy.TreatmentEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,21 +16,22 @@ import java.util.Set;
 @NoArgsConstructor
 @DiscriminatorValue("patient")
 @Entity
-public class Patient extends UserInfo {
-    public Patient(String username, String email, String password, Set<Role> authorities) {
+public class PatientEntity extends AbstractUserEntity {
+    public PatientEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         super(username, email, password, authorities);
     }
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
-    private Doctor doctor;
+    private DoctorEntity doctor;
 
-    private String allergies;
-    private String healthIssues;
-    private String prescriptions;
+    @OneToMany(mappedBy = "patient")
+    private List<TreatmentEntity> pastTreatmentEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
-    private List<Treatment> pastTreatments = new ArrayList<>();
+    private String allergies = "None";
+    private String healthIssues = "None";
+    private String prescriptions = "None";
+
 
     @Override
     public String toString() {

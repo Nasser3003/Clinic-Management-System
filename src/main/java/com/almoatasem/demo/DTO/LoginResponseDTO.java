@@ -1,6 +1,6 @@
 package com.almoatasem.demo.DTO;
 
-import com.almoatasem.demo.models.entitiy.user.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 
-public record LoginResponseDTO(UserInfo userInfo, String jwt) {
+public record LoginResponseDTO(AbstractUserEntity abstractUserEntity, String jwt) {
 }

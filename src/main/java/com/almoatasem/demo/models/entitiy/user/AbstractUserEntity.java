@@ -1,6 +1,6 @@
 package com.almoatasem.demo.models.entitiy.user;
 
-import com.almoatasem.demo.models.entitiy.Role;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.enums.GENDER;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,15 +24,15 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @DiscriminatorColumn(name = "user_type")
 @Table(name = "users")
-public abstract class UserInfo implements UserDetails {
+public abstract class AbstractUserEntity implements UserDetails {
 
-    public UserInfo(String username, String email, String password, Set<Role> authorities) {
+    public AbstractUserEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
     }
-    public UserInfo(String username, String email, String password) {
+    public AbstractUserEntity(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -70,7 +70,7 @@ public abstract class UserInfo implements UserDetails {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
-    private Set<Role> authorities = new HashSet<>();
+    private Set<RoleEntity> authorities = new HashSet<>();
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
@@ -94,8 +94,8 @@ public abstract class UserInfo implements UserDetails {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserInfo userInfo = (UserInfo) o;
-        return Objects.equals(id, userInfo.id);
+        AbstractUserEntity abstractUserEntity = (AbstractUserEntity) o;
+        return Objects.equals(id, abstractUserEntity.id);
     }
 
     @Override
@@ -103,11 +103,11 @@ public abstract class UserInfo implements UserDetails {
         return Objects.hash(id);
     }
 
-    public void addRole(Role role) {
-        authorities.add(role);
+    public void addRole(RoleEntity roleEntity) {
+        authorities.add(roleEntity);
     }
-    public void removeRole(Role role) {
-        authorities.remove(role);
+    public void removeRole(RoleEntity roleEntity) {
+        authorities.remove(roleEntity);
     }
 
 

@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @DiscriminatorValue("employee")
 @Entity
-public class Employee extends UserInfo {
+public class EmployeeEntity extends AbstractUserEntity {
     // has a salary
     // job title
     // employeee stuff

@@ -1,10 +1,13 @@
 package com.almoatasem.demo;
 
-import com.almoatasem.demo.models.entitiy.Role;
-import com.almoatasem.demo.models.entitiy.Treatment;
-import com.almoatasem.demo.models.entitiy.user.Doctor;
-import com.almoatasem.demo.models.entitiy.user.Patient;
-import com.almoatasem.demo.repository.*;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
+import com.almoatasem.demo.models.entitiy.AppointmentEntity;
+import com.almoatasem.demo.models.entitiy.TreatmentEntity;
+import com.almoatasem.demo.models.entitiy.user.DoctorEntity;
+import com.almoatasem.demo.models.entitiy.user.PatientEntity;
+import com.almoatasem.demo.repository.RoleRepository;
+import com.almoatasem.demo.repository.AppointmentRepository;
+import com.almoatasem.demo.repository.TreatmentRepository;
 import com.almoatasem.demo.repository.userRepos.DoctorRepository;
 import com.almoatasem.demo.repository.userRepos.EmployeeRepository;
 import com.almoatasem.demo.repository.userRepos.PatientRepository;
@@ -14,8 +17,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -25,64 +29,73 @@ public class Runner implements CommandLineRunner {
     private DoctorRepository doctorRepository;
     private EmployeeRepository employeeRepository;
     private PatientRepository patientRepository;
-
     private PasswordEncoder encoder;
     private TreatmentRepository treatmentRepository;
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     public Runner(RoleRepository roleRepository, DoctorRepository doctorRepository,
                   PatientRepository patientRepository,
                   EmployeeRepository employeeRepository,
                   TreatmentRepository treatmentRepository,
+                  AppointmentRepository appointmentRepository,
                   PasswordEncoder encoder) {
         this.roleRepository = roleRepository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
         this.employeeRepository = employeeRepository;
         this.treatmentRepository = treatmentRepository;
+        this.appointmentRepository = appointmentRepository;
         this.encoder = encoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
-
         if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
 
-        Role createAdminRole = roleRepository.save(new Role("ADMIN"));
-        Role createUserRole = roleRepository.save(new Role("USER"));
-        Role createPatientRole = roleRepository.save(new Role("PATIENT"));
-        Role createDoctorRole = roleRepository.save(new Role("DOCTOR"));
+        RoleEntity createAdminRoleEntity = roleRepository.save(new RoleEntity("ADMIN"));
+        RoleEntity createUserRoleEntity = roleRepository.save(new RoleEntity("USER"));
+        RoleEntity createPatientRoleEntity = roleRepository.save(new RoleEntity("PATIENT"));
+        RoleEntity createDoctorRoleEntity = roleRepository.save(new RoleEntity("DOCTOR"));
+
+        Set<RoleEntity> rolesAdminDoctor = new HashSet<>();
+        rolesAdminDoctor.add(createAdminRoleEntity);
+        rolesAdminDoctor.add(createDoctorRoleEntity);
+        rolesAdminDoctor.add(createUserRoleEntity);
+
+        Set<RoleEntity> rolesPatient = new HashSet<RoleEntity>();
+        rolesPatient.add(createPatientRoleEntity);
+        rolesPatient.add(createUserRoleEntity);
+
+        DoctorEntity docterMo3a = new DoctorEntity("DoctorAdmin", "DoctorAdmin@gmail.com",
+                encoder.encode("admin"), rolesAdminDoctor);
+        doctorRepository.save(docterMo3a);
+        docterMo3a.setFirstName("Mo3a");
+
+        PatientEntity patientNasser = new PatientEntity("PatientUser", "PatientUser@gmail.com",
+                encoder.encode("user"), rolesPatient);
+        patientRepository.save(patientNasser);
+        patientNasser.setFirstName("Nasser");
+
+        patientNasser.setDoctor(docterMo3a);
+        docterMo3a.addPatient(patientNasser);
+
+        LocalDate date = LocalDate.of(2023, 12, 19);
+        LocalTime time = LocalTime.of(10, 30);
+//        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(); // this doesnt give any errors
+        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(docterMo3a, patientNasser, date, time); // passing doctor only or patient only also gives the error
+        appointmentRepository.save(scheduleAppointmentNasserNow);
+
+        TreatmentEntity treatmentBraces = new TreatmentEntity(docterMo3a, patientNasser,
+                "Braces", 18000);
+        TreatmentEntity treatmentFixBraces = new TreatmentEntity(docterMo3a, patientNasser,
+                "Fix Braces", 1000);
+
+        treatmentRepository.save(treatmentBraces);
+        treatmentRepository.save(treatmentFixBraces);
 
 
-        Set<Role> rolesAdminDoctor = new HashSet<>();
-        rolesAdminDoctor.add(createAdminRole);
-        rolesAdminDoctor.add(createDoctorRole);
-        rolesAdminDoctor.add(createUserRole);
-
-        Set<Role> rolesPatient = new HashSet<Role>();
-        rolesPatient.add(createPatientRole);
-        rolesPatient.add(createUserRole);
-
-        Doctor docter1 = new Doctor("DoctorAdmin", "DoctorAdmin@gmail.com", encoder.encode("admin"),
-                rolesAdminDoctor, 30_000);
-        Patient patient1 = new Patient("PatientUser", "PatientUser@gmail.com", encoder.encode("user"),
-                rolesPatient);
-        doctorRepository.save(docter1);
-        patientRepository.save(patient1);
-        patient1.setDoctor(docter1);
-        patient1.setFirstName("Patient1111111");
-        docter1.addPatient(patient1);
-        docter1.setFirstName("Doctor1111111");
-
-        Treatment treatment1 = new Treatment(docter1, patient1, "Braces11111", 8000);
-        Treatment treatment2 = new Treatment(docter1, patient1, "Braces2222222222", 18000);
-
-        treatmentRepository.save(treatment1);
-        treatmentRepository.save(treatment2);
-
-        System.out.println(patient1);
-        System.out.println(docter1);
-
-        treatmentRepository.findAllByPatient(patient1).forEach(treatment -> System.out.println(treatment.getTreatment()));
+        treatmentRepository.findAllByPatient(patientNasser)
+                .forEach(treatmentEntity -> System.out.println(treatmentEntity.getTreatment()));
     }
 }
