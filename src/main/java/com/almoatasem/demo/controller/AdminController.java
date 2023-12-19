@@ -1,6 +1,6 @@
 package com.almoatasem.demo.controller;
 
-import com.almoatasem.demo.models.entitiy.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.UserInfo;
 import com.almoatasem.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,9 @@
 package com.almoatasem.demo;
 
 import com.almoatasem.demo.models.entitiy.Role;
-import com.almoatasem.demo.models.entitiy.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.Doctor;
+import com.almoatasem.demo.models.entitiy.user.Patient;
+import com.almoatasem.demo.models.entitiy.user.UserInfo;
 import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -30,15 +32,31 @@ public class DemoApplication {
 
 			Role createAdminRole = roleRepository.save(new Role("ADMIN"));
 			Role createUserRole = roleRepository.save(new Role("USER"));
-
-			Set<Role> roles = new HashSet<>();
-			roles.add(createAdminRole);
-			roles.add(createUserRole);
+			Role createPatientRole= roleRepository.save(new Role("PATIENT"));
+			Role createDoctorRole= roleRepository.save(new Role("DOCTOR"));
 
 
-			UserInfo admin = new UserInfo("admin", "admin@gmail.com", encoder.encode("admin"),
-					"Admin", roles);
-			userRepository.save(admin);
+			Set<Role> rolesAdminDoctor = new HashSet<>(); rolesAdminDoctor.add(createAdminRole);
+			rolesAdminDoctor.add(createDoctorRole);
+			rolesAdminDoctor.add(createUserRole);
+
+			Set<Role> rolesPatient = new HashSet<>();
+			rolesPatient.add(createPatientRole);
+			rolesPatient.add(createUserRole);
+
+			Doctor docter1 = new Doctor("DoctorAdmin", "DoctorAdmin@gmail.com", encoder.encode("admin"),
+					rolesAdminDoctor, 30_000);
+			Patient patient1 = new Patient("PatientUser", "PatientUser@gmail.com", encoder.encode("user"),
+					rolesPatient);
+			userRepository.save(docter1);
+			userRepository.save(patient1);
+			patient1.setDoctor(docter1);
+			patient1.setFirstName("Patient1111111");
+			docter1.addPatient(patient1);
+			docter1.setFirstName("Doctor1111111");
+
+			System.out.println(patient1);
+			System.out.println(docter1);
 
 		};
 	}

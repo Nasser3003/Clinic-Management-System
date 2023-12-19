@@ -1,13 +1,15 @@
 package com.almoatasem.demo.models.entitiy;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-@Getter
-@Setter
+@Data
 @Entity
+@NoArgsConstructor
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
 
@@ -15,12 +17,9 @@ public class Role implements GrantedAuthority {
         this.authority = authority;
     }
 
-    public Role() {
-        super();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter(AccessLevel.NONE)
     @Column(name = "role_id")
     private Long id;
 

@@ -1,7 +1,7 @@
 package com.almoatasem.demo.service;
 
 import com.almoatasem.demo.exception.RequestValidationException;
-import com.almoatasem.demo.models.entitiy.UserInfo;
+import com.almoatasem.demo.models.entitiy.user.UserInfo;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

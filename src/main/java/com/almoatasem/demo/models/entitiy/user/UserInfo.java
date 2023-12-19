@@ -1,8 +1,11 @@
-package com.almoatasem.demo.models.entitiy;
+package com.almoatasem.demo.models.entitiy.user;
 
+import com.almoatasem.demo.models.entitiy.Role;
 import com.almoatasem.demo.models.enums.GENDER;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,76 +18,77 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
+@Data
+@NoArgsConstructor
 @Entity
-@Getter
 @EntityListeners(AuditingEntityListener.class)
+@DiscriminatorColumn(name = "user_type")
 @Table(name = "users")
-public class UserInfo implements UserDetails {
-    public UserInfo() {
-        super();
-        this.authorities = new HashSet<>();
-    }
+public abstract class UserInfo implements UserDetails {
 
-    public UserInfo(String username, String email, String password, String title, Set<Role> authorities) {
+    public UserInfo(String username, String email, String password, Set<Role> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.title = title;
         this.authorities = authorities;
     }
+    public UserInfo(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
+    @Setter(AccessLevel.NONE)
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Setter
-    private String title;
-
-    @Setter
     private String firstName;
 
-    @Setter
     private String lastName;
 
-    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Setter
     @Column(name = "date_of_birth")
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     private LocalDate dateOfBirth;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     private GENDER gender;
 
-    @Setter
     @Column(unique = true)
     private String username;
 
-    @Setter
     @Column(nullable = false)
     private String password;
 
-    @Setter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role_junction",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
-    private Set<Role> authorities;
+    private Set<Role> authorities = new HashSet<>();
 
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createDate;
 
     @LastModifiedDate
+    @Setter(AccessLevel.NONE)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedDate;
+
+    private boolean isAccountNonExpired = true;
+
+    private boolean isAccountNonLocked = true;
+
+    private boolean isCredentialsNonExpired = true;
+
+    private boolean isEnabled = true;
 
     @Override
     public boolean equals(Object o) {
@@ -99,20 +103,12 @@ public class UserInfo implements UserDetails {
         return Objects.hash(id);
     }
 
+    public void addRole(Role role) {
+        authorities.add(role);
+    }
+    public void removeRole(Role role) {
+        authorities.remove(role);
+    }
 
-
-
-
-    @Setter
-    private boolean isAccountNonExpired = true;
-
-    @Setter
-    private boolean isAccountNonLocked = true;
-
-    @Setter
-    private boolean isCredentialsNonExpired = true;
-
-    @Setter
-    private boolean isEnabled = true;
 
 }
