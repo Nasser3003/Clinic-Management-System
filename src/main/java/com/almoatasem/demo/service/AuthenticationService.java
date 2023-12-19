@@ -3,7 +3,6 @@ package com.almoatasem.demo.service;
 import com.almoatasem.demo.DTO.LoginResponseDTO;
 import com.almoatasem.demo.models.entitiy.Role;
 import com.almoatasem.demo.models.entitiy.user.Patient;
-import com.almoatasem.demo.models.entitiy.user.UserInfo;
 import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

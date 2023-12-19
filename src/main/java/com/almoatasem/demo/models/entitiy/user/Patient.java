@@ -1,14 +1,14 @@
 package com.almoatasem.demo.models.entitiy.user;
 
 import com.almoatasem.demo.models.entitiy.Role;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.almoatasem.demo.models.entitiy.Treatment;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,6 +25,13 @@ public class Patient extends UserInfo {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
+    private String allergies;
+    private String healthIssues;
+    private String prescriptions;
+
+    @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
+    private List<Treatment> pastTreatments = new ArrayList<>();
+
     @Override
     public String toString() {
         String doctorName = doctor != null ? doctor.getFirstName() + " " + doctor.getLastName() :
@@ -36,8 +43,5 @@ public class Patient extends UserInfo {
                 '}';
     }
 
-// bills
-    // prescriptions
-
-
+    // Money they got to pay for treatment
 }
