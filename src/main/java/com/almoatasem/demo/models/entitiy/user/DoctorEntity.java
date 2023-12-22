@@ -2,12 +2,13 @@ package com.almoatasem.demo.models.entitiy.user;
 
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.AppointmentEntity;
+import com.almoatasem.demo.models.enums.UserTypeEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -15,6 +16,9 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "user_doctor")
 public class DoctorEntity extends AbstractUserEntity {
+    {
+        this.setUserType(UserTypeEnum.DOCTOR);
+    }
     public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         super(username, email, password, authorities);
     }
@@ -22,6 +26,7 @@ public class DoctorEntity extends AbstractUserEntity {
         super(username, email, password, authorities);
         this.salary = salary;
     }
+
 
     private double salary;
 

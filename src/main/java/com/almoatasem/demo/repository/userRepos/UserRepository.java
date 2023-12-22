@@ -1,4 +1,4 @@
-package com.almoatasem.demo.repository;
+package com.almoatasem.demo.repository.userRepos;
 
 import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

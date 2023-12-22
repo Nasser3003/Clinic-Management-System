@@ -2,6 +2,7 @@ package com.almoatasem.demo.models.entitiy.user;
 
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.TreatmentEntity;
+import com.almoatasem.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,9 @@ import java.util.Set;
 @Entity
 @Table(name = "user_patient")
 public class PatientEntity extends AbstractUserEntity {
+    {
+        this.setUserType(UserTypeEnum.PATIENT);
+    }
     public PatientEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         super(username, email, password, authorities);
     }

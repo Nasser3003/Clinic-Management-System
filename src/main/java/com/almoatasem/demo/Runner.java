@@ -4,14 +4,18 @@ import com.almoatasem.demo.models.entitiy.AppointmentEntity;
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.TreatmentEntity;
 import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
+import com.almoatasem.demo.models.entitiy.user.AdminEntity;
 import com.almoatasem.demo.models.entitiy.user.DoctorEntity;
 import com.almoatasem.demo.models.entitiy.user.PatientEntity;
+import com.almoatasem.demo.models.enums.AuthorityEnum;
 import com.almoatasem.demo.repository.AppointmentRepository;
 import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.TreatmentRepository;
 import com.almoatasem.demo.repository.userRepos.DoctorRepository;
 import com.almoatasem.demo.repository.userRepos.EmployeeRepository;
 import com.almoatasem.demo.repository.userRepos.PatientRepository;
+import com.almoatasem.demo.repository.userRepos.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -25,52 +29,44 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 @Component
 public class Runner implements CommandLineRunner {
     private RoleRepository roleRepository;
     private DoctorRepository doctorRepository;
-    private EmployeeRepository employeeRepository;
     private PatientRepository patientRepository;
-    private PasswordEncoder encoder;
     private TreatmentRepository treatmentRepository;
     private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    public Runner(RoleRepository roleRepository, DoctorRepository doctorRepository,
-                  PatientRepository patientRepository,
-                  EmployeeRepository employeeRepository,
-                  TreatmentRepository treatmentRepository,
-                  AppointmentRepository appointmentRepository,
-                  PasswordEncoder encoder) {
-        this.roleRepository = roleRepository;
-        this.doctorRepository = doctorRepository;
-        this.patientRepository = patientRepository;
-        this.employeeRepository = employeeRepository;
-        this.treatmentRepository = treatmentRepository;
-        this.appointmentRepository = appointmentRepository;
-        this.encoder = encoder;
-    }
+    private UserRepository userRepository;
+    private EmployeeRepository employeeRepository;
+    private PasswordEncoder encoder;
 
     @Override
     public void run(String... args) throws Exception {
-        if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
+        if (roleRepository.findByAuthority(AuthorityEnum.ADMIN).isPresent()) return;
 
-        RoleEntity createAdminRoleEntity = roleRepository.save(new RoleEntity("ADMIN"));
-        RoleEntity createUserRoleEntity = roleRepository.save(new RoleEntity("USER"));
-        RoleEntity createPatientRoleEntity = roleRepository.save(new RoleEntity("PATIENT"));
-        RoleEntity createDoctorRoleEntity = roleRepository.save(new RoleEntity("DOCTOR"));
+        RoleEntity createAdminRoleEntity = roleRepository.save(new RoleEntity(AuthorityEnum.ADMIN));
+        RoleEntity createUserRoleEntity = roleRepository.save(new RoleEntity(AuthorityEnum.USER));
+        RoleEntity createPatientRoleEntity = roleRepository.save(new RoleEntity(AuthorityEnum.PATIENT));
+        RoleEntity createDoctorRoleEntity = roleRepository.save(new RoleEntity(AuthorityEnum.DOCTOR));
 
-        Set<RoleEntity> rolesAdminDoctor = new HashSet<>();
-        rolesAdminDoctor.add(createAdminRoleEntity);
-        rolesAdminDoctor.add(createDoctorRoleEntity);
-        rolesAdminDoctor.add(createUserRoleEntity);
+        Set<RoleEntity> rolesAdmin = new HashSet<>();
+        rolesAdmin.add(createAdminRoleEntity);
+
+        Set<RoleEntity> rolesDoctor = new HashSet<>();
+        rolesDoctor.add(createDoctorRoleEntity);
+        rolesDoctor.add(createUserRoleEntity);
 
         Set<RoleEntity> rolesPatient = new HashSet<>();
         rolesPatient.add(createPatientRoleEntity);
         rolesPatient.add(createUserRoleEntity);
 
-        DoctorEntity docterMo3a = new DoctorEntity("DoctorAdmin", "DoctorAdmin@gmail.com",
-                encoder.encode("admin"), rolesAdminDoctor);
+       AdminEntity admin = new AdminEntity("admin", "admin@gmail.com",
+                encoder.encode("admin"), rolesAdmin);
+       userRepository.save(admin);
+
+        DoctorEntity docterMo3a = new DoctorEntity("docterMo3a", "docterMo3a@gmail.com",
+                encoder.encode("admin"), rolesDoctor);
         setFirstName(docterMo3a, "Mo3a"); // detached state if changed after saving to repo
 
         PatientEntity patientNasser = new PatientEntity("PatientUser", "PatientUser@gmail.com",
@@ -102,6 +98,9 @@ public class Runner implements CommandLineRunner {
 
         treatmentRepository.findAllByPatient(patientNasser)
                 .forEach(treatmentEntity -> System.out.println(treatmentEntity.getTreatment()));
+        System.out.println(docterMo3a);
+        System.out.println(patientNasser);
+
     }
     protected void setFirstName(AbstractUserEntity user, String firstName) {
         user.setFirstName(firstName);

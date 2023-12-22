@@ -1,12 +1,10 @@
 package com.almoatasem.demo.models.entitiy.user;
 
 import com.almoatasem.demo.models.entitiy.RoleEntity;
-import com.almoatasem.demo.models.enums.GENDER;
+import com.almoatasem.demo.models.enums.GenderEnum;
+import com.almoatasem.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,6 +21,7 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
+@ToString(exclude = "id")
 @Table(name = "users")
 public abstract class AbstractUserEntity implements UserDetails {
 
@@ -44,8 +43,14 @@ public abstract class AbstractUserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "user_type")
+    @Enumerated(EnumType.STRING)
+    private UserTypeEnum userType;
+
+    @Column(name = "first_name")
     private String firstName;
 
+    @Column(name = "last_name")
     private String lastName;
 
     @Column(nullable = false, unique = true)
@@ -56,7 +61,7 @@ public abstract class AbstractUserEntity implements UserDetails {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    private GENDER gender;
+    private GenderEnum gender;
 
     @Column(unique = true)
     private String username;
@@ -73,21 +78,27 @@ public abstract class AbstractUserEntity implements UserDetails {
     private Set<RoleEntity> authorities = new HashSet<>();
 
     @CreatedDate
+    @Column(name = "created_date")
     @Setter(AccessLevel.NONE)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createDate;
 
+    @Column(name = "last_modified_date")
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedDate;
 
+    @Column(name = "is_account_non_expired")
     private boolean isAccountNonExpired = true;
 
+    @Column(name = "is_account_non_locked")
     private boolean isAccountNonLocked = true;
 
+    @Column(name = "is_credentials_non_locked")
     private boolean isCredentialsNonExpired = true;
 
+    @Column(name = "is_enabled")
     private boolean isEnabled = true;
 
     @Override

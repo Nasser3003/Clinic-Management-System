@@ -1,5 +1,6 @@
 package com.almoatasem.demo.models.entitiy;
 
+import com.almoatasem.demo.models.enums.AuthorityEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -13,7 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name = "roles")
 public class RoleEntity implements GrantedAuthority {
 
-    public RoleEntity(String authority) {
+    public RoleEntity(AuthorityEnum authority) {
         this.authority = authority;
     }
 
@@ -24,6 +25,12 @@ public class RoleEntity implements GrantedAuthority {
     private Long id;
 
     @Column(unique = true)
-    private String authority;
+    @Enumerated(EnumType.STRING)
+    private AuthorityEnum authority;
+
+    @Override
+    public String getAuthority() {
+        return authority.name();
+    }
 
 }
