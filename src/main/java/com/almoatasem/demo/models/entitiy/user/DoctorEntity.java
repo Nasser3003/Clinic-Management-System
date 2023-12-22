@@ -3,25 +3,21 @@ package com.almoatasem.demo.models.entitiy.user;
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.AppointmentEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
-@DiscriminatorValue("doctor")
 @Entity
+@Table(name = "user_doctor")
 public class DoctorEntity extends AbstractUserEntity {
-
     public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         super(username, email, password, authorities);
     }
-
     public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities, double salary) {
         super(username, email, password, authorities);
         this.salary = salary;
@@ -35,19 +31,19 @@ public class DoctorEntity extends AbstractUserEntity {
     @OneToMany(mappedBy = "doctor")
     private Set<AppointmentEntity> schedule = new HashSet<>(); ;
 
-    @Override
-    public String toString() {
-        String patientNames = (!patients.isEmpty()) ?
-                patients.stream()
-                        .map(patient -> getFirstName() + " " + getLastName())
-                        .collect(Collectors.joining(", ")) : "No Patients";
-
-        return "Doctor{" +
-                "salary=" + salary +
-                ", patients=" + patientNames +
-                '}' +
-                super.toString();
-    }
+//    @Override
+//    public String toString() {
+//        String patientNames = (!patients.isEmpty()) ?
+//                patients.stream()
+//                        .map(patient -> getFirstName() + " " + getLastName())
+//                        .collect(Collectors.joining(", ")) : "No Patients";
+//
+//        return "Doctor{" +
+//                "salary=" + salary +
+//                ", patients=" + patientNames +
+//                '}' +
+//                super.toString();
+//    }
 
     public void addPatient(PatientEntity patientEntity) {
         patients.add(patientEntity);

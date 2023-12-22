@@ -22,7 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@DiscriminatorColumn(name = "user_type")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
 public abstract class AbstractUserEntity implements UserDetails {
 

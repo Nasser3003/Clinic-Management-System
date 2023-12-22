@@ -22,7 +22,7 @@ public class AppointmentEntity {
     @JoinColumn(name = "doctor_id")
     private DoctorEntity doctor;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "patient_id")
     private PatientEntity patient;
 
@@ -34,12 +34,14 @@ public class AppointmentEntity {
         this.doctor = doctor;
         this.patient = patient;
         this.scheduleTime = scheduleTime;
+        this.scheduleDate = scheduleDate;
         isBooked = true;
     }
 
     public AppointmentEntity(DoctorEntity doctor, LocalDate scheduleDate, LocalTime scheduleTime) {
         this.doctor = doctor;
         this.scheduleTime = scheduleTime;
+        this.scheduleDate = scheduleDate;
         isBooked = true;
     }
 }

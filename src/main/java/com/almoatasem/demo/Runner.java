@@ -1,5 +1,6 @@
 package com.almoatasem.demo;
 
+import com.almoatasem.demo.models.entitiy.AppointmentEntity;
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.TreatmentEntity;
 import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
@@ -64,7 +65,7 @@ public class Runner implements CommandLineRunner {
         rolesAdminDoctor.add(createDoctorRoleEntity);
         rolesAdminDoctor.add(createUserRoleEntity);
 
-        Set<RoleEntity> rolesPatient = new HashSet<RoleEntity>();
+        Set<RoleEntity> rolesPatient = new HashSet<>();
         rolesPatient.add(createPatientRoleEntity);
         rolesPatient.add(createUserRoleEntity);
 
@@ -79,14 +80,16 @@ public class Runner implements CommandLineRunner {
         patientNasser.setDoctor(docterMo3a); // detached state if changed after saving to repo
         docterMo3a.addPatient(patientNasser); // detached state if changed after saving to repo
 
-        doctorRepository.save(docterMo3a);
-        patientRepository.save(patientNasser);
+//        doctorRepository.save(docterMo3a); // if i save here i get error detached
+//        patientRepository.save(patientNasser); // if i save here i get error detached
 
         LocalDate date = LocalDate.of(2023, 12, 19);
         LocalTime time = LocalTime.of(10, 30);
-//        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(); // this doesnt give any errors
-//        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(docterMo3a, patientNasser, date, time); // passing doctor only or patient only also gives the error
-//        appointmentRepository.save(scheduleAppointmentNasserNow);
+        AppointmentEntity newAppointmentNasser = new AppointmentEntity(docterMo3a, patientNasser, date, time); // passing doctor only or patient only also gives the error
+        appointmentRepository.save(newAppointmentNasser);
+
+        doctorRepository.save(docterMo3a);
+        patientRepository.save(patientNasser);
 
         TreatmentEntity treatmentBraces = new TreatmentEntity(docterMo3a, patientNasser,
                 "Braces", 18000);
@@ -100,11 +103,9 @@ public class Runner implements CommandLineRunner {
         treatmentRepository.findAllByPatient(patientNasser)
                 .forEach(treatmentEntity -> System.out.println(treatmentEntity.getTreatment()));
     }
-    @Transactional
     protected void setFirstName(AbstractUserEntity user, String firstName) {
         user.setFirstName(firstName);
     }
-    @Transactional
     protected void setLastName(AbstractUserEntity user, String lastName) {
         user.setFirstName(lastName);
     }

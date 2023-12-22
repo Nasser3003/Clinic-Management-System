@@ -3,19 +3,17 @@ package com.almoatasem.demo.models.entitiy.user;
 import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.TreatmentEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
-@DiscriminatorValue("patient")
 @Entity
+@Table(name = "user_patient")
 public class PatientEntity extends AbstractUserEntity {
     public PatientEntity(String username, String email, String password, Set<RoleEntity> authorities) {
         super(username, email, password, authorities);
@@ -33,16 +31,16 @@ public class PatientEntity extends AbstractUserEntity {
     private String prescriptions = "None";
 
 
-    @Override
-    public String toString() {
-        String doctorName = doctor != null ? doctor.getFirstName() + " " + doctor.getLastName() :
-                "No Assigned Doctor" ;
-
-        return "Patient{" +
-                super.toString() +
-                "doctor=" + doctorName +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        String doctorName = doctor != null ? doctor.getFirstName() + " " + doctor.getLastName() :
+//                "No Assigned Doctor" ;
+//
+//        return "Patient{" +
+//                super.toString() +
+//                "doctor=" + doctorName +
+//                '}';
+//    }
 
     // Money they got to pay for treatment
 }
