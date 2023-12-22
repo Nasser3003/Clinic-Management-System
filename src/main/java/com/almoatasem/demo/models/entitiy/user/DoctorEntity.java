@@ -29,10 +29,10 @@ public class DoctorEntity extends AbstractUserEntity {
 
     private double salary;
 
-    @OneToMany(mappedBy = "doctor")
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private Set<PatientEntity> patients = new HashSet<>();
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor")
     private Set<AppointmentEntity> schedule = new HashSet<>(); ;
 
     @Override

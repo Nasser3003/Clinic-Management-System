@@ -1,12 +1,12 @@
 package com.almoatasem.demo;
 
 import com.almoatasem.demo.models.entitiy.RoleEntity;
-import com.almoatasem.demo.models.entitiy.AppointmentEntity;
 import com.almoatasem.demo.models.entitiy.TreatmentEntity;
+import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 import com.almoatasem.demo.models.entitiy.user.DoctorEntity;
 import com.almoatasem.demo.models.entitiy.user.PatientEntity;
-import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.AppointmentRepository;
+import com.almoatasem.demo.repository.RoleRepository;
 import com.almoatasem.demo.repository.TreatmentRepository;
 import com.almoatasem.demo.repository.userRepos.DoctorRepository;
 import com.almoatasem.demo.repository.userRepos.EmployeeRepository;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -69,22 +70,23 @@ public class Runner implements CommandLineRunner {
 
         DoctorEntity docterMo3a = new DoctorEntity("DoctorAdmin", "DoctorAdmin@gmail.com",
                 encoder.encode("admin"), rolesAdminDoctor);
-        doctorRepository.save(docterMo3a);
-        docterMo3a.setFirstName("Mo3a");
+        setFirstName(docterMo3a, "Mo3a"); // detached state if changed after saving to repo
 
         PatientEntity patientNasser = new PatientEntity("PatientUser", "PatientUser@gmail.com",
                 encoder.encode("user"), rolesPatient);
-        patientRepository.save(patientNasser);
-        patientNasser.setFirstName("Nasser");
+        setFirstName(patientNasser, "Nasser"); // detached state if changed after saving to repo
 
-        patientNasser.setDoctor(docterMo3a);
-        docterMo3a.addPatient(patientNasser);
+        patientNasser.setDoctor(docterMo3a); // detached state if changed after saving to repo
+        docterMo3a.addPatient(patientNasser); // detached state if changed after saving to repo
+
+        doctorRepository.save(docterMo3a);
+        patientRepository.save(patientNasser);
 
         LocalDate date = LocalDate.of(2023, 12, 19);
         LocalTime time = LocalTime.of(10, 30);
 //        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(); // this doesnt give any errors
-        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(docterMo3a, patientNasser, date, time); // passing doctor only or patient only also gives the error
-        appointmentRepository.save(scheduleAppointmentNasserNow);
+//        AppointmentEntity scheduleAppointmentNasserNow = new AppointmentEntity(docterMo3a, patientNasser, date, time); // passing doctor only or patient only also gives the error
+//        appointmentRepository.save(scheduleAppointmentNasserNow);
 
         TreatmentEntity treatmentBraces = new TreatmentEntity(docterMo3a, patientNasser,
                 "Braces", 18000);
@@ -98,4 +100,13 @@ public class Runner implements CommandLineRunner {
         treatmentRepository.findAllByPatient(patientNasser)
                 .forEach(treatmentEntity -> System.out.println(treatmentEntity.getTreatment()));
     }
+    @Transactional
+    protected void setFirstName(AbstractUserEntity user, String firstName) {
+        user.setFirstName(firstName);
+    }
+    @Transactional
+    protected void setLastName(AbstractUserEntity user, String lastName) {
+        user.setFirstName(lastName);
+    }
+
 }
