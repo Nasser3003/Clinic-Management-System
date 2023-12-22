@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class AdminService implements UserDetailsService {
+public class AdminService {
 
     private final UserRepository userRepository;
 
@@ -31,14 +31,13 @@ public class AdminService implements UserDetailsService {
                 .map(UserMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
-
     public UserInfoDTO selectUserByEmail(String email) {
         AbstractUserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RequestValidationException("No user with that email"));
         return UserMapper.convertToDTO(user);
     }
-
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("there is no user with that name"));
+    public UserInfoDTO selectUserByUsername(String username) {
+        AbstractUserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new RequestValidationException("No user with that email"));
+        return UserMapper.convertToDTO(user);
     }
+
 }

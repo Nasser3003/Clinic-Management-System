@@ -6,12 +6,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/doctor")
 @CrossOrigin("*") // need to change in the future
-public class UserController {
+public class DoctorController {
 
-    @GetMapping("/")
-    public String helloAdminController(){
-        return "user Access level";
-    }
+//    @GetMapping("/doctor")
+//    public String helloAdminController(){
+//        return "user Access level";
+//    }
+
+    /*
+        doctor should view his profile
+
+        doctor should check his patients
+
+        doctor should be able to take break
+
+     */
 }

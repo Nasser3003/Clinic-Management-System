@@ -1,11 +1,15 @@
 package com.almoatasem.demo.models.entitiy.user;
 
-import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.entitiy.AppointmentEntity;
+import com.almoatasem.demo.models.entitiy.RoleEntity;
 import com.almoatasem.demo.models.enums.UserTypeEnum;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +30,6 @@ public class DoctorEntity extends AbstractUserEntity {
         super(username, email, password, authorities);
         this.salary = salary;
     }
-
 
     private double salary;
 

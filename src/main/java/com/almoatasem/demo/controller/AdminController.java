@@ -13,20 +13,19 @@ import java.util.List;
 @RequestMapping("/admin")
 @CrossOrigin("*") // will need in the future
 public class AdminController {
-
     private final AdminService adminService;
 
-//    NEED TO MAKE THIS ONLY FOR ADMIN
     @GetMapping("/all")
     public List<UserInfoDTO> getAllUsers() {
        return adminService.selectAllUsers();
     }
 
-    //    NEED TO MAKE THIS ONLY FOR ADMIN
-    @GetMapping("/{email}")
-    public UserInfoDTO getUser (@PathVariable("email") String email) {
+    @GetMapping("/email/{email}")
+    public UserInfoDTO getUserByEmail (@PathVariable("email") String email) {
         return adminService.selectUserByEmail(email);
     }
-
-
+    @GetMapping("/username/{username}")
+    public UserInfoDTO getUserByUsername (@PathVariable("username") String username) {
+        return adminService.selectUserByUsername(username);
+    }
 }
