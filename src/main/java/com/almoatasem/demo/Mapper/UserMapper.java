@@ -7,7 +7,6 @@ public class UserMapper {
 
     public static UserInfoDTO convertToDTO(AbstractUserEntity abstractUserEntity) {
         return new UserInfoDTO(
-                abstractUserEntity.getUsername(),
                 abstractUserEntity.getFirstName(),
                 abstractUserEntity.getLastName(),
                 abstractUserEntity.getEmail(),

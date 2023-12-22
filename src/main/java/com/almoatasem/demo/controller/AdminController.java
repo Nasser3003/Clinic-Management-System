@@ -24,8 +24,4 @@ public class AdminController {
     public UserInfoDTO getUserByEmail (@PathVariable("email") String email) {
         return adminService.selectUserByEmail(email);
     }
-    @GetMapping("/username/{username}")
-    public UserInfoDTO getUserByUsername (@PathVariable("username") String username) {
-        return adminService.selectUserByUsername(username);
-    }
 }

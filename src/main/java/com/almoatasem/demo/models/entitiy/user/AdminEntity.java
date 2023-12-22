@@ -18,8 +18,8 @@ public class AdminEntity extends AbstractUserEntity {
     {
         setUserType(UserTypeEnum.ADMIN);
     }
-    public AdminEntity(String username, String email, String password, Set<RoleEntity> authorities) {
-        super(username, email, password, authorities);
+    public AdminEntity(String email, String password, Set<RoleEntity> authorities) {
+        super(email, password, authorities);
     }
 
 }

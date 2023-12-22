@@ -19,8 +19,8 @@ public class PatientEntity extends AbstractUserEntity {
     {
         this.setUserType(UserTypeEnum.PATIENT);
     }
-    public PatientEntity(String username, String email, String password, Set<RoleEntity> authorities) {
-        super(username, email, password, authorities);
+    public PatientEntity(String email, String password, Set<RoleEntity> authorities) {
+        super(email, password, authorities);
     }
 
     @ManyToOne

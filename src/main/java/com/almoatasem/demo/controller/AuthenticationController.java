@@ -18,12 +18,11 @@ public class AuthenticationController {
     @PostMapping("/register")
     public void registerUser(@RequestBody RegistrationDTO registrationDTO) {
         authenticationService.registerUser(
-                registrationDTO.username()
-                ,registrationDTO.email()
+                registrationDTO.email()
                 ,registrationDTO.password());
     }
     @PostMapping("/login")
     public LoginResponseDTO loginUser(@RequestBody LoginDTO loginDTO) {
-        return authenticationService.loginUser(loginDTO.username(), loginDTO.password());
+        return authenticationService.loginUser(loginDTO.email(), loginDTO.password());
     }
 }

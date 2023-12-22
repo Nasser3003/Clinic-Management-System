@@ -23,11 +23,11 @@ public class DoctorEntity extends AbstractUserEntity {
     {
         this.setUserType(UserTypeEnum.DOCTOR);
     }
-    public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities) {
-        super(username, email, password, authorities);
+    public DoctorEntity(String email, String password, Set<RoleEntity> authorities) {
+        super(email, password, authorities);
     }
-    public DoctorEntity(String username, String email, String password, Set<RoleEntity> authorities, double salary) {
-        super(username, email, password, authorities);
+    public DoctorEntity(String email, String password, Set<RoleEntity> authorities, double salary) {
+        super(email, password, authorities);
         this.salary = salary;
     }
 

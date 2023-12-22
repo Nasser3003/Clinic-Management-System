@@ -29,26 +29,26 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
 
-    public String registerUser(String username, String email, String password) {
+    public String registerUser(String email, String password) {
         RoleEntity userRoleEntity = roleRepository.findByAuthority(AuthorityEnum.USER)
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         Set<RoleEntity> authorities = new HashSet<>();
         authorities.add(userRoleEntity);
-        userRepository.save(new PatientEntity(username, email, encoder.encode(password),  authorities));
+        userRepository.save(new PatientEntity(email, encoder.encode(password),  authorities));
         return "User Created Successfully";
 
     }
 
-    public LoginResponseDTO loginUser(String username, String password) {
+    public LoginResponseDTO loginUser(String email, String password) {
         try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(email, password)
             );
             String token = tokenService.generateJWT(auth);
-            return new LoginResponseDTO(userRepository.findByUsername(username).orElse(null), token);
+            return new LoginResponseDTO(userRepository.findByEmail(email).orElse(null), token);
         } catch (AuthenticationException e) {
             e.printStackTrace();
-            return new LoginResponseDTO(null, "Issue in loginUser");
+            return new LoginResponseDTO(null, "Authentication failed in loginUser");
         }
     }
 }

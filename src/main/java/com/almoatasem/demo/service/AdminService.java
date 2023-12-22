@@ -35,9 +35,5 @@ public class AdminService {
         AbstractUserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RequestValidationException("No user with that email"));
         return UserMapper.convertToDTO(user);
     }
-    public UserInfoDTO selectUserByUsername(String username) {
-        AbstractUserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new RequestValidationException("No user with that email"));
-        return UserMapper.convertToDTO(user);
-    }
 
 }

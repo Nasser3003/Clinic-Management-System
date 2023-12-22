@@ -24,16 +24,15 @@ import java.util.Set;
 @ToString(exclude = "id")
 @Table(name = "users")
 public abstract class AbstractUserEntity implements UserDetails {
-
-    public AbstractUserEntity(String username, String email, String password, Set<RoleEntity> authorities) {
-        this.username = username;
+    public AbstractUserEntity(String email, String password, Set<RoleEntity> authorities) {
         this.email = email;
+        this.username = email;
         this.password = password;
         this.authorities = authorities;
     }
-    public AbstractUserEntity(String username, String email, String password) {
-        this.username = username;
+    public AbstractUserEntity(String email, String password) {
         this.email = email;
+        this.username = email;
         this.password = password;
     }
 

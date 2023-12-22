@@ -61,15 +61,15 @@ public class Runner implements CommandLineRunner {
         rolesPatient.add(createPatientRoleEntity);
         rolesPatient.add(createUserRoleEntity);
 
-       AdminEntity admin = new AdminEntity("admin", "admin@gmail.com",
+       AdminEntity admin = new AdminEntity("admin@gmail.com",
                 encoder.encode("admin"), rolesAdmin);
        userRepository.save(admin);
 
-        DoctorEntity docterMo3a = new DoctorEntity("docterMo3a", "docterMo3a@gmail.com",
+        DoctorEntity docterMo3a = new DoctorEntity("docterMo3a@gmail.com",
                 encoder.encode("admin"), rolesDoctor);
         setFirstName(docterMo3a, "Mo3a"); // detached state if changed after saving to repo
 
-        PatientEntity patientNasser = new PatientEntity("PatientUser", "PatientUser@gmail.com",
+        PatientEntity patientNasser = new PatientEntity("PatientUser@gmail.com",
                 encoder.encode("user"), rolesPatient);
         setFirstName(patientNasser, "Nasser"); // detached state if changed after saving to repo
 
