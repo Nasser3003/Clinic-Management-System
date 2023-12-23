@@ -2,6 +2,7 @@ package com.almoatasem.demo.service;
 
 import com.almoatasem.demo.DTO.LoginResponseDTO;
 import com.almoatasem.demo.models.entitiy.RoleEntity;
+import com.almoatasem.demo.models.entitiy.user.AbstractUserEntity;
 import com.almoatasem.demo.models.entitiy.user.PatientEntity;
 import com.almoatasem.demo.models.enums.AuthorityEnum;
 import com.almoatasem.demo.repository.RoleRepository;
@@ -36,7 +37,6 @@ public class AuthenticationService {
         authorities.add(userRoleEntity);
         userRepository.save(new PatientEntity(email, encoder.encode(password),  authorities));
         return "User Created Successfully";
-
     }
 
     public LoginResponseDTO loginUser(String email, String password) {
@@ -45,7 +45,8 @@ public class AuthenticationService {
                     new UsernamePasswordAuthenticationToken(email, password)
             );
             String token = tokenService.generateJWT(auth);
-            return new LoginResponseDTO(userRepository.findByEmail(email).orElse(null), token);
+            AbstractUserEntity user = userRepository.findByEmail(email).orElse(null);
+            return new LoginResponseDTO(user.getEmail(), token);
         } catch (AuthenticationException e) {
             e.printStackTrace();
             return new LoginResponseDTO(null, "Authentication failed in loginUser");

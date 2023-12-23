@@ -1,0 +1,18 @@
+# logback-spring.yml
+
+# Configuration for logging using Logback
+
+spring:
+  profiles: development
+
+logging:
+  level:
+    root: DEBUG
+
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: logReport.log
+
+  config: classpath:logback-spring.xml

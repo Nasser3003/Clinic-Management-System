@@ -4,6 +4,9 @@ server:
 
 # conf server or no server
 spring:
+  profiles:
+    active: development # this is profile for logback
+
   main:
     web-application-type: servlet
 
