@@ -16,3 +16,4 @@ logging:
     name: logReport.log
 
   config: classpath:logback-spring.xml
+  debug: true
