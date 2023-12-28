@@ -118,13 +118,4 @@ public abstract class AbstractUserEntity implements UserDetails {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    public void addRole(RoleEntity roleEntity) {
-        authorities.add(roleEntity);
-    }
-
-    public void removeRole(RoleEntity roleEntity) {
-        authorities.remove(roleEntity);
-    }
-
 }

@@ -2,12 +2,14 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
+import com.clinic.demo.models.entitiy.RoleEntity;
 import com.clinic.demo.models.entitiy.user.*;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,22 +49,18 @@ public class UserService {
         AbstractUserEntity user = selectUserByEmail(userEmail);
         if (user == null)
             return ResponseEntity.notFound().build();
-
         updateProperties(user, updates);
-        try {
-            save(user);
-            return ResponseEntity.ok("Profile updated successfully.");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok("Profile updated successfully.");
     }
     public void updateProperties(AbstractUserEntity user, Map<String, Object> updates) {
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
+            if (Objects.equals(key, "email"))
+                updateEmail(user, value);
+
             switch (key) {
-                case "email" -> user.setEmail(getStringValue(value));
                 case "phone" -> user.setPhoneNumber(getStringValue(value));
                 case "firstName" -> user.setFirstName(getStringValue(value));
                 case "lastName" -> user.setLastName(getStringValue(value));
@@ -71,9 +70,14 @@ public class UserService {
                 default -> System.out.println("Unhandled key: " + key);
             }
         }
-        System.out.println("Update complete");
     }
 
+    private void updateEmail(AbstractUserEntity user, Object value) {
+        String email = getStringValue(value);
+        if (selectUserByEmail(email) != null)
+            throw new DataIntegrityViolationException("Email you provided is taken");
+        user.setEmail(email);
+    }
     private String getStringValue(Object value) {
         return value instanceof String ? (String) value : null;
     }
@@ -113,5 +117,11 @@ public class UserService {
             case ADMIN -> (AdminEntity) user;
             case EMPLOYEE -> (EmployeeEntity) user;
         };
+    }
+    public void addRole(AbstractUserEntity user, RoleEntity roleEntity) {
+        user.getAuthorities().add(roleEntity);
+    }
+    public void removeRole(AbstractUserEntity user, RoleEntity roleEntity) {
+        user.getAuthorities().remove(roleEntity);
     }
 }

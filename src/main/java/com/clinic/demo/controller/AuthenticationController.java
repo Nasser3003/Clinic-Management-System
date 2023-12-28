@@ -3,12 +3,9 @@ package com.clinic.demo.controller;
 import com.clinic.demo.DTO.LoginDTO;
 import com.clinic.demo.DTO.LoginResponseDTO;
 import com.clinic.demo.DTO.RegistrationDTO;
-import com.clinic.demo.exception.EmailAlreadyTakenException;
 import com.clinic.demo.service.AuthenticationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,11 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*") // need to change in the future
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-
-    @ExceptionHandler({EmailAlreadyTakenException.class})
-    public ResponseEntity<String> handleEmailTaken() {
-        return new ResponseEntity<>("The email you provided is already in use", HttpStatus.CONFLICT);
-    }
 
     @PostMapping("/register")
     public void registerUser(@RequestBody RegistrationDTO registrationDTO) {
