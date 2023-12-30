@@ -16,7 +16,6 @@ import java.util.Map;
 @RequestMapping("/users")
 @CrossOrigin("*") // need to change in the future
 public class UserController {
-
     private final UserService userService;
 
     @PutMapping("{userEmail}/update-profile")
@@ -25,4 +24,5 @@ public class UserController {
             @RequestBody Map<String, Object> updates) {
         return userService.update(userEmail, updates);
     }
+
 }

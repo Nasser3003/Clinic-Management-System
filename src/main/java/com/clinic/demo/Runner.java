@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +35,7 @@ public class Runner implements CommandLineRunner {
     private PasswordEncoder encoder;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (roleRepository.findByAuthority(AuthorityEnum.ADMIN).isPresent()) return;
 
         RoleEntity createAdminRoleEntity = roleRepository.save(new RoleEntity(AuthorityEnum.ADMIN));
@@ -69,9 +69,9 @@ public class Runner implements CommandLineRunner {
         patientNasser.setDoctor(docterMo3a);
         docterMo3a.addPatient(patientNasser);
 
-        LocalDate date = LocalDate.of(2023, 12, 19);
-        LocalTime time = LocalTime.of(10, 30);
-        AppointmentEntity newAppointmentNasser = new AppointmentEntity(docterMo3a, patientNasser, date, time);
+        LocalDateTime dateTime = LocalDate.of(2023, 12, 19).atTime(10, 30);
+
+        AppointmentEntity newAppointmentNasser = new AppointmentEntity(docterMo3a, patientNasser, dateTime);
         appointmentRepository.save(newAppointmentNasser);
 
         userRepository.save(docterMo3a);

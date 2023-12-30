@@ -28,7 +28,7 @@ public class PatientEntity extends AbstractUserEntity {
     @JoinColumn(name = "doctor_id")
     private DoctorEntity doctor;
 
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<TreatmentEntity> pastTreatmentEntities = new ArrayList<>();
 
     private String allergies = "None";

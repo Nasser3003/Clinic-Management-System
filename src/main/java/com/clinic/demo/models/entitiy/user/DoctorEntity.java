@@ -37,8 +37,15 @@ public class DoctorEntity extends AbstractUserEntity {
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private Set<PatientEntity> patients = new HashSet<>();
 
-    @OneToMany(mappedBy = "doctor")
-    private Set<AppointmentEntity> schedule = new HashSet<>(); ;
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private Set<AppointmentEntity> schedule = new HashSet<>();
+
+    public void addPatient(PatientEntity patientEntity) {
+        patients.add(patientEntity);
+    }
+    public void removePatient(PatientEntity patientEntity) {
+        patients.remove(patientEntity);
+    }
 
 //    @Override
 //    public String toString() {
@@ -54,10 +61,4 @@ public class DoctorEntity extends AbstractUserEntity {
 //                super.toString();
 //    }
 
-    public void addPatient(PatientEntity patientEntity) {
-        patients.add(patientEntity);
-    }
-    public void removePatient(PatientEntity patientEntity) {
-        patients.remove(patientEntity);
-    }
 }
