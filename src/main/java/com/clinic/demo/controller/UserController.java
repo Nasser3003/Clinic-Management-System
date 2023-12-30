@@ -13,7 +13,7 @@ import java.util.Map;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 
 @Transactional
-@RequestMapping("/users")
+@RequestMapping("/user")
 @CrossOrigin("*") // need to change in the future
 public class UserController {
     private final UserService userService;
@@ -24,5 +24,4 @@ public class UserController {
             @RequestBody Map<String, Object> updates) {
         return userService.update(userEmail, updates);
     }
-
 }

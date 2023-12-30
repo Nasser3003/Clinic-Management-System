@@ -78,9 +78,9 @@ public class Runner implements CommandLineRunner {
         userRepository.save(patientNasser);
 
         TreatmentEntity treatmentBraces = new TreatmentEntity(docterMo3a, patientNasser,
-                "Braces", 18000);
+                "Braces", 18000, 0, 0);
         TreatmentEntity treatmentFixBraces = new TreatmentEntity(docterMo3a, patientNasser,
-                "Fix Braces", 1000);
+                "Fix Braces", 1000, 0, 0);
 
         treatmentRepository.save(treatmentBraces);
         treatmentRepository.save(treatmentFixBraces);

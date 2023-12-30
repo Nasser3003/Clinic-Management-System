@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +53,7 @@ public class UserService {
         updateProperties(user, updates);
         return ResponseEntity.ok("Profile updated successfully.");
     }
+    @Transactional
     public void updateProperties(AbstractUserEntity user, Map<String, Object> updates) {
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String key = entry.getKey();
@@ -71,7 +73,6 @@ public class UserService {
             }
         }
     }
-
     private void updateEmail(AbstractUserEntity user, Object value) {
         String email = getStringValue(value);
         if (selectUserByEmail(email) != null)
@@ -111,12 +112,16 @@ public class UserService {
         AbstractUserEntity user = userOptional.get();
         UserTypeEnum userTypeEnum = user.getUserType();
 
-        return switch (userTypeEnum) {
-            case DOCTOR -> (DoctorEntity) user;
-            case PATIENT -> (PatientEntity) user;
-            case ADMIN -> (AdminEntity) user;
-            case EMPLOYEE -> (EmployeeEntity) user;
-        };
+        try {
+            return switch (userTypeEnum) {
+                case DOCTOR -> (DoctorEntity) user;
+                case PATIENT -> (PatientEntity) user;
+                case ADMIN -> (AdminEntity) user;
+                case EMPLOYEE -> (EmployeeEntity) user;
+            };
+        } catch (Exception e) {
+            throw new RuntimeException("exception in typeCastUserToType UserService", e);
+        }
     }
     public void addRole(AbstractUserEntity user, RoleEntity roleEntity) {
         user.getAuthorities().add(roleEntity);

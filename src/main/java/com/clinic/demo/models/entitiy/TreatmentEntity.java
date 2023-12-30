@@ -12,8 +12,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @NoArgsConstructor
 @Data
@@ -22,59 +22,54 @@ import java.util.List;
 @Table(name = "treatment")
 public class TreatmentEntity {
 
-    private static List<String> treatments = new ArrayList<>();
+    private static Map<Integer, String> treatmentsMap = new HashMap<>();
     static {
-        treatments.add("Braces Metal");
-        treatments.add("Braces Ceramic");
-        treatments.add("Braces Lingual");
-        treatments.add("Braces Invisalign");
-        treatments.add("Clear aligners");
-        treatments.add("Retainers");
-        treatments.add("Palatal expanders");
-        treatments.add("Headgear");
-        treatments.add("Jaw repositioning appliances");
-        treatments.add("Lip and cheek bumpers");
-        treatments.add("Removable space maintainers");
-        treatments.add("Splints for temporomandibular joint (TMJ) disorders");
-        treatments.add("Surgical orthodontics");
-        treatments.add("Dentofacial orthopedics");
-        treatments.add("Orthodontic appliances for early intervention");
-        treatments.add("Fixed and removable appliances for bite correction");
-        treatments.add("Orthognathic surgery for severe jaw discrepancies");
-        treatments.add("Treatment for impacted teeth");
-        treatments.add("Crossbite correction");
-        treatments.add("Open bite correction");
-        treatments.add("Overbite correction");
-        treatments.add("Underbite correction");
-        treatments.add("Space closure");
-        treatments.add("Protraction facemask therapy");
-        treatments.add("Temporary anchorage devices (TADs)");
-        treatments.add("Distalizers for molar movement");
-        treatments.add("Habit appliances for thumb sucking or tongue thrusting");
-        treatments.add("Tongue crib appliances");
-        treatments.add("Cleft lip and palate orthodontic treatment");
-        treatments.add("Orthodontic treatment for sleep apnea");
-        treatments.add("Other");
-
+        treatmentsMap.put(1, "Braces Metal");
+        treatmentsMap.put(2, "Braces Ceramic");
+        treatmentsMap.put(3, "Braces Lingual");
+        treatmentsMap.put(4, "Braces Invisalign");
+        treatmentsMap.put(5, "Clear aligners");
+        treatmentsMap.put(6, "Retainers");
+        treatmentsMap.put(7, "Palatal expanders");
+        treatmentsMap.put(8, "Headgear");
+        treatmentsMap.put(9, "Jaw repositioning appliances");
+        treatmentsMap.put(10, "Lip and cheek bumpers");
+        treatmentsMap.put(11, "Removable space maintainers");
+        treatmentsMap.put(12, "Splints for temporomandibular joint (TMJ) disorders");
+        treatmentsMap.put(13, "Surgical orthodontics");
+        treatmentsMap.put(14, "Dentofacial orthopedics");
+        treatmentsMap.put(15, "Orthodontic appliances for early intervention");
+        treatmentsMap.put(16, "Fixed and removable appliances for bite correction");
+        treatmentsMap.put(17, "Orthognathic surgery for severe jaw discrepancies");
+        treatmentsMap.put(18, "Treatment for impacted teeth");
+        treatmentsMap.put(19, "Crossbite correction");
+        treatmentsMap.put(20, "Open bite correction");
+        treatmentsMap.put(21, "Overbite correction");
+        treatmentsMap.put(22, "Underbite correction");
+        treatmentsMap.put(23, "Space closure");
+        treatmentsMap.put(24, "Protraction facemask therapy");
+        treatmentsMap.put(25, "Temporary anchorage devices (TADs)");
+        treatmentsMap.put(26, "Distalizers for molar movement");
+        treatmentsMap.put(27, "Habit appliances for thumb sucking or tongue thrusting");
+        treatmentsMap.put(28, "Tongue crib appliances");
+        treatmentsMap.put(29, "Cleft lip and palate orthodontic treatment");
+        treatmentsMap.put(30, "Orthodontic treatment for sleep apnea");
+        treatmentsMap.put(31, "Other");
+    }
+    public static String getTreatmentFromMap(int key) {
+        return treatmentsMap.get(key);
     }
 
-    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost) {
-        this.doctor = doctor;
-        this.patient = patient;
-        this.treatment = treatment;
-        this.cost = cost;
-    }
-
-    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost, int installementPeriodInMonths) {
+    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost, int installementPeriodInMonths, int remainingBalance) {
         this.doctor = doctor;
         this.patient = patient;
         this.treatment = treatment;
         this.cost = cost;
         this.installementPeriodInMonths = installementPeriodInMonths;
+        this.remainingBalance = remainingBalance;
     }
 
     @Id
-    @Column(name = "treatment_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
@@ -86,7 +81,12 @@ public class TreatmentEntity {
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientEntity patient;
 
+    @Column(nullable = false)
     private String treatment;
+
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", referencedColumnName = "id")
+    private AppointmentEntity appointment;
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
@@ -98,8 +98,15 @@ public class TreatmentEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedDate;
 
+    @Column(nullable = false)
     private long cost;
 
+    @Column(name = "installment_period_in_months")
     private int installementPeriodInMonths;
 
+    @Column(name = "amount_paid")
+    private int amountPaid;
+
+    @Column(name = "remaining_balance")
+    private int remainingBalance;
 }
