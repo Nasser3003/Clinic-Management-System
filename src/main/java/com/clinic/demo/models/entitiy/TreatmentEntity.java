@@ -90,12 +90,12 @@ public class TreatmentEntity {
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime treatmentDate;
 
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime lastModifiedDate;
 
     @Column(nullable = false)

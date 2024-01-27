@@ -85,13 +85,13 @@ public abstract class AbstractUserEntity implements UserDetails {
     @CreatedDate
     @Column(name = "created_date")
     @Setter(AccessLevel.NONE)
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime createDate;
 
     @Column(name = "last_modified_date")
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime lastModifiedDate;
 
     @Column(name = "is_account_non_expired")
