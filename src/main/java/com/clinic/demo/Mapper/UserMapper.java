@@ -1,7 +1,7 @@
 package com.clinic.demo.Mapper;
 
 import com.clinic.demo.DTO.UserInfoDTO;
-import com.clinic.demo.models.entitiy.user.AbstractUserEntity;
+import com.clinic.demo.models.entity.user.AbstractUserEntity;
 
 public class UserMapper {
 

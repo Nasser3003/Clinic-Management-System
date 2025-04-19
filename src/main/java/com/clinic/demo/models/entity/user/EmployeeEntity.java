@@ -1,4 +1,4 @@
-package com.clinic.demo.models.entitiy.user;
+package com.clinic.demo.models.entity.user;
 
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.Entity;

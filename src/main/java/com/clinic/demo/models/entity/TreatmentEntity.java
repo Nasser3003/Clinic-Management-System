@@ -1,7 +1,7 @@
-package com.clinic.demo.models.entitiy;
+package com.clinic.demo.models.entity;
 
-import com.clinic.demo.models.entitiy.user.DoctorEntity;
-import com.clinic.demo.models.entitiy.user.PatientEntity;
+import com.clinic.demo.models.entity.user.DoctorEntity;
+import com.clinic.demo.models.entity.user.PatientEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Data
@@ -70,8 +71,8 @@ public class TreatmentEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)

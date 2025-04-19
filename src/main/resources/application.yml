@@ -12,7 +12,7 @@ spring:
 
   # conf database address and auth
   datasource:
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://localhost:5432/clinic
     username: postgres
     password: postgres
 

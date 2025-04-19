@@ -5,5 +5,6 @@ public enum AuthorityEnum {
     USER,
     DOCTOR,
     PATIENT,
-    EMPLOYEE
+    EMPLOYEE,
+    PARTNER
 }

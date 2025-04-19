@@ -1,7 +1,7 @@
-package com.clinic.demo.models.entitiy;
+package com.clinic.demo.models.entity;
 
-import com.clinic.demo.models.entitiy.user.DoctorEntity;
-import com.clinic.demo.models.entitiy.user.PatientEntity;
+import com.clinic.demo.models.entity.user.DoctorEntity;
+import com.clinic.demo.models.entity.user.PatientEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Table(name = "appointment")
 @NoArgsConstructor
@@ -16,8 +17,8 @@ import java.util.List;
 @Entity
 public class AppointmentEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "doctor_id")

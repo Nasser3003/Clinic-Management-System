@@ -1,8 +1,8 @@
 package com.clinic.demo.repository;
 
-import com.clinic.demo.models.entitiy.TreatmentEntity;
-import com.clinic.demo.models.entitiy.user.DoctorEntity;
-import com.clinic.demo.models.entitiy.user.PatientEntity;
+import com.clinic.demo.models.entity.TreatmentEntity;
+import com.clinic.demo.models.entity.user.DoctorEntity;
+import com.clinic.demo.models.entity.user.PatientEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

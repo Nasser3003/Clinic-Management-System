@@ -1,6 +1,6 @@
-package com.clinic.demo.models.entitiy.user;
+package com.clinic.demo.models.entity.user;
 
-import com.clinic.demo.models.entitiy.RoleEntity;
+import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
@@ -14,9 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -25,16 +26,13 @@ import java.util.Set;
 @ToString(exclude = "id")
 @Table(name = "users")
 public abstract class AbstractUserEntity implements UserDetails {
-    public AbstractUserEntity(String email, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
-        this.email = email;
-        this.username = email;
-        this.password = password;
-        this.dateOfBirth = dateOfBirth;
-        this.authorities = authorities;
-    }
 
-    public AbstractUserEntity(String email, String password) {
+    public AbstractUserEntity(String firstName, String lastName, String email, String phoneNumber, GenderEnum gender, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
         this.username = email;
         this.password = password;
     }
@@ -42,12 +40,15 @@ public abstract class AbstractUserEntity implements UserDetails {
     @Setter(AccessLevel.NONE)
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "user_type")
     @Enumerated(EnumType.STRING)
-    private UserTypeEnum userType;
+    private UserTypeEnum userTitle;
+
+    @Column(name = "national_id", unique = true)
+    private String nationalId;
 
     @Column(name = "first_name", unique = true)
     private String firstName;
@@ -85,13 +86,11 @@ public abstract class AbstractUserEntity implements UserDetails {
     @CreatedDate
     @Column(name = "created_date")
     @Setter(AccessLevel.NONE)
-//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime createDate;
 
     @Column(name = "last_modified_date")
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
-//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime lastModifiedDate;
 
     @Column(name = "is_account_non_expired")

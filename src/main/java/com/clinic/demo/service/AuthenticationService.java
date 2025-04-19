@@ -2,9 +2,9 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.LoginResponseDTO;
 import com.clinic.demo.exception.EmailAlreadyTakenException;
-import com.clinic.demo.models.entitiy.RoleEntity;
-import com.clinic.demo.models.entitiy.user.AbstractUserEntity;
-import com.clinic.demo.models.entitiy.user.PatientEntity;
+import com.clinic.demo.models.entity.RoleEntity;
+import com.clinic.demo.models.entity.user.AbstractUserEntity;
+import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.AuthorityEnum;
 import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;

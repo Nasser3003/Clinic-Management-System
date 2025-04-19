@@ -1,7 +1,7 @@
-package com.clinic.demo.models.entitiy.user;
+package com.clinic.demo.models.entity.user;
 
-import com.clinic.demo.models.entitiy.RoleEntity;
-import com.clinic.demo.models.entitiy.TreatmentEntity;
+import com.clinic.demo.models.entity.RoleEntity;
+import com.clinic.demo.models.entity.TreatmentEntity;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,11 +17,10 @@ import java.util.Set;
 @Entity
 @Table(name = "user_patient")
 public class PatientEntity extends AbstractUserEntity {
-    {
-        this.setUserType(UserTypeEnum.PATIENT);
-    }
+
     public PatientEntity(String email, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
         super(email, password, dateOfBirth, authorities);
+        this.setUserType(UserTypeEnum.PATIENT);
     }
 
     @ManyToOne
@@ -35,17 +34,6 @@ public class PatientEntity extends AbstractUserEntity {
     private String healthIssues = "None";
     private String prescriptions = "None";
 
-
-//    @Override
-//    public String toString() {
-//        String doctorName = doctor != null ? doctor.getFirstName() + " " + doctor.getLastName() :
-//                "No Assigned Doctor" ;
-//
-//        return "Patient{" +
-//                super.toString() +
-//                "doctor=" + doctorName +
-//                '}';
-//    }
 
     // Money they got to pay for treatment
 }

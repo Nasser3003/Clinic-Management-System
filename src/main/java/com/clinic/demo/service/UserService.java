@@ -2,8 +2,8 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
-import com.clinic.demo.models.entitiy.RoleEntity;
-import com.clinic.demo.models.entitiy.user.*;
+import com.clinic.demo.models.entity.RoleEntity;
+import com.clinic.demo.models.entity.user.*;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.UserRepository;
