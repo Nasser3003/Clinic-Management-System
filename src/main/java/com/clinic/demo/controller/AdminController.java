@@ -1,7 +1,9 @@
 package com.clinic.demo.controller;
 
-import com.clinic.demo.DTO.UserInfoDTO;
+import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
+import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
+import com.clinic.demo.service.AuthenticationService;
 import com.clinic.demo.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,16 @@ import java.util.List;
 @CrossOrigin("*") // will need in the future
 public class AdminController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @GetMapping("/all")
     public List<UserInfoDTO> getAllUsers() {
        return userService.selectAllUsers();
+    }
+
+    @PostMapping("/register-employee")
+    public void registerUser(@RequestBody EmployeeRegistrationDTO employeeRegistrationDTO) {
+        authenticationService.registerEmployee(employeeRegistrationDTO);
     }
 
     @GetMapping("/email/{email}")

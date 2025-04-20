@@ -1,5 +1,6 @@
 package com.clinic.demo.models.entity.user;
 
+import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -18,13 +20,10 @@ import java.time.LocalDate;
 public class AdminEntity extends AbstractUserEntity {
 
     public AdminEntity(String firstName, String lastName, String email, String phoneNumber, String nationalId,
-                       String gender, String password, LocalDate dateOfBirth) {
+                       GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
 
-        super(firstName, lastName, email, phoneNumber, GenderEnum.valueOf(gender.toUpperCase()), password);
-        setUserTitle(UserTypeEnum.ADMIN);
+        super(firstName, lastName, email, phoneNumber, gender, userType, password, dateOfBirth, authorities);
         setNationalId(nationalId);
-        setDateOfBirth(dateOfBirth);
-        setAuthorities(authorities);
     }
 
 }

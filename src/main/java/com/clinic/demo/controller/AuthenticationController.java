@@ -2,7 +2,7 @@ package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.LoginDTO;
 import com.clinic.demo.DTO.LoginResponseDTO;
-import com.clinic.demo.DTO.RegistrationDTO;
+import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
 import com.clinic.demo.service.AuthenticationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public void registerUser(@RequestBody RegistrationDTO registrationDTO) {
-        authenticationService.registerUser(
-                registrationDTO.email()
-                ,registrationDTO.password()
-                ,registrationDTO.dob());
+            authenticationService.registerUser(registrationDTO);
     }
     @PostMapping("/login")
     public LoginResponseDTO loginUser(@RequestBody LoginDTO loginDTO) {

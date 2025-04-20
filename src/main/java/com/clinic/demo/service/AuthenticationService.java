@@ -1,11 +1,15 @@
 package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.LoginResponseDTO;
+import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
+import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
 import com.clinic.demo.exception.EmailAlreadyTakenException;
 import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.AbstractUserEntity;
+import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
-import com.clinic.demo.models.enums.AuthorityEnum;
+import com.clinic.demo.models.enums.GenderEnum;
+import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -36,33 +40,95 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
 
-    public void registerUser(String email, String password, LocalDate dob) {
-        if (userRepository.findByEmail(email).isPresent())
-            throw new EmailAlreadyTakenException();
+    public void registerUser(RegistrationDTO registrationDTO) {
+        String firstName = registrationDTO.firstName();
+        String lastName = registrationDTO.lastName();
+        String email = registrationDTO.email();
+        String phoneNumber = registrationDTO.phoneNumber();
+        String gender = registrationDTO.gender();
+        String password = registrationDTO.password();
+        LocalDate dob = registrationDTO.dob();
 
-        RoleEntity userRoleEntity = roleRepository.findByAuthority(AuthorityEnum.USER)
-                .orElseThrow(() -> new RuntimeException("User role not found"));
+        checkEmailAvailability(email);
+        Set<RoleEntity> roles = initializeUserRoles();
+        GenderEnum genderEnum = parseGender(gender);
 
-        Set<RoleEntity> authorities = new HashSet<>();
-        authorities.add(userRoleEntity);
+        userRepository.save(new PatientEntity(
+                firstName, lastName, email, phoneNumber, genderEnum,
+                UserTypeEnum.PATIENT, encoder.encode(password), dob, roles
+        ));
+    }
 
-        userRepository.save(new PatientEntity(email, encoder.encode(password), dob,  authorities));
+    public void registerEmployee(EmployeeRegistrationDTO registrationDTO) {
+        checkEmailAvailability(registrationDTO.email());
+
+        GenderEnum genderEnum = parseGender(registrationDTO.gender());
+        UserTypeEnum userTypeEnum = UserTypeEnum.valueOf(registrationDTO.userType().toUpperCase());
+        Set<RoleEntity> roles = initializeUserRoles();
+
+        userRepository.save(new EmployeeEntity(
+                registrationDTO.firstName(),
+                registrationDTO.lastName(),
+                registrationDTO.email(),
+                registrationDTO.phoneNumber(),
+                registrationDTO.nationalId(),
+                genderEnum,
+                userTypeEnum,
+                encoder.encode(registrationDTO.password()),
+                registrationDTO.dob(),
+                registrationDTO.salary(),
+                roles
+        ));
     }
 
     public LoginResponseDTO loginUser(String email, String password) {
         try {
+            AbstractUserEntity user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (user.isDeleted()) {
+                logger.error("Attempted login for deleted account: {}", email);
+                throw new RuntimeException("Account has been deleted");
+            }
+
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
 
             String token = tokenService.generateJWT(auth);
-            AbstractUserEntity user = userRepository.findByEmail(email).orElse(null);
-
             return new LoginResponseDTO(user.getEmail(), token);
+
         } catch (AuthenticationException e) {
-            logger.error("Authentication failed in loginUser for email: {}. Exception: {}", email, e.getMessage(), e);
-            return new LoginResponseDTO(null, "Authentication failed in loginUser");
+            logger.error("Authentication failed for email: {}. Reason: {}", email, e.getMessage());
+            throw new RuntimeException("Invalid credentials");
+        } catch (RuntimeException e) {
+            logger.error("Login error for email: {}. Error: {}", email, e.getMessage());
+            throw new RuntimeException("Login failed: " + e.getMessage());
         }
     }
 
+    // Helper methods to reduce duplication
+    private void checkEmailAvailability(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new EmailAlreadyTakenException();
+        }
+    }
+
+    private Set<RoleEntity> initializeUserRoles() {
+        // Find the "USER" role instead of looking for AuthorityEnum.USER
+        RoleEntity userRole = roleRepository.findByName("USER_ROLE")
+                .orElseThrow(() -> new RuntimeException("User role not found"));
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(userRole);
+        return roles;
+    }
+
+    private GenderEnum parseGender(String gender) {
+        try {
+            return GenderEnum.valueOf(gender.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid gender value provided: {}", gender);
+            throw new IllegalArgumentException("Invalid gender value");
+        }
+    }
 }

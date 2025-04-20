@@ -1,37 +1,40 @@
 package com.clinic.demo.models.entity;
 
-import com.clinic.demo.models.enums.AuthorityEnum;
+import com.clinic.demo.models.enums.PermissionEnum;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
 @Entity
-@NoArgsConstructor
 @Table(name = "roles")
-public class RoleEntity implements GrantedAuthority {
-    public RoleEntity(AuthorityEnum authority) {
-        this.authority = authority;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RoleEntity {
+
+    public RoleEntity(String name) {
+        this.name = name;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Setter(AccessLevel.NONE)
-    @Column(name = "role_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(unique = true)
-    @Enumerated(EnumType.STRING)
-    private AuthorityEnum authority;
+    private String name;
 
-    @Override
-    public String getAuthority() {
-        return authority.name();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
+    @Column(name = "permission")
+    private Set<PermissionEnum> permissions = new HashSet<>();
+
+    public boolean hasPermission(PermissionEnum permission) {
+        return permissions.contains(permission);
     }
 
 }

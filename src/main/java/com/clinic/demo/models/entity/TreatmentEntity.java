@@ -1,6 +1,6 @@
 package com.clinic.demo.models.entity;
 
-import com.clinic.demo.models.entity.user.DoctorEntity;
+import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -43,7 +43,7 @@ public class TreatmentEntity {
         treatmentsMap.put(16, "Fixed and removable appliances for bite correction");
         treatmentsMap.put(17, "Orthognathic surgery for severe jaw discrepancies");
         treatmentsMap.put(18, "Treatment for impacted teeth");
-        treatmentsMap.put(19, "Crossbite correction");
+        treatmentsMap.put(19, "Cross-bite correction");
         treatmentsMap.put(20, "Open bite correction");
         treatmentsMap.put(21, "Overbite correction");
         treatmentsMap.put(22, "Underbite correction");
@@ -61,12 +61,13 @@ public class TreatmentEntity {
         return treatmentsMap.get(key);
     }
 
-    public TreatmentEntity(DoctorEntity doctor, PatientEntity patient, String treatment, long cost, int installementPeriodInMonths, int remainingBalance) {
+    public TreatmentEntity(EmployeeEntity doctor, PatientEntity patient, AppointmentEntity appointment, String treatment, int cost, int installmentPeriodInMonths, float remainingBalance) {
         this.doctor = doctor;
         this.patient = patient;
+        this.appointment = appointment;
         this.treatment = treatment;
         this.cost = cost;
-        this.installementPeriodInMonths = installementPeriodInMonths;
+        this.installmentPeriodInMonths = installmentPeriodInMonths;
         this.remainingBalance = remainingBalance;
     }
 
@@ -76,7 +77,7 @@ public class TreatmentEntity {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private DoctorEntity doctor;
+    private EmployeeEntity doctor;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
@@ -91,23 +92,21 @@ public class TreatmentEntity {
 
     @CreatedDate
     @Setter(AccessLevel.NONE)
-//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime treatmentDate;
 
     @LastModifiedDate
     @Setter(AccessLevel.NONE)
-//    @Temporal(TemporalType.TIMESTAMP) // i think not needed
     private LocalDateTime lastModifiedDate;
 
     @Column(nullable = false)
-    private long cost;
+    private int cost;
 
     @Column(name = "installment_period_in_months")
-    private int installementPeriodInMonths;
+    private int installmentPeriodInMonths;
 
     @Column(name = "amount_paid")
     private int amountPaid;
 
     @Column(name = "remaining_balance")
-    private int remainingBalance;
+    private float remainingBalance;
 }

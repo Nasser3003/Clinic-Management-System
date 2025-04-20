@@ -5,7 +5,7 @@ import com.clinic.demo.DTO.TreatmentsDTO;
 import com.clinic.demo.exception.LocalDateTimeException;
 import com.clinic.demo.models.entity.AppointmentEntity;
 import com.clinic.demo.models.entity.TreatmentEntity;
-import com.clinic.demo.models.entity.user.DoctorEntity;
+import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.TreatmentRepository;
@@ -36,7 +36,7 @@ public class AppointmentService {
         validateInput(doctorEmail, patientEmail, dateTime);
         appointmentDateTimeLimitations(dateTime);
 
-        DoctorEntity doctor = (DoctorEntity) userService.selectUserByEmail(doctorEmail);
+        EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
         PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
 
         AppointmentEntity newAppointment = new AppointmentEntity(doctor, patient, dateTime);
@@ -50,7 +50,7 @@ public class AppointmentService {
         validateInput(doctorEmail, patientEmail, dateTime);
         appointmentDateTimeLimitations(dateTime);
 
-        DoctorEntity doctor = (DoctorEntity) userService.selectUserByEmail(doctorEmail);
+        EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
         PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
 
         Optional<AppointmentEntity> appointment = appointmentRepository.findByScheduleDateTimeAndPatientAndDoctor(dateTime, patient, doctor);
@@ -76,7 +76,7 @@ public class AppointmentService {
         Objects.requireNonNull(dateTime, "date must not be null");
 
         try {
-            DoctorEntity doctor = (DoctorEntity) userService.selectUserByEmail(doctorEmail);
+            EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
             PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
         } catch (ClassCastException e) {
             throw new RuntimeException("Issue in AppointmentService, validateInput TypeCast", e);
@@ -90,24 +90,20 @@ public class AppointmentService {
 
         List<TreatmentEntity> treatments = new ArrayList<>();
         for (TreatmentDetails treatment : treatmentsDTO.treatmentsDetails()) {
-            DoctorEntity doctor = (DoctorEntity) userService.selectUserByEmail(treatmentsDTO.doctorEmail());
+            EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(treatmentsDTO.doctorEmail());
             PatientEntity patient = (PatientEntity) userService.selectUserByEmail(treatmentsDTO.patientEmail());
             int cost = treatment.cost();
             int amountPaid = treatment.amountPaid();
             int remainingBalance = cost - amountPaid;
             int installmentPeriodInMonths = treatment.installmentPeriodInMonths();
             String treatmentDescription = TreatmentEntity.getTreatmentFromMap(treatment.treatmentId());
-            TreatmentEntity t = new TreatmentEntity(doctor, patient, treatmentDescription, cost, installmentPeriodInMonths, remainingBalance);
+            TreatmentEntity t = new TreatmentEntity(doctor, patient, appointment, treatmentDescription, cost, installmentPeriodInMonths, remainingBalance);
             treatmentRepository.save(t);
             treatments.add(t);
             appointmentRepository.save(appointment);
         }
-        appointment.setDone(true);
+        appointment.setStatus("done");
         return ResponseEntity.ok("Appointment marked complete.");
     }
-//    public ResponseEntity<String> markAppointmentAsNotDone(Long appointmentId) {
-//        AppointmentEntity appointment = appointmentRepository.findById(appointmentId).orElseThrow(() ->
-//                new NullPointerException("Exception in AppointmentService- markAppointmentAs-Not-Done Appointment not found "));
-//    }
 
 }
