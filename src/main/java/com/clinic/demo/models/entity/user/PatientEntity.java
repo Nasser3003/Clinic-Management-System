@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_patient")
-public class PatientEntity extends AbstractUserEntity {
+public class PatientEntity extends BaseUserEntity {
 
     public PatientEntity(String firstName, String lastName, String email, String phoneNumber, GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
         super(firstName, lastName, email, phoneNumber, gender, userType, password, dateOfBirth, authorities);

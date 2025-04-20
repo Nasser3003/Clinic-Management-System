@@ -36,32 +36,32 @@ public class UserService {
     private final UserRepository userRepository;
 
     public List<UserInfoDTO> selectAllUsers() {
-        List<AbstractUserEntity> users = userRepository.findAll();
+        List<BaseUserEntity> users = userRepository.findAll();
         return users.stream()
                 .map(UserMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public AbstractUserEntity selectUserByEmail(String email) {
+    public BaseUserEntity selectUserByEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         
-        Optional<AbstractUserEntity> userOptional = userRepository.findByEmail(email);
+        Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
         return typeCastUserToType(userOptional);
     }
 
-    public AbstractUserEntity findByPhone(String phoneNumber) {
+    public BaseUserEntity findByPhone(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             throw new IllegalArgumentException("Phone number cannot be null or empty");
         }
         
-        Optional<AbstractUserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+        Optional<BaseUserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
         return typeCastUserToType(userOptional);
     }
 
     @Transactional
-    public void save(AbstractUserEntity user) {
+    public void save(BaseUserEntity user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -72,7 +72,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<String> update(String userEmail, Map<String, Object> updates) {
         try {
-            AbstractUserEntity user = selectUserByEmail(userEmail);
+            BaseUserEntity user = selectUserByEmail(userEmail);
             if (user == null) {
                 logger.warn("Update attempted for non-existent user: {}", userEmail);
                 return ResponseEntity.notFound().build();
@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateProperties(AbstractUserEntity user, Map<String, Object> updates) {
+    public void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
 
         if (updates == null || updates.isEmpty()) {
@@ -125,11 +125,11 @@ public class UserService {
         }
     }
 
-    private void updateEmail(AbstractUserEntity user, Object value) {
+    private void updateEmail(BaseUserEntity user, Object value) {
         String email = getStringValue(value);
         if (email == null || email.trim().isEmpty()) throw new IllegalArgumentException("Email cannot be null or empty");
         
-        AbstractUserEntity existingUser = selectUserByEmail(email);
+        BaseUserEntity existingUser = selectUserByEmail(email);
         if (existingUser != null && !existingUser.getId().equals(user.getId())) throw new DataIntegrityViolationException("Email you provided is already taken");
 
         user.setEmail(email);
@@ -167,10 +167,10 @@ public class UserService {
         return null;
     }
 
-    private AbstractUserEntity typeCastUserToType(Optional<AbstractUserEntity> userOptional) {
+    private BaseUserEntity typeCastUserToType(Optional<BaseUserEntity> userOptional) {
         if (userOptional.isEmpty()) return null;
 
-        AbstractUserEntity user = userOptional.get();
+        BaseUserEntity user = userOptional.get();
         UserTypeEnum userTypeEnum = user.getUserType();
 
         try {
@@ -188,7 +188,7 @@ public class UserService {
     }
 
     @Transactional
-    public void addRole(AbstractUserEntity user, RoleEntity role) {
+    public void addRole(BaseUserEntity user, RoleEntity role) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
         if (role == null) throw new IllegalArgumentException("Role cannot be null");
         
@@ -200,7 +200,7 @@ public class UserService {
     }
 
     @Transactional
-    public void removeRole(AbstractUserEntity user, RoleEntity role) {
+    public void removeRole(BaseUserEntity user, RoleEntity role) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
         if (role == null) throw new IllegalArgumentException("Role cannot be null");
         
@@ -211,8 +211,8 @@ public class UserService {
         }
     }
 
-    public AbstractUserEntity findUserByEmailOrThrow(String email) {
-        AbstractUserEntity user = selectUserByEmail(email);
+    public BaseUserEntity findUserByEmailOrThrow(String email) {
+        BaseUserEntity user = selectUserByEmail(email);
         if (user == null) throw new UserNotFoundException("User not found with email: " + email);
         return user;
     }

@@ -5,7 +5,7 @@ import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
 import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
 import com.clinic.demo.exception.EmailAlreadyTakenException;
 import com.clinic.demo.models.entity.RoleEntity;
-import com.clinic.demo.models.entity.user.AbstractUserEntity;
+import com.clinic.demo.models.entity.user.BaseUserEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
@@ -83,7 +83,7 @@ public class AuthenticationService {
 
     public LoginResponseDTO loginUser(String email, String password) {
         try {
-            AbstractUserEntity user = userRepository.findByEmail(email)
+            BaseUserEntity user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             if (user.isDeleted()) {
@@ -124,6 +124,7 @@ public class AuthenticationService {
     }
 
     private GenderEnum parseGender(String gender) {
+        if (gender == null || gender.trim().isEmpty()) throw new IllegalArgumentException("Gender cannot be null or empty");
         try {
             return GenderEnum.valueOf(gender.toUpperCase());
         } catch (IllegalArgumentException e) {

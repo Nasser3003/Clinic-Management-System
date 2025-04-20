@@ -20,8 +20,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "user_doctor")
-public class EmployeeEntity extends AbstractUserEntity {
+@Table(name = "user_employee")
+public class EmployeeEntity extends BaseUserEntity {
 
     public EmployeeEntity(String firstName, String lastName, String email, String phoneNumber, String nationalId,
                           GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth, float salary, Set<RoleEntity> authorities) {

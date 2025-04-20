@@ -29,12 +29,13 @@ import java.util.stream.Collectors;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractUserEntity implements UserDetails {
+@Table(name = "base_user")
+public class BaseUserEntity implements UserDetails {
 
     // Constructors for different entity types
-    public AbstractUserEntity(String firstName, String lastName, String email, String phoneNumber,
-                              GenderEnum gender, UserTypeEnum userType, String password,
-                              LocalDate dateOfBirth, Set<RoleEntity> roles) {
+    public BaseUserEntity(String firstName, String lastName, String email, String phoneNumber,
+                          GenderEnum gender, UserTypeEnum userType, String password,
+                          LocalDate dateOfBirth, Set<RoleEntity> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

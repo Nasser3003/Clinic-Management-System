@@ -5,7 +5,7 @@ import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.PatientDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.models.entity.RoleEntity;
-import com.clinic.demo.models.entity.user.AbstractUserEntity;
+import com.clinic.demo.models.entity.user.BaseUserEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class UserMapper {
 
-    public static UserInfoDTO convertToDTO(AbstractUserEntity user) {
+    public static UserInfoDTO convertToDTO(BaseUserEntity user) {
 
         return new UserInfoDTO(
                 user.getId(),
@@ -41,7 +41,7 @@ public class UserMapper {
         );
     }
     
-    public static Object convertToSpecializedDTO(AbstractUserEntity user) {
+    public static Object convertToSpecializedDTO(BaseUserEntity user) {
         return switch (user.getUserType()) {
             case DOCTOR, EMPLOYEE, ADMIN -> convertToEmployeeDTO((EmployeeEntity) user);
             case PATIENT -> convertToPatientDTO((PatientEntity) user);

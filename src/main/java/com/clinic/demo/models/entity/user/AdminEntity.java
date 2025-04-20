@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_admin")
-public class AdminEntity extends AbstractUserEntity {
+public class AdminEntity extends BaseUserEntity {
 
     public AdminEntity(String firstName, String lastName, String email, String phoneNumber, String nationalId,
                        GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
