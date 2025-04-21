@@ -61,12 +61,13 @@ public class TreatmentEntity {
         return treatmentsMap.get(key);
     }
 
-    public TreatmentEntity(EmployeeEntity doctor, PatientEntity patient, AppointmentEntity appointment, String treatment, int cost, int installmentPeriodInMonths, float remainingBalance) {
+    public TreatmentEntity(EmployeeEntity doctor, PatientEntity patient, AppointmentEntity appointment, String treatment, int cost, int amountPaid, int installmentPeriodInMonths, float remainingBalance) {
         this.doctor = doctor;
         this.patient = patient;
         this.appointment = appointment;
         this.treatment = treatment;
         this.cost = cost;
+        this.amountPaid = amountPaid;
         this.installmentPeriodInMonths = installmentPeriodInMonths;
         this.remainingBalance = remainingBalance;
     }
@@ -109,4 +110,6 @@ public class TreatmentEntity {
 
     @Column(name = "remaining_balance")
     private float remainingBalance;
+
+    private String notes;
 }

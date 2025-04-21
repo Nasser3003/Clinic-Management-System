@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public record TreatmentDetails(
         @NotNull(message = "Treatment ID is required")
         @Min(value = 1, message = "Treatment ID must be a positive number")
-        int treatmentId,
+        int treatmentId, // this is the treatment description from a static list of treatments fetched by id.
 
         @NotNull(message = "Amount paid is required")
         @PositiveOrZero(message = "Amount paid must be zero or positive")
@@ -19,7 +19,11 @@ public record TreatmentDetails(
 
         @NotNull(message = "Installment period is required")
         @PositiveOrZero(message = "Installment period must be zero or positive")
-        int installmentPeriodInMonths
+        int installmentPeriodInMonths,
+
+        String notes
+
+
 ) {
     public TreatmentDetails {
         if (amountPaid > cost) throw new IllegalArgumentException("Amount paid cannot exceed total cost");

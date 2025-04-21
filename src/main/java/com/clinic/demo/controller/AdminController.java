@@ -5,6 +5,7 @@ import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.service.AuthenticationService;
 import com.clinic.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AdminController {
     }
 
     @PostMapping("/register-employee")
-    public void registerUser(@RequestBody EmployeeRegistrationDTO employeeRegistrationDTO) {
+    public void registerUser(@Valid @RequestBody EmployeeRegistrationDTO employeeRegistrationDTO) {
         authenticationService.registerEmployee(employeeRegistrationDTO);
     }
 

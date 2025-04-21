@@ -1,12 +1,15 @@
 package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.AppointmentRequestDTO;
-import com.clinic.demo.DTO.TreatmentsDTO;
+import com.clinic.demo.DTO.FinalizingAppointmentDTO;
 import com.clinic.demo.service.AppointmentService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -16,22 +19,21 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping("/schedule")
-    public ResponseEntity<String> scheduleAppointment(
-            @RequestBody AppointmentRequestDTO requestDTO) {
-        return appointmentService.scheduleAppointment(requestDTO.doctorEmail(), requestDTO.patientEmail(), requestDTO.dateTime());
+    public ResponseEntity<String> scheduleAppointment(@Valid @RequestBody AppointmentRequestDTO requestDTO) {
+        appointmentService.scheduleAppointment(requestDTO);
+        return ResponseEntity.ok("Appointment scheduled successfully");
     }
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelAppointment(
-            @RequestBody AppointmentRequestDTO requestDTO) {
-        return appointmentService.cancelAppointment(requestDTO.doctorEmail(), requestDTO.patientEmail(), requestDTO.dateTime());
+    public ResponseEntity<String> cancelAppointment(String uuid) {
+        appointmentService.cancelAppointment(uuid);
+        return ResponseEntity.ok("Appointment cancelled successfully");
     }
 
-    @PostMapping("mark-done")
-    public ResponseEntity<String> markAppointmentAsDone(@RequestBody TreatmentsDTO treatmentsDTO) {
-        return appointmentService.markAppointmentAsDone(treatmentsDTO);
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<String> completeAppointment(@PathVariable String appointmentId, @RequestBody FinalizingAppointmentDTO finalizingAppointmentDTO) {
+        appointmentService.completeAppointment(appointmentId, finalizingAppointmentDTO);
+        return ResponseEntity.ok("Appointment completed successfully");
     }
-//    @PostMapping("mark-not-done")
-//    public ResponseEntity<String> markAppointmentAsNotDone(@RequestBody TreatmentsDTO treatmentsDTO) {
-//        // Implementation
-//    }
+
+
 }

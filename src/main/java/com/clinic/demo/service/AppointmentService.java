@@ -1,109 +1,137 @@
 package com.clinic.demo.service;
 
+import com.clinic.demo.DTO.AppointmentRequestDTO;
 import com.clinic.demo.DTO.TreatmentDetails;
-import com.clinic.demo.DTO.TreatmentsDTO;
+import com.clinic.demo.DTO.FinalizingAppointmentDTO;
 import com.clinic.demo.exception.LocalDateTimeException;
 import com.clinic.demo.models.entity.AppointmentEntity;
 import com.clinic.demo.models.entity.TreatmentEntity;
+import com.clinic.demo.models.entity.user.BaseUserEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
+import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.TreatmentRepository;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.UUID;
 
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserService userService;
     private final TreatmentRepository treatmentRepository;
 
-    public ResponseEntity<String> scheduleAppointment(String doctorEmail,
-                                                      String patientEmail,
-                                                      LocalDateTime dateTime) {
-        validateInput(doctorEmail, patientEmail, dateTime);
+    public void scheduleAppointment(AppointmentRequestDTO requestDTO) {
+        String doctorEmail = requestDTO.doctorEmail();
+        String patientEmail = requestDTO.patientEmail();
+        LocalDateTime dateTime = requestDTO.dateTime();
+
+        validateUsers(doctorEmail, patientEmail);
+
+        if (dateTime == null) throw new IllegalArgumentException("Appointment date and time must not be null");
         appointmentDateTimeLimitations(dateTime);
 
-        EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
-        PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
+        EmployeeEntity doctor = getUserAsEmployee(doctorEmail);
+        PatientEntity patient = getUserAsPatient(patientEmail);
 
         AppointmentEntity newAppointment = new AppointmentEntity(doctor, patient, dateTime);
         appointmentRepository.save(newAppointment);
-        return ResponseEntity.ok("Appointment Scheduled.");
     }
 
-    public ResponseEntity<String> cancelAppointment(String doctorEmail,
-                                                    String patientEmail,
-                                                    LocalDateTime dateTime) {
-        validateInput(doctorEmail, patientEmail, dateTime);
-        appointmentDateTimeLimitations(dateTime);
+    public void cancelAppointment(String appointmentId) {
+        AppointmentEntity appointment = findAppointmentById(appointmentId);
+        appointmentRepository.delete(appointment);
+    }
 
-        EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
-        PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
+    @Transactional
+    public void completeAppointment(String appointmentId, FinalizingAppointmentDTO finalizingAppointmentDTO) {
 
-        Optional<AppointmentEntity> appointment = appointmentRepository.findByScheduleDateTimeAndPatientAndDoctor(dateTime, patient, doctor);
-        AppointmentEntity appointmentEntity = appointment.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "No appointment found for the specified criteria"));
-        try {
-            appointmentRepository.delete(appointmentEntity);
-            return ResponseEntity.ok("Appointment canceled successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel the appointment.");
-        }
+        AppointmentEntity appointment = findAppointmentById(appointmentId);
+        List<TreatmentDetails> allTreatments = finalizingAppointmentDTO.treatments();
+        if (allTreatments == null || allTreatments.isEmpty())
+            throw new IllegalArgumentException("Treatments list must not be null or empty");
+
+        saveTreatments(finalizingAppointmentDTO.treatments(), appointment);
+        appointment.setStatus("done");
+        appointmentRepository.save(appointment);
+    }
+
+    private void saveTreatments(List<TreatmentDetails> allTreatments, AppointmentEntity appointment) {
+        allTreatments.stream()
+                .map(treatmentDetail -> createTreatmentEntity(treatmentDetail, appointment.getDoctor(), appointment.getPatient(), appointment))
+                .forEach(treatmentRepository::save);
+    }
+
+    private TreatmentEntity createTreatmentEntity(TreatmentDetails treatmentDetail, EmployeeEntity doctor, PatientEntity patient, AppointmentEntity appointment) {
+        int cost = treatmentDetail.cost();
+        int amountPaid = treatmentDetail.amountPaid();
+        int remainingBalance = cost - amountPaid;
+        int installmentPeriodInMonths = treatmentDetail.installmentPeriodInMonths();
+        String treatmentDescription = TreatmentEntity.getTreatmentFromMap(treatmentDetail.treatmentId());
+
+        return new TreatmentEntity(
+                doctor,
+                patient,
+                appointment,
+                treatmentDescription,
+                cost,
+                amountPaid,
+                installmentPeriodInMonths,
+                remainingBalance
+        );
+    }
+
+    private AppointmentEntity findAppointmentById(String appointmentId) {
+        return appointmentRepository.findById(UUID.fromString(appointmentId))
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found with ID: " + appointmentId));
     }
 
     private void appointmentDateTimeLimitations(LocalDateTime dateTime) {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
-        if (dateTime.isBefore(tomorrow))
-            throw new LocalDateTimeException("cannot cancel tomorrow appointment");
-    }
-
-    private void validateInput(String doctorEmail, String patientEmail, LocalDateTime dateTime) {
-        Objects.requireNonNull(doctorEmail, "doctorEmail must not be null");
-        Objects.requireNonNull(patientEmail, "patientEmail must not be null");
-        Objects.requireNonNull(dateTime, "date must not be null");
-
-        try {
-            EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(doctorEmail);
-            PatientEntity patient = (PatientEntity) userService.selectUserByEmail(patientEmail);
-        } catch (ClassCastException e) {
-            throw new RuntimeException("Issue in AppointmentService, validateInput TypeCast", e);
+        if (dateTime.isBefore(tomorrow)) {
+            throw new LocalDateTimeException("Cannot schedule/cancel appointment less than 24 hours in advance");
         }
     }
 
-    @Transactional // without it the appointment isDone doesnt change to true
-    public ResponseEntity<String> markAppointmentAsDone(TreatmentsDTO treatmentsDTO) {
-        AppointmentEntity appointment = appointmentRepository.findById(treatmentsDTO.appointmentId()).orElseThrow(() ->
-                new NullPointerException("Exception in AppointmentService- markAppointmentAsDone Appointment not found "));
+    private void validateUsers(String doctorEmail, String patientEmail) {
+        // Validate email parameters
+        if (doctorEmail == null) throw new IllegalArgumentException("Doctor email must not be null");
+        if (patientEmail == null) throw new IllegalArgumentException("Patient email must not be null");
 
-        List<TreatmentEntity> treatments = new ArrayList<>();
-        for (TreatmentDetails treatment : treatmentsDTO.treatmentsDetails()) {
-            EmployeeEntity doctor = (EmployeeEntity) userService.selectUserByEmail(treatmentsDTO.doctorEmail());
-            PatientEntity patient = (PatientEntity) userService.selectUserByEmail(treatmentsDTO.patientEmail());
-            int cost = treatment.cost();
-            int amountPaid = treatment.amountPaid();
-            int remainingBalance = cost - amountPaid;
-            int installmentPeriodInMonths = treatment.installmentPeriodInMonths();
-            String treatmentDescription = TreatmentEntity.getTreatmentFromMap(treatment.treatmentId());
-            TreatmentEntity t = new TreatmentEntity(doctor, patient, appointment, treatmentDescription, cost, installmentPeriodInMonths, remainingBalance);
-            treatmentRepository.save(t);
-            treatments.add(t);
-            appointmentRepository.save(appointment);
-        }
-        appointment.setStatus("done");
-        return ResponseEntity.ok("Appointment marked complete.");
+        // Retrieve and validate user entities
+        BaseUserEntity doctor = userService.selectUserByEmail(doctorEmail);
+        BaseUserEntity patient = userService.selectUserByEmail(patientEmail);
+
+        if (doctor == null) throw new EntityNotFoundException("Doctor not found with email: " + doctorEmail);
+        if (patient == null) throw new EntityNotFoundException("Patient not found with email: " + patientEmail);
+
+        // Validate user types
+        if (doctor.getUserType() != UserTypeEnum.DOCTOR && doctor.getUserType() != UserTypeEnum.EMPLOYEE)
+            throw new IllegalArgumentException("User with email " + doctorEmail + " is not a doctor or employee");
+
+        if (patient.getUserType() != UserTypeEnum.PATIENT)
+            throw new IllegalArgumentException("User with email " + patientEmail + " is not a patient");
     }
 
+    private EmployeeEntity getUserAsEmployee(String email) {
+        BaseUserEntity user = userService.selectUserByEmail(email);
+        if (user instanceof EmployeeEntity) return (EmployeeEntity) user;
+        throw new IllegalArgumentException("User with email " + email + " is not an employee");
+    }
+
+    private PatientEntity getUserAsPatient(String email) {
+        BaseUserEntity user = userService.selectUserByEmail(email);
+        if (user instanceof PatientEntity) {
+            return (PatientEntity) user;
+        }
+        throw new IllegalArgumentException("User with email " + email + " is not a patient");
+    }
 }
