@@ -144,8 +144,9 @@ public class Runner implements CommandLineRunner {
                 appointment,
                 "Braces Metal",
                 18000,
-                12,
-                18000.0f
+                18000,
+                0,
+                0
         );
         treatmentRepository.save(treatmentBraces);
         
@@ -159,7 +160,8 @@ public class Runner implements CommandLineRunner {
                 appointment,
                 "Braces Adjustment",
                 1000,
-                0,
+                500,
+                2,
                 1000.0f
         );
         treatmentRepository.save(treatmentFixBraces);
