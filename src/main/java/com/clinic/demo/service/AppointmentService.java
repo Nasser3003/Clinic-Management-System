@@ -28,13 +28,12 @@ public class AppointmentService {
         String patientEmail = requestDTO.patientEmail();
         LocalDateTime dateTime = requestDTO.dateTime();
 
-        userValidationService.validateDoctorAndPatient(doctorEmail, patientEmail);
-
         if (dateTime == null) throw new IllegalArgumentException("Appointment date and time must not be null");
+
         appointmentDateTimeLimitations(dateTime);
 
-        EmployeeEntity doctor = userValidationService.getUserAsEmployee(doctorEmail);
-        PatientEntity patient = userValidationService.getUserAsPatient(patientEmail);
+        EmployeeEntity doctor = userValidationService.validateAndGetDoctor(doctorEmail);
+        PatientEntity patient = userValidationService.validateAndGetPatient(patientEmail);
 
         AppointmentEntity newAppointment = new AppointmentEntity(doctor, patient, dateTime);
         appointmentRepository.save(newAppointment);

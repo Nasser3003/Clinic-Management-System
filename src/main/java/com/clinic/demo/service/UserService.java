@@ -43,9 +43,8 @@ public class UserService {
     }
 
     public BaseUserEntity selectUserByEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
+        if (email == null || email.trim().isEmpty())
             throw new IllegalArgumentException("Email cannot be null or empty");
-        }
         
         Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
         return typeCastUserToType(userOptional);
@@ -187,33 +186,4 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public void addRole(BaseUserEntity user, RoleEntity role) {
-        if (user == null) throw new IllegalArgumentException("User cannot be null");
-        if (role == null) throw new IllegalArgumentException("Role cannot be null");
-        
-        boolean added = user.addRole(role);
-        if (added) {
-            userRepository.save(user);
-            logger.info("Role '{}' added to user {}", role.getName(), user.getEmail());
-        }
-    }
-
-    @Transactional
-    public void removeRole(BaseUserEntity user, RoleEntity role) {
-        if (user == null) throw new IllegalArgumentException("User cannot be null");
-        if (role == null) throw new IllegalArgumentException("Role cannot be null");
-        
-        boolean removed = user.removeRole(role);
-        if (removed) {
-            userRepository.save(user);
-            logger.info("Role '{}' removed from user {}", role.getName(), user.getEmail());
-        }
-    }
-
-    public BaseUserEntity findUserByEmailOrThrow(String email) {
-        BaseUserEntity user = selectUserByEmail(email);
-        if (user == null) throw new UserNotFoundException("User not found with email: " + email);
-        return user;
-    }
 }
