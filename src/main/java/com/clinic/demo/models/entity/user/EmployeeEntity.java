@@ -34,7 +34,4 @@ public class EmployeeEntity extends BaseUserEntity {
     private float salary;
     private String description;
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
-    private Set<AppointmentEntity> schedule = new HashSet<>();
-
 }

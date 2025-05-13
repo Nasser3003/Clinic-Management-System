@@ -3,7 +3,6 @@ package com.clinic.demo.models.entity;
 import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +15,6 @@ import java.util.Set;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class RoleEntity {
 
     public static Map<UserTypeEnum, Set<PermissionEnum>> userTypeToPermissionsMap() {

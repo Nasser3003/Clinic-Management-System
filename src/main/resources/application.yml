@@ -29,3 +29,14 @@ spring:
     user:
       name: spring
       password: spring
+
+# Appointment configuration properties
+appointment:
+  min:
+    hours:
+      in:
+        advance: 8
+  max:
+    months:
+      in:
+        advance: 6

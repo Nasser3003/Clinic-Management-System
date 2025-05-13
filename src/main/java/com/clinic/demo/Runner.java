@@ -1,16 +1,12 @@
 package com.clinic.demo;
 
-import com.clinic.demo.models.entity.AppointmentEntity;
 import com.clinic.demo.models.entity.RoleEntity;
-import com.clinic.demo.models.entity.TreatmentEntity;
 import com.clinic.demo.models.entity.user.AdminEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
-import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.RoleRepository;
-import com.clinic.demo.repository.TreatmentRepository;
 import com.clinic.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -21,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,10 +26,11 @@ import java.util.Set;
 @Transactional
 public class Runner implements CommandLineRunner {
     private RoleRepository roleRepository;
-    private TreatmentRepository treatmentRepository;
-    private AppointmentRepository appointmentRepository;
     private UserRepository userRepository;
     private PasswordEncoder encoder;
+
+    // todo finish calender and doctor schedules and availability
+    // todo paying methods
 
     @Override
     public void run(String... args) {
@@ -71,7 +67,7 @@ public class Runner implements CommandLineRunner {
                 "Admin",
                 "admin@gmail.com",
                 "+1234567890",
-                "nationalId",
+                "nationalIdAdminAdmin",
                 GenderEnum.MALE,
                 UserTypeEnum.ADMIN,
                 encoder.encode("admin"),
@@ -134,41 +130,8 @@ public class Runner implements CommandLineRunner {
 
         userRepository.save(patient);
 
-        LocalDateTime appointmentDateTime = LocalDate.now().plusDays(7).atTime(10, 30);
-        AppointmentEntity appointment = new AppointmentEntity(doctor, patient, appointmentDateTime);
-        appointmentRepository.save(appointment);
-
-        TreatmentEntity treatmentBraces = new TreatmentEntity(
-                doctor,
-                patient,
-                appointment,
-                "Braces Metal",
-                18000,
-                18000,
-                0,
-                0
-        );
-        treatmentRepository.save(treatmentBraces);
-        
         patient.setAllergies(allergies);
         patient.setHealthIssues(healthIssues);
         patient.setPrescriptions(prescriptions);
-
-        TreatmentEntity treatmentFixBraces = new TreatmentEntity(
-                doctor,
-                patient,
-                appointment,
-                "Braces Adjustment",
-                1000,
-                500,
-                2,
-                1000.0f
-        );
-        treatmentRepository.save(treatmentFixBraces);
-
-        System.out.println("=== Initialization Complete ===");
-        System.out.println("Created admin: " + admin.getEmail());
-        System.out.println("Created doctor: " + doctor.getEmail());
-        System.out.println("Created patient: " + patient.getEmail());
     }
 }

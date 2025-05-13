@@ -10,6 +10,7 @@ import com.clinic.demo.repository.AppointmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,14 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserValidationService userValidationService;
     private final TreatmentService treatmentService;
+
+
+    @Value("${appointment.min.hours.in.advance:24}")
+    private int minHoursInAdvance;
+
+    @Value("${appointment.max.months.in.advance:6}")
+    private int maxMonthsInAdvance;
+
 
     public void scheduleAppointment(AppointmentRequestDTO requestDTO) {
         String doctorEmail = requestDTO.doctorEmail();
@@ -60,8 +69,13 @@ public class AppointmentService {
     }
 
     private void appointmentDateTimeLimitations(LocalDateTime dateTime) {
-        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        LocalDateTime tomorrow = LocalDateTime.now().plusHours(minHoursInAdvance);
         if (dateTime.isBefore(tomorrow))
-            throw new LocalDateTimeException("Cannot schedule/cancel appointment less than 24 hours in advance");
+            throw new LocalDateTimeException("Cannot schedule appointment less than 24 hours in advance");
+
+        LocalDateTime maxFutureDate = LocalDateTime.now().plusMonths(maxMonthsInAdvance);
+        if (dateTime.isAfter(maxFutureDate))
+            throw new LocalDateTimeException("Cannot schedule appointment more than 6 months in advance");
     }
+
 }
