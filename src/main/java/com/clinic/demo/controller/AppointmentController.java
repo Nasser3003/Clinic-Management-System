@@ -29,7 +29,7 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment cancelled successfully");
     }
 
-    @PatchMapping("/{id}/complete")
+    @PatchMapping("/{appointmentId}/complete")
     public ResponseEntity<String> completeAppointment(@PathVariable String appointmentId, @RequestBody FinalizingAppointmentDTO finalizingAppointmentDTO) {
         appointmentService.completeAppointment(appointmentId, finalizingAppointmentDTO);
         return ResponseEntity.ok("Appointment completed successfully");
