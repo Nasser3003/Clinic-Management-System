@@ -1,11 +1,10 @@
 package com.clinic.demo.DTO.userDTO;
 
-import com.clinic.demo.models.enums.GenderEnum;
-import com.clinic.demo.models.enums.UserTypeEnum;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,8 +15,9 @@ public record EmployeeDTO(
         String email,
         String phoneNumber,
         String username,
-        GenderEnum gender,
-        UserTypeEnum userType,
+        String gender,
+        String userType,
+        @NotBlank(message = "national Id is required")
         String nationalId,
         LocalDate dateOfBirth,
         Set<String> authorities,
@@ -34,17 +34,4 @@ public record EmployeeDTO(
         float salary,
         String description
 ) implements UserDTO {
-
-    public EmployeeDTO {
-        Objects.requireNonNull(email, "Email cannot be null");
-        if (email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty");
-        }
-
-        Objects.requireNonNull(firstName, "First name cannot be null");
-        Objects.requireNonNull(lastName, "Last name cannot be null");
-        Objects.requireNonNull(gender, "Gender cannot be null");
-        Objects.requireNonNull(userType, "User type cannot be null");
-        Objects.requireNonNull(authorities, "Authorities cannot be null");
-    }
 }
