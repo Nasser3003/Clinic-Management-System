@@ -17,7 +17,7 @@ public class UserValidationService {
     public BaseUserEntity validateAndGetBaseUser(String email) {
         if (email == null) throw new IllegalArgumentException("Doctor email must not be null");
 
-        BaseUserEntity user = userService.selectUserByEmail(email);
+        BaseUserEntity user = userService.findUserByEmail(email);
 
         if (user == null) throw new EntityNotFoundException("User not found with email: " + email);
 
@@ -27,7 +27,7 @@ public class UserValidationService {
     public EmployeeEntity validateAndGetDoctor(String email) {
         if (email == null) throw new IllegalArgumentException("Doctor email must not be null");
 
-        BaseUserEntity user = userService.selectUserByEmail(email);
+        BaseUserEntity user = userService.findUserByEmail(email);
         if (user == null) throw new EntityNotFoundException("Doctor not found with email: " + email);
 
         if (user.getUserType() != UserTypeEnum.DOCTOR && user.getUserType() != UserTypeEnum.EMPLOYEE)
@@ -42,7 +42,7 @@ public class UserValidationService {
     public PatientEntity validateAndGetPatient(String email) {
         if (email == null) throw new IllegalArgumentException("Patient email must not be null");
 
-        BaseUserEntity user = userService.selectUserByEmail(email);
+        BaseUserEntity user = userService.findUserByEmail(email);
         if (user == null) throw new EntityNotFoundException("Patient not found with email: " + email);
 
         if (user.getUserType() != UserTypeEnum.PATIENT)

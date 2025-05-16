@@ -12,6 +12,7 @@ import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;
+import com.clinic.demo.utils.Validations;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,26 @@ public class AuthenticationService {
 
     public void registerUser(RegistrationDTO registrationDTO) {
         String firstName = registrationDTO.firstName();
+        if (!Validations.isValidName(firstName))
+            throw new IllegalArgumentException("Invalid first name provided");
+
         String lastName = registrationDTO.lastName();
+        if (!Validations.isValidName(lastName))
+            throw new IllegalArgumentException("Invalid last name provided");
+
         String email = registrationDTO.email();
+        if (!Validations.isValidEmail(email))
+            throw new IllegalArgumentException("Invalid email provided");
+
         String phoneNumber = registrationDTO.phoneNumber();
-        String gender = registrationDTO.gender();
+        if (!Validations.isValidPhoneNumber(phoneNumber))
+            throw new IllegalArgumentException("Invalid phone number provided");
+
         String password = registrationDTO.password();
+        if (!Validations.isValidPassword(password))
+            throw new IllegalArgumentException("Invalid password provided");
+
+        String gender = registrationDTO.gender();
         LocalDate dob = registrationDTO.dob();
 
         checkEmailAvailability(email);

@@ -77,7 +77,6 @@ public class UserMapper {
         );
     }
 
-
     private static PatientDTO convertToPatientDTO(PatientEntity patient) {
         return new PatientDTO(
                 patient.getId(),
@@ -106,7 +105,6 @@ public class UserMapper {
                 patient.getPrescriptions()
         );
     }
-
 
     private static Set<String> convertAuthoritiesToRoles(Set<RoleEntity> roles) {
         return roles.stream()

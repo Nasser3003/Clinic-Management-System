@@ -2,8 +2,6 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
-import com.clinic.demo.exception.UserNotFoundException;
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.*;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
@@ -35,14 +33,14 @@ public class UserService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final UserRepository userRepository;
 
-    public List<UserInfoDTO> selectAllUsers() {
+    public List<UserInfoDTO> findAllUsers() {
         List<BaseUserEntity> users = userRepository.findAll();
         return users.stream()
                 .map(UserMapper::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public BaseUserEntity selectUserByEmail(String email) {
+    public BaseUserEntity findUserByEmail(String email) {
         if (email == null || email.trim().isEmpty())
             throw new IllegalArgumentException("Email cannot be null or empty");
         
@@ -71,7 +69,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<String> update(String userEmail, Map<String, Object> updates) {
         try {
-            BaseUserEntity user = selectUserByEmail(userEmail);
+            BaseUserEntity user = findUserByEmail(userEmail);
             if (user == null) {
                 logger.warn("Update attempted for non-existent user: {}", userEmail);
                 return ResponseEntity.notFound().build();
@@ -128,7 +126,7 @@ public class UserService {
         String email = getStringValue(value);
         if (email == null || email.trim().isEmpty()) throw new IllegalArgumentException("Email cannot be null or empty");
         
-        BaseUserEntity existingUser = selectUserByEmail(email);
+        BaseUserEntity existingUser = findUserByEmail(email);
         if (existingUser != null && !existingUser.getId().equals(user.getId())) throw new DataIntegrityViolationException("Email you provided is already taken");
 
         user.setEmail(email);

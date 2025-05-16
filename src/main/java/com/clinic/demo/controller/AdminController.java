@@ -22,7 +22,7 @@ public class AdminController {
 
     @GetMapping("/all")
     public List<UserInfoDTO> getAllUsers() {
-       return userService.selectAllUsers();
+       return userService.findAllUsers();
     }
 
     @PostMapping("/register-employee")
@@ -32,6 +32,6 @@ public class AdminController {
 
     @GetMapping("/email/{email}")
     public UserInfoDTO getUserByEmail (@PathVariable("email") String email) {
-        return UserMapper.convertToDTO(userService.selectUserByEmail(email));
+        return UserMapper.convertToDTO(userService.findUserByEmail(email));
     }
 }
