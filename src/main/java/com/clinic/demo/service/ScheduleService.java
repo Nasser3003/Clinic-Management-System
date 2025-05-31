@@ -8,7 +8,7 @@ import com.clinic.demo.repository.ScheduleRepository;
 import com.clinic.demo.utils.Validations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;                                                     
 
 import java.time.DayOfWeek;
 import java.util.HashSet;

@@ -17,10 +17,11 @@ import java.util.UUID;
 @Entity
 public class AppointmentEntity {
 
-    public AppointmentEntity(EmployeeEntity doctor, PatientEntity patient, LocalDateTime scheduleDateTime) {
+    public AppointmentEntity(EmployeeEntity doctor, PatientEntity patient, LocalDateTime startDateTime, int durationInMins) {
         this.doctor = doctor;
         this.patient = patient;
-        this.scheduleDateTime = scheduleDateTime;
+        this.startDateTime = startDateTime;
+        this.durationInMins = durationInMins;
     }
 
     @Id
@@ -36,11 +37,19 @@ public class AppointmentEntity {
     private PatientEntity patient;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "schedule_date_time")
-    private LocalDateTime scheduleDateTime;
+    @Column(name = "start_date_time")
+    private LocalDateTime startDateTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "end_date_time")
+    private LocalDateTime endDateTime;
+
+    private int durationInMins;
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<TreatmentEntity> treatment;
 
     private String status;
+
+    private boolean isDone;
 }

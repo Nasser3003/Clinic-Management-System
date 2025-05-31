@@ -15,7 +15,7 @@ import java.util.Map;
 @Transactional
 @RequestMapping("/user")
 @CrossOrigin("*") // need to change in the future
-public class UserController {
+public class  UserController {
     private final UserService userService;
 
     @PutMapping("{userEmail}/update-profile")

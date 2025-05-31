@@ -2,6 +2,7 @@ package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.ScheduleSlotDTO;
 import com.clinic.demo.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,24 +19,28 @@ public class EmployeeSchedulerController {
 
     private final ScheduleService scheduleService;
 
-    // TODO finish the employeeScheduleService methods
     @PostMapping("/create-schedule")
-    public ResponseEntity<String> createEmployeeSchedule(String email, List<ScheduleSlotDTO> schedule) {
+    public ResponseEntity<String> createEmployeeSchedule(@RequestParam String email, @Valid @RequestBody List<ScheduleSlotDTO> schedule) {
         scheduleService.createEmployeeSchedule(email, schedule);
         return ResponseEntity.ok("Schedule created successfully");
     }
+
     @PatchMapping("/update-schedule")
-    public ResponseEntity<String> updateEmployeeSchedule(String email, List<ScheduleSlotDTO> schedule) {
+    public ResponseEntity<String> updateEmployeeSchedule(@RequestParam String email, @Valid @RequestBody List<ScheduleSlotDTO> schedule) {
         scheduleService.updateEmployeeSchedule(email, schedule);
         return ResponseEntity.ok("Schedule updated successfully");
     }
-    public ResponseEntity<String> deleteEmployeeSchedule(String email) {
+
+    @DeleteMapping("/delete-schedule")
+    public ResponseEntity<String> deleteEmployeeSchedule(@RequestParam String email) {
         scheduleService.deleteEmployeeSchedule(email);
         return ResponseEntity.ok("Schedule deleted successfully");
     }
-    public ResponseEntity<String> getEmployeeSchedule(String email) {
+
+    @GetMapping("/get-schedule")
+    public ResponseEntity<Set<ScheduleSlotDTO>> getEmployeeSchedule(@RequestParam String email) {
         Set<ScheduleSlotDTO> scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
-        return ResponseEntity.ok("Schedule retrieved successfully");
+        return ResponseEntity.ok(scheduleSlotDTOList);
     }
 
 
