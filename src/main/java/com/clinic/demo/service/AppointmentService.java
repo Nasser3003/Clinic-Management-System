@@ -95,7 +95,7 @@ public class AppointmentService {
     private boolean patientHasOpenAppointment(PatientEntity patient) {
         List<AppointmentEntity> allAppointments = appointmentRepository.findAllByPatient(patient);
         return allAppointments.stream()
-                .noneMatch(AppointmentEntity::isDone);
+                .anyMatch(appointment -> !appointment.isDone());
     }
 
     private boolean isDoctorWorking(EmployeeEntity employee, LocalDateTime dateTime) {
