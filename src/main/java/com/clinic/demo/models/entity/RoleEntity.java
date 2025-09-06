@@ -5,75 +5,134 @@ import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RoleEntity {
-
-    public static Map<UserTypeEnum, Set<PermissionEnum>> userTypeToPermissionsMap() {
-        Map<UserTypeEnum, Set<PermissionEnum>> permissionsMap = new HashMap<>();
-
-        permissionsMap.put(UserTypeEnum.ADMIN, Set.of(
-                PermissionEnum.MANAGE_USERS,
-                PermissionEnum.MANAGE_ROLES,
-                PermissionEnum.VIEW_REPORTS,
-                PermissionEnum.CONFIGURE_SYSTEM
-        ));
-
-        permissionsMap.put(UserTypeEnum.DOCTOR, Set.of(
-                PermissionEnum.PRESCRIBE_MEDICATION,
-                PermissionEnum.ORDER_TESTS,
-                PermissionEnum.VIEW_TEST_RESULTS,
-                PermissionEnum.SCHEDULE_APPOINTMENTS,
-                PermissionEnum.VIEW_PATIENT_RECORDS
-        ));
-
-        permissionsMap.put(UserTypeEnum.PATIENT, Set.of(
-                PermissionEnum.VIEW_APPOINTMENTS,
-                PermissionEnum.VIEW_INVOICES,
-                PermissionEnum.VIEW_TEST_RESULTS
-        ));
-
-        permissionsMap.put(UserTypeEnum.EMPLOYEE, Set.of(
-                PermissionEnum.SCHEDULE_APPOINTMENTS,
-                PermissionEnum.CANCEL_APPOINTMENTS,
-                PermissionEnum.VIEW_REPORTS
-        ));
-
-        permissionsMap.put(UserTypeEnum.PARTNER, Set.of(
-                PermissionEnum.VIEW_REPORTS,
-                PermissionEnum.ORDER_TESTS
-        ));
-
-        return permissionsMap;
-    }
-
-    public RoleEntity(String name) {
-        this.name = name;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false, length = 50)
     private String name;
+
+    @Column(length = 255)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type")
+    private UserTypeEnum userType;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
     @Column(name = "permission")
+    @Builder.Default
     private Set<PermissionEnum> permissions = new HashSet<>();
 
-    public boolean hasPermission(PermissionEnum permission) {
-        return permissions.contains(permission);
+    @Column(name = "is_system_role", nullable = false)
+    @Builder.Default
+    private Boolean systemRole = false;
+
+    @Column(name = "is_active", nullable = false)
+    @Builder.Default
+    private Boolean active = true;
+
+    @Column(name = "created_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public RoleEntity(String name) {
+        this.name = name;
+        this.permissions = new HashSet<>();
+        this.systemRole = false;
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
 
+    public RoleEntity(String name, UserTypeEnum userType) {
+        this.name = name;
+        this.userType = userType;
+        this.permissions = new HashSet<>();
+        this.systemRole = true; // Roles with user types are typically system roles
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public boolean hasPermission(PermissionEnum permission) {
+        return permissions != null && permissions.contains(permission);
+    }
+
+    public boolean hasAnyPermission(PermissionEnum... permissions) {
+        if (this.permissions == null || permissions == null) {
+            return false;
+        }
+
+        for (PermissionEnum permission : permissions) {
+            if (this.permissions.contains(permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAllPermissions(PermissionEnum... permissions) {
+        if (this.permissions == null || permissions == null) {
+            return false;
+        }
+
+        for (PermissionEnum permission : permissions) {
+            if (!this.permissions.contains(permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void addPermission(PermissionEnum permission) {
+        if (this.permissions == null) {
+            this.permissions = new HashSet<>();
+        }
+        this.permissions.add(permission);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void removePermission(PermissionEnum permission) {
+        if (this.permissions != null) {
+            this.permissions.remove(permission);
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    public void setPermissions(Set<PermissionEnum> permissions) {
+        this.permissions = permissions != null ? new HashSet<>(permissions) : new HashSet<>();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public int getPermissionCount() {
+        return permissions != null ? permissions.size() : 0;
+    }
+
+    public boolean isModifiable() {
+        return !Boolean.TRUE.equals(systemRole);
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

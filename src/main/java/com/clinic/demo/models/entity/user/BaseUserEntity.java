@@ -176,4 +176,7 @@ public class BaseUserEntity implements UserDetails {
         return email;
     }
 
+    public boolean hasRole(RoleEntity role) {
+        return roles.contains(role);
+    }
 }

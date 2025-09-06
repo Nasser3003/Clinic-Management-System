@@ -53,7 +53,7 @@ public class AppointmentService {
             throw new IllegalArgumentException("Patient with email " + patientEmail + " already has an open appointment");
 
         if (!isDoctorWorking(doctor, dateTime))
-            throw new IllegalArgumentException("Doctor is not working on " + dateTime.getDayOfWeek());
+            throw new IllegalArgumentException("Doctor is not working on " + dateTime);
 
         if (!isDoctorAvailable(doctor, dateTime, duration))
             throw new IllegalArgumentException("Doctor is not available at the requested time");
