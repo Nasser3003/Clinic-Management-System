@@ -46,7 +46,7 @@ public class UserService {
         
         Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty())
-            throw new RuntimeException("User not found");
+            throw new RuntimeException(email + " User not found");
         return typeCastUserToType(userOptional);
     }
 

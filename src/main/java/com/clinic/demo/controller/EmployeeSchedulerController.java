@@ -1,6 +1,7 @@
 package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.ScheduleSlotDTO;
+import com.clinic.demo.DTO.calenderDTO.CreateScheduleRequestDTO;
 import com.clinic.demo.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +21,14 @@ public class EmployeeSchedulerController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/create-schedule")
-    public ResponseEntity<String> createEmployeeSchedule(@RequestParam String email, @Valid @RequestBody List<ScheduleSlotDTO> schedule) {
-        scheduleService.createEmployeeSchedule(email, schedule);
+    public ResponseEntity<String> createEmployeeSchedule(@Valid @RequestBody CreateScheduleRequestDTO request) {
+        scheduleService.createEmployeeSchedule(request.email(), request.schedule());
         return ResponseEntity.ok("Schedule created successfully");
     }
 
     @PatchMapping("/update-schedule")
-    public ResponseEntity<String> updateEmployeeSchedule(@RequestParam String email, @Valid @RequestBody List<ScheduleSlotDTO> schedule) {
-        scheduleService.updateEmployeeSchedule(email, schedule);
+    public ResponseEntity<String> updateEmployeeSchedule(@Valid @RequestBody CreateScheduleRequestDTO request) {
+        scheduleService.updateEmployeeSchedule(request.email(), request.schedule());
         return ResponseEntity.ok("Schedule updated successfully");
     }
 
@@ -42,6 +43,5 @@ public class EmployeeSchedulerController {
         Set<ScheduleSlotDTO>  scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
         return ResponseEntity.ok(scheduleSlotDTOList);
     }
-
 
 }
