@@ -123,7 +123,6 @@ public class AuthenticationService {
         }
     }
 
-    // Helper methods to reduce duplication
     private void checkEmailAvailability(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyTakenException();
@@ -131,7 +130,6 @@ public class AuthenticationService {
     }
 
     private Set<RoleEntity> initializeUserRoles() {
-        // Find the "USER" role instead of looking for AuthorityEnum.USER
         RoleEntity userRole = roleRepository.findByName("USER_ROLE")
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         Set<RoleEntity> roles = new HashSet<>();

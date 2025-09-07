@@ -15,4 +15,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     Optional<ScheduleEntity> findScheduleByDayOfWeek(DayOfWeek dayOfWeek);
     Set<ScheduleEntity> findScheduleByEmployee(EmployeeEntity employee);
     Optional<ScheduleEntity> findScheduleByEmployeeAndDayOfWeek(EmployeeEntity employee, DayOfWeek dayOfWeek);
+
+    Optional<ScheduleEntity> findByEmployeeAndDayOfWeek(EmployeeEntity doctor, DayOfWeek dayOfWeek);
+
+    List<ScheduleEntity> findByEmployee(EmployeeEntity doctor);
 }

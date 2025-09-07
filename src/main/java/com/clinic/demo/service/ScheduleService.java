@@ -8,7 +8,9 @@ import com.clinic.demo.repository.ScheduleRepository;
 import com.clinic.demo.utils.Validations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;                                                     
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.util.HashSet;
@@ -24,7 +26,7 @@ public class ScheduleService {
     private final UserService userService;
 
     public void createEmployeeSchedule(String email,
-                                                 List<ScheduleSlotDTO> scheduleSlots) {
+                                       List<ScheduleSlotDTO> scheduleSlots) {
         BaseUserEntity employee = userService.findUserByEmail(email);
         if (!Validations.isInstanceOfEmployee(employee))
             throw new IllegalArgumentException("User with email " + email + " is not an employee type");
@@ -32,7 +34,6 @@ public class ScheduleService {
         var schedules = new HashSet<ScheduleEntity>();
 
         for (ScheduleSlotDTO slot : scheduleSlots) {
-            // Validate time range
             if (slot.endTime().isBefore(slot.startTime()) || slot.endTime().equals(slot.startTime()))
                 throw new IllegalArgumentException("End time cannot be before start time for day: " + slot.dayOfWeek());
 
@@ -58,9 +59,9 @@ public class ScheduleService {
             ScheduleEntity scheduleEntity = scheduleRepository.findScheduleByEmployeeAndDayOfWeek(
                     (EmployeeEntity) employee,
                     DayOfWeek.valueOf(scheduleSlotDTO.dayOfWeek().toUpperCase())).orElseThrow(() -> new IllegalArgumentException("Schedule not found for employee: " + email + " and day: " + scheduleSlotDTO.dayOfWeek()));
-                scheduleEntity.setStartTime(scheduleSlotDTO.startTime());
-                scheduleEntity.setEndTime(scheduleSlotDTO.endTime());
-                scheduleRepository.save(scheduleEntity);
+            scheduleEntity.setStartTime(scheduleSlotDTO.startTime());
+            scheduleEntity.setEndTime(scheduleSlotDTO.endTime());
+            scheduleRepository.save(scheduleEntity);
 
         }
     }
@@ -73,17 +74,31 @@ public class ScheduleService {
     }
 
     public Set<ScheduleSlotDTO> getEmployeeSchedule(String email) {
-        BaseUserEntity employee = userService.findUserByEmail(email);
-        if (!Validations.isInstanceOfEmployee(employee))
-            throw new IllegalArgumentException("User with email " + email + " is not an employee type");
+        BaseUserEntity currentUser = userService.findUserByEmail(getCurrentUserEmail());
+        BaseUserEntity targetEmployee;
 
-        return scheduleRepository.findScheduleByEmployee((EmployeeEntity) employee)
+        if (email == null)
+            targetEmployee = currentUser;
+        else {
+            if (!Validations.isInstanceOfEmployee(currentUser))
+                throw new IllegalArgumentException("Only employees can view schedules");
+            targetEmployee = userService.findUserByEmail(email);
+        }
+
+        if (!Validations.isInstanceOfEmployee(targetEmployee))
+            throw new IllegalArgumentException("User with email " + (email != null ? email : "current user") + " is not an employee type");
+
+        return scheduleRepository.findScheduleByEmployee((EmployeeEntity) targetEmployee)
                 .stream()
                 .map(entity -> new ScheduleSlotDTO(
                         entity.getDayOfWeek().name(),
                         entity.getStartTime(),
                         entity.getEndTime()))
                 .collect(Collectors.toSet());
+    }
 
+    private String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

@@ -23,4 +23,8 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findAllByDoctorAndIsDoneIsFalseAndStartDateTimeBeforeAndEndDateTimeAfter(EmployeeEntity doctor, LocalDateTime startDateTime, LocalDateTime endDateTime);
     Optional<AppointmentEntity> findByStartDateTimeIsAfter(LocalDateTime afterDate);
     Optional<AppointmentEntity> findByStartDateTimeIsBefore(LocalDateTime beforeDate);
+
+    List<AppointmentEntity> findByPatient_EmailAndStartDateTimeBetween(String patientEmail, LocalDateTime start, LocalDateTime end);
+//    List<AppointmentEntity> findByPatientEmailAndStartDateTimeBetween(String patientEmail, LocalDateTime localDateTime, LocalDateTime localDateTime1);
+
 }

@@ -126,12 +126,12 @@ public class BaseUserEntity implements UserDetails {
     )
     private Set<RoleEntity> roles = new HashSet<>();
 
-    public boolean addRole(RoleEntity role) {
-        return roles.add(role);
+    public void addRole(RoleEntity role) {
+        roles.add(role);
     }
 
-    public boolean removeRole(RoleEntity role) {
-        return roles.remove(role);
+    public void removeRole(RoleEntity role) {
+        roles.remove(role);
     }
 
     public boolean hasPermission(PermissionEnum permission) {
