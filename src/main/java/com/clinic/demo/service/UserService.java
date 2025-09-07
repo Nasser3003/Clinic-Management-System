@@ -45,6 +45,8 @@ public class UserService {
             throw new IllegalArgumentException("Email cannot be null or empty");
         
         Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty())
+            throw new RuntimeException("User not found");
         return typeCastUserToType(userOptional);
     }
 

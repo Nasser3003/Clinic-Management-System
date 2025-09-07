@@ -77,16 +77,16 @@ public class ScheduleService {
         BaseUserEntity currentUser = userService.findUserByEmail(getCurrentUserEmail());
         BaseUserEntity targetEmployee;
 
-        if (email == null)
+        if (email == null || email.isBlank())
             targetEmployee = currentUser;
-        else {
-            if (!Validations.isInstanceOfEmployee(currentUser))
-                throw new IllegalArgumentException("Only employees can view schedules");
+        else
             targetEmployee = userService.findUserByEmail(email);
-        }
+
+        if (!Validations.isInstanceOfEmployee(currentUser))
+            throw new IllegalArgumentException("Only employees can view schedules");
 
         if (!Validations.isInstanceOfEmployee(targetEmployee))
-            throw new IllegalArgumentException("User with email " + (email != null ? email : "current user") + " is not an employee type");
+            throw new IllegalArgumentException("Target User is not an employee");
 
         return scheduleRepository.findScheduleByEmployee((EmployeeEntity) targetEmployee)
                 .stream()

@@ -39,8 +39,7 @@ public class EmployeeSchedulerController {
 
     @GetMapping("/get-schedule")
     public ResponseEntity<Set<ScheduleSlotDTO>> getEmployeeSchedule(@RequestParam(required = false) String email) {
-        Set<ScheduleSlotDTO> scheduleSlotDTOList;
-        scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
+        Set<ScheduleSlotDTO>  scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
         return ResponseEntity.ok(scheduleSlotDTOList);
     }
 
