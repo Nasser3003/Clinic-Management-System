@@ -1,6 +1,5 @@
 package com.clinic.demo.controller;
 
-import com.clinic.demo.DTO.*;
 import com.clinic.demo.DTO.calenderDTO.AvailableTimeSlotDTO;
 import com.clinic.demo.DTO.calenderDTO.DoctorAvailabilityDTO;
 import com.clinic.demo.DTO.calenderDTO.DoctorCalendarViewDTO;

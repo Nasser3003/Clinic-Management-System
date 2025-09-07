@@ -2,6 +2,7 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
+import com.clinic.demo.exception.UserNotFoundException;
 import com.clinic.demo.models.entity.user.*;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
@@ -46,7 +47,7 @@ public class UserService {
         
         Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty())
-            throw new RuntimeException(email + " User not found");
+            throw new UserNotFoundException(email + " User not found");
         return typeCastUserToType(userOptional);
     }
 

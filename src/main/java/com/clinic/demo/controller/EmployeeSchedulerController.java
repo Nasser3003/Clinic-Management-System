@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -19,6 +18,12 @@ import java.util.Set;
 public class EmployeeSchedulerController {
 
     private final ScheduleService scheduleService;
+
+    @GetMapping("/get-schedule")
+    public ResponseEntity<Set<ScheduleSlotDTO>> getEmployeeSchedule(@RequestParam(required = false) String email) {
+        Set<ScheduleSlotDTO>  scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
+        return ResponseEntity.ok(scheduleSlotDTOList);
+    }
 
     @PostMapping("/create-schedule")
     public ResponseEntity<String> createEmployeeSchedule(@Valid @RequestBody CreateScheduleRequestDTO request) {
@@ -32,16 +37,11 @@ public class EmployeeSchedulerController {
         return ResponseEntity.ok("Schedule updated successfully");
     }
 
-    @DeleteMapping("/delete-schedule")
-    public ResponseEntity<String> deleteEmployeeSchedule(@RequestParam String email) {
-        scheduleService.deleteEmployeeSchedule(email);
-        return ResponseEntity.ok("Schedule deleted successfully");
-    }
-
-    @GetMapping("/get-schedule")
-    public ResponseEntity<Set<ScheduleSlotDTO>> getEmployeeSchedule(@RequestParam(required = false) String email) {
-        Set<ScheduleSlotDTO>  scheduleSlotDTOList = scheduleService.getEmployeeSchedule(email);
-        return ResponseEntity.ok(scheduleSlotDTOList);
-    }
+//     should have special permission
+//    @DeleteMapping("/delete-schedule")
+//    public ResponseEntity<String> deleteEmployeeSchedule(@RequestParam String email) {
+//        scheduleService.deleteEmployeeSchedule(email);
+//        return ResponseEntity.ok("Schedule deleted successfully");
+//    }
 
 }

@@ -2,6 +2,7 @@ package com.clinic.demo.repository;
 
 import com.clinic.demo.models.entity.TimeOff;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
+import com.clinic.demo.models.enums.TimeOffStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,52 +14,49 @@ import java.util.List;
 
 @Repository
 public interface TimeOffRepository extends JpaRepository<TimeOff, Long> {
-    
-    /**
-     * Find all time off periods for an employee
-     */
-    List<TimeOff> findByEmployee(EmployeeEntity employee);
-    
-    /**
-     * Find time off periods for an employee within a date range
-     */
-    @Query("SELECT t FROM TimeOff t WHERE t.employee = :employee AND " +
-           "(DATE(t.startDateTime) <= :endDate AND DATE(t.endDateTime) >= :startDate)")
-    List<TimeOff> findByEmployeeAndDateRange(
-            @Param("employee") EmployeeEntity employee,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
-    );
-    
-    /**
-     * Find time off periods that overlap with a specific date range
-     */
-    @Query("SELECT t FROM TimeOff t WHERE t.employee = :employee AND " +
-           "t.startDateTime <= :endDateTime AND t.endDateTime >= :startDateTime")
+
+    // Find time offs for a specific employee ordered by start date (descending)
+    List<TimeOff> findByEmployeeOrderByStartDateTimeDesc(EmployeeEntity employee);
+
+    // Find time offs for a specific employee with a specific status
+    List<TimeOff> findByEmployeeAndStatus(EmployeeEntity employee, TimeOffStatus status);
+
+    // Find time offs by status only
+    List<TimeOff> findByStatus(TimeOffStatus status);
+
+    // Find time offs by status ordered by start date (ascending)
+    List<TimeOff> findByStatusOrderByStartDateTimeAsc(TimeOffStatus status);
+
+    // Find overlapping time off periods for an employee (APPROVED or PENDING)
+    @Query("SELECT t FROM TimeOff t WHERE t.employee = :employee " +
+            "AND t.status IN ('APPROVED', 'PENDING') " +
+            "AND ((t.startDateTime <= :endDateTime AND t.endDateTime >= :startDateTime))")
     List<TimeOff> findByEmployeeAndDateTimeRange(
             @Param("employee") EmployeeEntity employee,
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime
     );
-    
-    /**
-     * Check if employee has any time off on a specific date
-     */
-    @Query("SELECT COUNT(t) > 0 FROM TimeOff t WHERE t.employee = :employee AND " +
-           "DATE(t.startDateTime) <= :date AND DATE(t.endDateTime) >= :date")
-    boolean hasTimeOffOnDate(
-            @Param("employee") EmployeeEntity employee,
-            @Param("date") LocalDate date
-    );
-    
-    /**
-     * Find all active time off periods (current and future)
-     */
-    @Query("SELECT t FROM TimeOff t WHERE t.endDateTime >= :currentDateTime")
+
+    // Better query for hasTimeOffOnDate method
+    @Query("SELECT COUNT(t) > 0 FROM TimeOff t WHERE t.employee = :employee " +
+            "AND t.status = 'APPROVED' " +
+            "AND :date BETWEEN DATE(t.startDateTime) AND DATE(t.endDateTime)")
+    boolean hasTimeOffOnDate(@Param("employee") EmployeeEntity employee, @Param("date") LocalDate date);
+
+    // Find currently active time offs (approved and currently ongoing)
+    @Query("SELECT t FROM TimeOff t WHERE t.status = 'APPROVED' " +
+            "AND t.startDateTime <= :currentDateTime " +
+            "AND t.endDateTime >= :currentDateTime")
     List<TimeOff> findActiveTimeOffs(@Param("currentDateTime") LocalDateTime currentDateTime);
-    
-    /**
-     * Find time off periods by employee and status (if you add a status field later)
-     */
-    List<TimeOff> findByEmployeeOrderByStartDateTimeDesc(EmployeeEntity employee);
+
+    // Find time offs for an employee within a date range
+    @Query("SELECT t FROM TimeOff t WHERE t.employee = :employee " +
+            "AND t.startDateTime <= :endDateTime " +
+            "AND t.endDateTime >= :startDateTime " +
+            "ORDER BY t.startDateTime ASC")
+    List<TimeOff> findEmployeeTimeOffsInRange(
+            @Param("employee") EmployeeEntity employee,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime
+    );
 }

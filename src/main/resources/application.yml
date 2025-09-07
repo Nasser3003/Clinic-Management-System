@@ -4,6 +4,11 @@ server:
 
 # conf server or no server
 spring:
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: UTC
+
   profiles:
     active: development # this is profile for logback
 

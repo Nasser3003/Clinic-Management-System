@@ -272,7 +272,10 @@ public class CalendarService {
      */
     private List<TimeOff> getTimeOffInRange(EmployeeEntity doctor, LocalDate startDate, LocalDate endDate) {
         try {
-            return timeOffRepository.findByEmployeeAndDateRange(doctor, startDate, endDate);
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+
+            return timeOffRepository.findEmployeeTimeOffsInRange(doctor, startDateTime, endDateTime);
         } catch (Exception e) {
             log.warn("Error getting time off for doctor {}: {}", doctor.getEmail(), e.getMessage());
             return Collections.emptyList();
