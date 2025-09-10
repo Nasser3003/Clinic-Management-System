@@ -1,6 +1,6 @@
 # conf port
 server:
-  port: 3000
+  port: 3001
 
 # conf server or no server
 spring:
@@ -10,7 +10,7 @@ spring:
     time-zone: UTC
 
   profiles:
-    active: development # this is profile for logback
+    active: development # this is a profile for logback
 
   main:
     web-application-type: servlet

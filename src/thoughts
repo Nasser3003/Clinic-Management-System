@@ -1,0 +1,13 @@
+thoughts about the project
+
+issue with permission
+do i give roles?
+or do i give permissions or both for maximum modularity?
+
+where do i save the fees.
+ do i save the fees in the treatment entity or in the appointment as a whole?
+ good for audit
+ do i only let one doctor for per appointment? or no. an appointment could be for cleaning teeth and also for braces.
+ which will be 2 doctors. and so i made the cost per treatment since each could have a cost
+
+ problems with persisting

@@ -29,7 +29,7 @@ public class Runner implements CommandLineRunner {
     private UserRepository userRepository;
     private PasswordEncoder encoder;
 
-    // todo finish calender and doctor schedules and availability
+    // front end
     // todo paying methods
 
     @Override

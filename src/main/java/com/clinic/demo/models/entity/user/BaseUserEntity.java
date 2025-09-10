@@ -54,6 +54,9 @@ public class BaseUserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private String avatarPath;
+    private String title;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserTypeEnum userType;

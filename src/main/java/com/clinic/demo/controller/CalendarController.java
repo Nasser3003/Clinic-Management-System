@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/calendar")
 @RequiredArgsConstructor
+@CrossOrigin("*") // Enable CORS
 public class CalendarController {
     
     private final CalendarService calendarService;
