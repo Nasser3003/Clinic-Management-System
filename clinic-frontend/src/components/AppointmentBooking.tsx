@@ -3,7 +3,6 @@ import { appointmentService } from '../services/appointmentService';
 import { DoctorAvailability, AvailableTimeSlot } from '../types/appointment';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
-import AdvancedDatePicker from './AdvancedDatePicker';
 
 const AppointmentBooking: React.FC = () => {
   const { user } = useAuth();
@@ -19,8 +18,6 @@ const AppointmentBooking: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [doctorCalendar, setDoctorCalendar] = useState<any>(null);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
 
@@ -32,7 +29,6 @@ const AppointmentBooking: React.FC = () => {
     setSelectedDoctor('');
     setAvailableSlots([]);
     setAvailableDoctors([]);
-    setDoctorCalendar(null);
     setAvailableDates([]);
     setUnavailableDates([]);
     setError('');
@@ -52,7 +48,6 @@ const AppointmentBooking: React.FC = () => {
       console.log(`Fetching doctor calendar for ${doctorEmail} from ${startDateStr} to ${endDateStr}`);
       
       const calendar = await appointmentService.getDoctorCalendar(doctorEmail, startDateStr, endDateStr);
-      setDoctorCalendar(calendar);
       
       console.log('Doctor calendar received:', calendar);
       
@@ -425,10 +420,10 @@ const AppointmentBooking: React.FC = () => {
             <button
               type="button"
               onClick={() => handleModeChange('date')}
-              className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+              className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-200 shadow-lg hover:shadow-xl ${
                 bookingMode === 'date'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
               }`}
             >
               📅 Book by Date
@@ -436,10 +431,10 @@ const AppointmentBooking: React.FC = () => {
             <button
               type="button"
               onClick={() => handleModeChange('doctor')}
-              className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+              className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-200 shadow-lg hover:shadow-xl ${
                 bookingMode === 'doctor'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
               }`}
             >
               👨‍⚕️ Book by Doctor
@@ -467,7 +462,7 @@ const AppointmentBooking: React.FC = () => {
                   value={selectedDate}
                   onChange={(e) => handleDateChange(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   required
                 />
               </div>
@@ -487,7 +482,7 @@ const AppointmentBooking: React.FC = () => {
                       id="doctor"
                       value={selectedDoctor}
                       onChange={(e) => handleDoctorChange(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       required
                     >
                       <option value="">Choose your doctor</option>
@@ -523,7 +518,7 @@ const AppointmentBooking: React.FC = () => {
                   id="doctor-mode"
                   value={selectedDoctor}
                   onChange={(e) => handleDoctorChange(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   required
                 >
                   <option value="">Choose your doctor</option>
@@ -538,16 +533,20 @@ const AppointmentBooking: React.FC = () => {
               {/* Step 2: Date Selection - Only show after doctor is selected */}
               {selectedDoctor && (
                 <div>
-                  <AdvancedDatePicker
-                    selectedDate={selectedDate}
-                    onDateChange={handleDateChange}
-                    availableDates={availableDates}
-                    unavailableDates={unavailableDates}
-                    minDate={new Date().toISOString().split('T')[0]}
-                    label="Step 2: Select Date"
-                    required
-                    loading={availableDates.length === 0 && unavailableDates.length === 0}
-                  />
+                  <div className="mb-4">
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                      Step 2: Select Date
+                    </label>
+                    <input
+                      type="date"
+                      id="date"
+                      value={selectedDate}
+                      onChange={(e) => handleDateChange(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
                   {selectedDate && getDateAvailabilityMessage(selectedDate) && (
                     <p className={`mt-2 text-sm ${
                       isDateAvailable(selectedDate) ? 'text-green-600' : 'text-red-600'
@@ -571,10 +570,10 @@ const AppointmentBooking: React.FC = () => {
                     key={index}
                     type="button"
                     onClick={() => setSelectedTime(slot.startTime)}
-                    className={`p-2 text-sm rounded-md border transition-colors ${
+                    className={`p-3 text-sm rounded-2xl border transition-all duration-200 font-medium ${
                       selectedTime === slot.startTime
-                        ? 'bg-indigo-600 text-white border-indigo-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-600 shadow-lg'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 shadow-sm hover:shadow-md'
                     }`}
                   >
                     {slot.startTime}
@@ -598,7 +597,7 @@ const AppointmentBooking: React.FC = () => {
           <button
             type="submit"
             disabled={loading || !selectedDate || !selectedDoctor || !selectedTime}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full flex justify-center py-3 px-6 border border-transparent rounded-full shadow-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-200 hover:shadow-xl"
           >
             {loading ? 'Scheduling...' : 'Schedule Appointment'}
           </button>
