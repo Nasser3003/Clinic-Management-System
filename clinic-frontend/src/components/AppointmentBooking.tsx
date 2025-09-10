@@ -3,6 +3,7 @@ import { appointmentService } from '../services/appointmentService';
 import { DoctorAvailability, AvailableTimeSlot } from '../types/appointment';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
+import AdvancedDatePicker from './AdvancedDatePicker';
 
 const AppointmentBooking: React.FC = () => {
   const { user } = useAuth();
@@ -537,17 +538,15 @@ const AppointmentBooking: React.FC = () => {
               {/* Step 2: Date Selection - Only show after doctor is selected */}
               {selectedDoctor && (
                 <div>
-                  <label htmlFor="date-doctor-mode" className="block text-sm font-medium text-gray-700">
-                    Step 2: Select Date
-                  </label>
-                  <input
-                    type="date"
-                    id="date-doctor-mode"
-                    value={selectedDate}
-                    onChange={(e) => handleDateChange(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  <AdvancedDatePicker
+                    selectedDate={selectedDate}
+                    onDateChange={handleDateChange}
+                    availableDates={availableDates}
+                    unavailableDates={unavailableDates}
+                    minDate={new Date().toISOString().split('T')[0]}
+                    label="Step 2: Select Date"
                     required
+                    loading={availableDates.length === 0 && unavailableDates.length === 0}
                   />
                   {selectedDate && getDateAvailabilityMessage(selectedDate) && (
                     <p className={`mt-2 text-sm ${
