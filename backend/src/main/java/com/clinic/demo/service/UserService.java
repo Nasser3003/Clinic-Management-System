@@ -111,7 +111,6 @@ public class UserService {
                         case "lastName" -> user.setLastName(getStringValue(value));
                         case "dateOfBirth" -> user.setDateOfBirth(parseDateValue(value));
                         case "gender" -> user.setGender(parseGenderValue(value));
-                        case "username" -> user.setUsername(getStringValue(value));
                         case "emergencyContactName" -> user.setEmergencyContactName(getStringValue(value));
                         case "emergencyContactNumber" -> user.setEmergencyContactNumber(getStringValue(value));
                         case "notes" -> user.setNotes(getStringValue(value));

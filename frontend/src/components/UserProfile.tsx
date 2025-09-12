@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/UserProfile.css';
@@ -10,19 +10,33 @@ function UserProfile() {
     const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
+    // Initialize with actual user data from JWT/login
     const [profileData, setProfileData] = useState({
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
         email: user?.email || '',
-        phoneNumber: '',
-        gender: '',
-        dob: '',
-        address: '',
-        city: '',
-        zipCode: '',
-        emergencyContact: '',
-        emergencyPhone: ''
+        phoneNumber: user?.phoneNumber || '',
+        gender: user?.gender || '',
+        dob: user?.dateOfBirth || '',
+        emergencyContact: user?.emergencyContactName || '',
+        emergencyPhone: user?.emergencyContactNumber || ''
     });
+
+    // Update profileData when a user changes (e.g., after login)
+    useEffect(() => {
+        if (user) {
+            setProfileData({
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                email: user.email || '',
+                phoneNumber: user.phoneNumber || '',
+                gender: user.gender || '',
+                dob: user.dateOfBirth || '',
+                emergencyContact: user.emergencyContactName || '',
+                emergencyPhone: user.emergencyContactNumber || ''
+            });
+        }
+    }, [user]);
 
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
@@ -49,9 +63,18 @@ function UserProfile() {
         setMessage({ type: '', text: '' });
 
         try {
+            // TODO: Make actual API call to update profile
+            // const response = await api.put('/user/profile', profileData);
+
+            // Simulate API call for now
             await new Promise(resolve => setTimeout(resolve, 1000));
+
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
             setIsEditing(false);
+
+            // TODO: Update user context with new data
+            // updateUser(response.data);
+
         } catch (error) {
             setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
         } finally {
@@ -67,11 +90,21 @@ function UserProfile() {
             return;
         }
 
+        if (passwordData.newPassword.length < 8) {
+            setMessage({ type: 'error', text: 'Password must be at least 8 characters long.' });
+            return;
+        }
+
         setIsSaving(true);
         setMessage({ type: '', text: '' });
 
         try {
+            // TODO: Make actual API call to change password
+            // await api.put('/user/change-password', passwordData);
+
+            // Simulate API call for now
             await new Promise(resolve => setTimeout(resolve, 1000));
+
             setMessage({ type: 'success', text: 'Password changed successfully!' });
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error) {
@@ -81,9 +114,19 @@ function UserProfile() {
         }
     };
 
+    // Format date for display
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return dateString;
+        }
+    };
+
     const tabs = [
         { id: 'profile', label: 'Profile Information', icon: '👤' },
-        { id: 'security', label: 'Security', icon: '🔒' },
+        { id: 'security', label: 'Security', icon: '🔐' },
         { id: 'preferences', label: 'Preferences', icon: '⚙️' },
         { id: 'medical', label: 'Medical Information', icon: '🏥' }
     ];
@@ -101,10 +144,13 @@ function UserProfile() {
                         </div>
                         <div className="header-info">
                             <h1 className="profile-name">
-                                {user?.firstName} {user?.lastName}
+                                {profileData.firstName} {profileData.lastName}
                             </h1>
                             <p className="profile-role">{user?.role?.toLowerCase()} Account</p>
                             <p className="profile-email">{user?.email}</p>
+                            {profileData.dob && (
+                                <p className="profile-dob">Born: {formatDate(profileData.dob)}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -177,8 +223,9 @@ function UserProfile() {
                                             name="email"
                                             value={profileData.email}
                                             onChange={handleProfileChange}
-                                            disabled={!isEditing}
-                                            className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
+                                            disabled={true} // Email should not be editable
+                                            className="form-input readonly"
+                                            title="Email cannot be changed"
                                         />
                                     </div>
                                     <div className="form-group">
@@ -190,6 +237,7 @@ function UserProfile() {
                                             onChange={handleProfileChange}
                                             disabled={!isEditing}
                                             className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
+                                            placeholder={isEditing ? 'Enter phone number' : 'Not provided'}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -201,10 +249,9 @@ function UserProfile() {
                                             disabled={!isEditing}
                                             className={`form-select ${isEditing ? 'editable' : 'readonly'}`}
                                         >
-                                            <option value="">Select Gender</option>
-                                            <option value="MALE">Male</option>
-                                            <option value="FEMALE">Female</option>
-                                            <option value="OTHER">Other</option>
+                                            <option value=""></option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
                                         </select>
                                     </div>
                                     <div className="form-group">
@@ -220,45 +267,6 @@ function UserProfile() {
                                     </div>
                                 </div>
 
-                                <div className="address-section">
-                                    <h3 className="section-title">Address Information</h3>
-                                    <div className="form-grid">
-                                        <div className="form-group full-width">
-                                            <label className="form-label">Address</label>
-                                            <input
-                                                type="text"
-                                                name="address"
-                                                value={profileData.address}
-                                                onChange={handleProfileChange}
-                                                disabled={!isEditing}
-                                                className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label className="form-label">City</label>
-                                            <input
-                                                type="text"
-                                                name="city"
-                                                value={profileData.city}
-                                                onChange={handleProfileChange}
-                                                disabled={!isEditing}
-                                                className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label className="form-label">ZIP Code</label>
-                                            <input
-                                                type="text"
-                                                name="zipCode"
-                                                value={profileData.zipCode}
-                                                onChange={handleProfileChange}
-                                                disabled={!isEditing}
-                                                className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div className="emergency-section">
                                     <h3 className="section-title">Emergency Contact</h3>
                                     <div className="form-grid">
@@ -271,6 +279,7 @@ function UserProfile() {
                                                 onChange={handleProfileChange}
                                                 disabled={!isEditing}
                                                 className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
+                                                placeholder={isEditing ? 'Enter contact name' : 'Not provided'}
                                             />
                                         </div>
                                         <div className="form-group">
@@ -282,6 +291,7 @@ function UserProfile() {
                                                 onChange={handleProfileChange}
                                                 disabled={!isEditing}
                                                 className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
+                                                placeholder={isEditing ? 'Enter contact phone' : 'Not provided'}
                                             />
                                         </div>
                                     </div>
@@ -332,6 +342,7 @@ function UserProfile() {
                                             onChange={handlePasswordChange}
                                             className="form-input editable"
                                             required
+                                            minLength={8}
                                         />
                                     </div>
                                     <div className="form-group">

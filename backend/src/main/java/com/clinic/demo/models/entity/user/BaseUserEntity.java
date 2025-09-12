@@ -32,49 +32,25 @@ import java.util.stream.Collectors;
 @Table(name = "base_user")
 public class BaseUserEntity implements UserDetails {
 
-    // Constructors for different entity types
-    public BaseUserEntity(String firstName, String lastName, String email, String phoneNumber,
-                          GenderEnum gender, UserTypeEnum userType, String password,
-                          LocalDate dateOfBirth, Set<RoleEntity> roles) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.gender = gender;
-        this.userType = userType;
-        this.password = password;
-        this.dateOfBirth = dateOfBirth;
-        this.roles = roles;
-        this.username = email; // Default username to email
-        this.createDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String avatarPath;
-    private String title;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserTypeEnum userType;
-
-    @Column(length = 20)
-    private String nationalId;
-
-    @Column(nullable = false)
+    // Basic Information
+    @Column(nullable = false, length = 100)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String lastName;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
+    @Column(length = 20)
     private String phoneNumber;
+
+    @Column(length = 20)
+    private String nationalId;
 
     @Column
     private LocalDate dateOfBirth;
@@ -83,12 +59,33 @@ public class BaseUserEntity implements UserDetails {
     @Column(nullable = false)
     private GenderEnum gender;
 
-    @Column
-    private String username;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserTypeEnum userType;
 
+    // Optional Profile Information
+    @Column(length = 100)
+    private String title; // Dr., Mr., Mrs., etc.
+
+    @Column(length = 500)
+    private String avatarPath;
+
+    // Authentication
     @Column(nullable = false)
     private String password;
 
+    // Emergency Contact
+    @Column(length = 100)
+    private String emergencyContactName;
+
+    @Column(length = 20)
+    private String emergencyContactNumber;
+
+    // Additional Notes
+    @Column(length = 1000)
+    private String notes;
+
+    // Audit Fields
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createDate;
@@ -97,6 +94,7 @@ public class BaseUserEntity implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 
+    // Account Status
     @Column(nullable = false)
     private boolean isAccountNonExpired = true;
 
@@ -112,15 +110,7 @@ public class BaseUserEntity implements UserDetails {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @Column
-    private String emergencyContactName;
-
-    @Column
-    private String emergencyContactNumber;
-
-    @Column(length = 500)
-    private String notes;
-
+    // Roles and Permissions
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -129,28 +119,76 @@ public class BaseUserEntity implements UserDetails {
     )
     private Set<RoleEntity> roles = new HashSet<>();
 
+    // Constructor for creating users
+    public BaseUserEntity(String firstName, String lastName, String email, String phoneNumber,
+                          GenderEnum gender, UserTypeEnum userType, String password,
+                          LocalDate dateOfBirth, Set<RoleEntity> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.userType = userType;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.roles = roles != null ? roles : new HashSet<>();
+        this.createDate = LocalDateTime.now();
+        this.lastModifiedDate = LocalDateTime.now();
+    }
+
+    // Role Management
     public void addRole(RoleEntity role) {
-        roles.add(role);
+        if (role != null) {
+            roles.add(role);
+        }
     }
 
     public void removeRole(RoleEntity role) {
-        roles.remove(role);
+        if (role != null) {
+            roles.remove(role);
+        }
+    }
+
+    public boolean hasRole(RoleEntity role) {
+        return role != null && roles.contains(role);
     }
 
     public boolean hasPermission(PermissionEnum permission) {
-        return roles.stream()
+        return permission != null && roles.stream()
                 .flatMap(role -> role.getPermissions().stream())
                 .anyMatch(p -> p.equals(permission));
     }
 
-    // Override method from UserDetails interface
+    // Utility Methods
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getDisplayName() {
+        return title != null && !title.isEmpty()
+                ? title + " " + getFullName()
+                : getFullName();
+    }
+
+    public int getAge() {
+        if (dateOfBirth == null) {
+            return 0;
+        }
+        return LocalDate.now().getYear() - dateOfBirth.getYear();
+    }
+
+    // Spring Security UserDetails Implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convert all permissions from all roles into Spring Security GrantedAuthority objects
         return roles.stream()
                 .flatMap(role -> role.getPermissions().stream())
-                .map(permission -> new SimpleGrantedAuthority(permission.name()))
+                .map(permission -> new SimpleGrantedAuthority("ROLE_" + permission.name()))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Using email as a username
     }
 
     @Override
@@ -171,15 +209,5 @@ public class BaseUserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isEnabled && !isDeleted;
-    }
-
-    @Override
-    public String getUsername() {
-        // Using email as the username for authentication
-        return email;
-    }
-
-    public boolean hasRole(RoleEntity role) {
-        return roles.contains(role);
     }
 }

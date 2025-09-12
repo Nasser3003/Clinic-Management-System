@@ -1,6 +1,7 @@
 package com.clinic.demo.Mapper;
 
 
+import com.clinic.demo.DTO.UserProfileDTO;
 import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.PatientDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
@@ -110,6 +111,21 @@ public class UserMapper {
         return roles.stream()
                 .map(RoleEntity::getName)
                 .collect(Collectors.toSet());
+    }
+    public static UserProfileDTO toUserProfileDTO(BaseUserEntity user) {
+        return new UserProfileDTO(
+                user.getId().toString(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getUserType().name(),
+                user.getNationalId(),
+                user.getPhoneNumber(),
+                user.getGender() != null ? user.getGender().name() : null,
+                user.getDateOfBirth().toString(),
+                user.getEmergencyContactName(),
+                user.getEmergencyContactNumber()
+        );
     }
 
 }

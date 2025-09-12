@@ -123,8 +123,8 @@ function Register() {
                             onChange={handleChange}
                         >
                             <option value="">Select gender</option>
-                            <option value="MALE">Male</option>
-                            <option value="FEMALE">Female</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
                         </select>
                         <input
                             name="dob"

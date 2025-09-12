@@ -1,8 +1,10 @@
 package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.LoginResponseDTO;
+import com.clinic.demo.DTO.UserProfileDTO;
 import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
 import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
+import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.exception.EmailAlreadyTakenException;
 import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.BaseUserEntity;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -112,7 +115,9 @@ public class AuthenticationService {
             );
 
             String token = tokenService.generateJWT(auth);
-            return new LoginResponseDTO(user.getEmail(), token);
+            UserProfileDTO userProfile = UserMapper.toUserProfileDTO(user);
+
+            return new LoginResponseDTO(token, userProfile);
 
         } catch (AuthenticationException e) {
             logger.error("Authentication failed for email: {}. Reason: {}", email, e.getMessage());
@@ -122,7 +127,6 @@ public class AuthenticationService {
             throw new RuntimeException("Login failed: " + e.getMessage());
         }
     }
-
     private void checkEmailAvailability(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyTakenException();

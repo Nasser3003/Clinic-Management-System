@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
-import { extractUserRole } from '../utils/jwtDecoder';
 import './css/Login.css';
 
 function Login() {
@@ -20,17 +19,23 @@ function Login() {
 
         try {
             const response = await authService.login({ email, password });
-            const userRole = extractUserRole(response.jwt);
 
-            const user = {
-                id: '1',
-                email: response.email,
-                firstName: response.email.split('@')[0],
-                lastName: '',
-                role: userRole
-            };
+            // Debug: Let's see what the backend actually returns
+            console.log('Backend response:', response);
+            console.log('Response structure:', {
+                hasJwt: !!response.jwt,
+                hasUser: !!response.user,
+                responseKeys: Object.keys(response)
+            });
 
-            login(response.jwt, user);
+            if (!response.jwt)
+                throw new Error('No JWT token received from server');
+
+            if (!response.user)
+                throw new Error('No user data received from server');
+
+            // Now the response contains { jwt: string, user: User }
+            login(response.jwt, response.user);
             navigate('/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);
