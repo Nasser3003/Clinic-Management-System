@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/UserProfile.css';
+import api from '../services/api'; // Assuming you have an api service
 
 function UserProfile() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -17,12 +18,12 @@ function UserProfile() {
         email: user?.email || '',
         phoneNumber: user?.phoneNumber || '',
         gender: user?.gender || '',
-        dob: user?.dateOfBirth || '',
-        emergencyContact: user?.emergencyContactName || '',
-        emergencyPhone: user?.emergencyContactNumber || ''
+        dateOfBirth: user?.dateOfBirth || '',
+        emergencyContactName: user?.emergencyContactName || '',
+        emergencyContactNumber: user?.emergencyContactNumber || ''
     });
 
-    // Update profileData when a user changes (e.g., after login)
+    // Update profileData when user changes (e.g., after login)
     useEffect(() => {
         if (user) {
             setProfileData({
@@ -31,9 +32,9 @@ function UserProfile() {
                 email: user.email || '',
                 phoneNumber: user.phoneNumber || '',
                 gender: user.gender || '',
-                dob: user.dateOfBirth || '',
-                emergencyContact: user.emergencyContactName || '',
-                emergencyPhone: user.emergencyContactNumber || ''
+                dateOfBirth: user.dateOfBirth || '',
+                emergencyContactName: user.emergencyContactName || '',
+                emergencyContactNumber: user.emergencyContactNumber || ''
             });
         }
     }, [user]);
@@ -63,20 +64,40 @@ function UserProfile() {
         setMessage({ type: '', text: '' });
 
         try {
-            // TODO: Make actual API call to update profile
-            // const response = await api.put('/user/profile', profileData);
-
-            // Simulate API call for now
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
+            // Prepare data for backend - map frontend fields to backend fields
+            const updateData = {
+                firstName: profileData.firstName,
+                lastName: profileData.lastName,
+                phone: profileData.phoneNumber, // Backend expects 'phone'
+                gender: profileData.gender,
+                dateOfBirth: profileData.dateOfBirth,
+                emergencyContactName: profileData.emergencyContactName,
+                emergencyContactNumber: profileData.emergencyContactNumber
+            };
+            await api.put(`/user/update-profile/${user?.email}`, updateData);
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
             setIsEditing(false);
 
-            // TODO: Update user context with new data
-            // updateUser(response.data);
+            // Update user context with new data
+            if (updateUser && user) {
+                updateUser({
+                    ...user,
+                    firstName: profileData.firstName,
+                    lastName: profileData.lastName,
+                    phoneNumber: profileData.phoneNumber,
+                    gender: profileData.gender as 'M' | 'F',
+                    dateOfBirth: profileData.dateOfBirth,
+                    emergencyContactName: profileData.emergencyContactName,
+                    emergencyContactNumber: profileData.emergencyContactNumber
+                });
+            }
 
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
+        } catch (error: any) {
+            console.error('Error updating profile:', error);
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Failed to update profile. Please try again.'
+            });
         } finally {
             setIsSaving(false);
         }
@@ -99,16 +120,19 @@ function UserProfile() {
         setMessage({ type: '', text: '' });
 
         try {
-            // TODO: Make actual API call to change password
-            // await api.put('/user/change-password', passwordData);
-
-            // Simulate API call for now
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await api.put('/user/change-password', {
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            });
 
             setMessage({ type: 'success', text: 'Password changed successfully!' });
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to change password. Please try again.' });
+        } catch (error: any) {
+            console.error('Error changing password:', error);
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Failed to change password. Please try again.'
+            });
         } finally {
             setIsSaving(false);
         }
@@ -148,8 +172,8 @@ function UserProfile() {
                             </h1>
                             <p className="profile-role">{user?.role?.toLowerCase()} Account</p>
                             <p className="profile-email">{user?.email}</p>
-                            {profileData.dob && (
-                                <p className="profile-dob">Born: {formatDate(profileData.dob)}</p>
+                            {profileData.dateOfBirth && (
+                                <p className="profile-dob">Born: {formatDate(profileData.dateOfBirth)}</p>
                             )}
                         </div>
                     </div>
@@ -249,7 +273,7 @@ function UserProfile() {
                                             disabled={!isEditing}
                                             className={`form-select ${isEditing ? 'editable' : 'readonly'}`}
                                         >
-                                            <option value=""></option>
+                                            <option value="">Select Gender</option>
                                             <option value="M">Male</option>
                                             <option value="F">Female</option>
                                         </select>
@@ -258,8 +282,8 @@ function UserProfile() {
                                         <label className="form-label">Date of Birth</label>
                                         <input
                                             type="date"
-                                            name="dob"
-                                            value={profileData.dob}
+                                            name="dateOfBirth"
+                                            value={profileData.dateOfBirth}
                                             onChange={handleProfileChange}
                                             disabled={!isEditing}
                                             className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
@@ -274,8 +298,8 @@ function UserProfile() {
                                             <label className="form-label">Emergency Contact Name</label>
                                             <input
                                                 type="text"
-                                                name="emergencyContact"
-                                                value={profileData.emergencyContact}
+                                                name="emergencyContactName"
+                                                value={profileData.emergencyContactName}
                                                 onChange={handleProfileChange}
                                                 disabled={!isEditing}
                                                 className={`form-input ${isEditing ? 'editable' : 'readonly'}`}
@@ -286,8 +310,8 @@ function UserProfile() {
                                             <label className="form-label">Emergency Contact Phone</label>
                                             <input
                                                 type="tel"
-                                                name="emergencyPhone"
-                                                value={profileData.emergencyPhone}
+                                                name="emergencyContactNumber"
+                                                value={profileData.emergencyContactNumber}
                                                 onChange={handleProfileChange}
                                                 disabled={!isEditing}
                                                 className={`form-input ${isEditing ? 'editable' : 'readonly'}`}

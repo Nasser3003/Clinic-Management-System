@@ -3,57 +3,64 @@ import { User } from '../types/auth';
 import { authService } from '../services/authService';
 
 interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  loading: boolean;
+    user: User | null;
+    isAuthenticated: boolean;
+    login: (token: string, user: User) => void;
+    logout: () => void;
+    updateUser: (userData: User) => void;
+    loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = authService.getCurrentUser();
-    
-    if (token && savedUser) {
-      setUser(savedUser);
-    }
-    setLoading(false);
-  }, []);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const savedUser = authService.getCurrentUser();
 
-  const login = (token: string, userData: User) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-  };
+        if (token && savedUser) {
+            setUser(savedUser);
+        }
+        setLoading(false);
+    }, []);
 
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-  };
+    const login = (token: string, userData: User) => {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+    };
 
-  return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      login,
-      logout,
-      loading
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    const logout = () => {
+        authService.logout();
+        setUser(null);
+    };
+
+    const updateUser = (userData: User) => {
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+    };
+
+    return (
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated: !!user,
+            login,
+            logout,
+            updateUser, // Add this to the context value
+            loading
+        }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };

@@ -18,7 +18,7 @@ import java.util.Map;
 public class  UserController {
     private final UserService userService;
 
-    @PutMapping("{userEmail}/update-profile")
+    @PutMapping("/update-profile/{userEmail}")
     public ResponseEntity<String> updateProfile(
             @PathVariable String userEmail,
             @RequestBody Map<String, Object> updates) {
