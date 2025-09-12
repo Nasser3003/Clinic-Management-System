@@ -23,7 +23,7 @@ function UserProfile() {
         emergencyContactNumber: user?.emergencyContactNumber || ''
     });
 
-    // Update profileData when user changes (e.g., after login)
+    // Update profileData when a user changes
     useEffect(() => {
         if (user) {
             setProfileData({
@@ -122,7 +122,8 @@ function UserProfile() {
         try {
             await api.put('/user/change-password', {
                 currentPassword: passwordData.currentPassword,
-                newPassword: passwordData.newPassword
+                newPassword: passwordData.newPassword,
+                confirmPassword: passwordData.confirmPassword
             });
 
             setMessage({ type: 'success', text: 'Password changed successfully!' });
@@ -131,14 +132,12 @@ function UserProfile() {
             console.error('Error changing password:', error);
             setMessage({
                 type: 'error',
-                text: error.response?.data?.message || 'Failed to change password. Please try again.'
+                text: error.response?.data || 'Failed to change password. Please try again.'
             });
         } finally {
             setIsSaving(false);
         }
     };
-
-    // Format date for display
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
         try {

@@ -100,26 +100,24 @@ public class UserService {
         if (userUpdatePasswordDTO.currentPassword() == null || userUpdatePasswordDTO.currentPassword().isBlank())
             throw new PasswordValidationException("Current password cannot be null or empty");
 
-        try {
-            authenticationService.authenticateUser(authenticatedUserEmail, userUpdatePasswordDTO.currentPassword());
-        } catch (AuthenticationException e) {
+        BaseUserEntity user = userRepository.findByEmail(authenticatedUserEmail)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + authenticatedUserEmail));
+
+        if (!encoder.matches(userUpdatePasswordDTO.currentPassword(), user.getPassword()))
             throw new AuthenticationFailedException("Current password is incorrect");
-        }
 
         if (!Validations.isValidPassword(userUpdatePasswordDTO.newPassword()))
-            throw new PasswordValidationException("New password must be at least 8 characters long");
+            throw new PasswordValidationException("Password must be 8+ characters with uppercase, lowercase, digit, and special character");
 
         if (!userUpdatePasswordDTO.newPassword().equals(userUpdatePasswordDTO.confirmPassword()))
             throw new PasswordMismatchException("Passwords do not match");
-
-        BaseUserEntity user = userRepository.findByEmail(authenticatedUserEmail)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + authenticatedUserEmail));
 
         user.setPassword(encoder.encode(userUpdatePasswordDTO.newPassword()));
         userRepository.save(user);
 
         logger.info("Password updated successfully for user: {}", authenticatedUserEmail);
     }
+
     @Transactional
     public void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");

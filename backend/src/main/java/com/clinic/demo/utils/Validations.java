@@ -12,9 +12,11 @@ public class Validations {
     public static boolean isValidPhoneNumber(String phoneNumber) {
         return phoneNumber.matches("^[0-9]{10}$");
     }
+
     public static boolean isValidPassword(String password) {
         return password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
     }
+
     public static boolean isValidName(String name) {
         return name.matches("^[a-zA-Z ]+$");
     }

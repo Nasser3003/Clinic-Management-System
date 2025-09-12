@@ -29,7 +29,6 @@ public class Runner implements CommandLineRunner {
     private UserRepository userRepository;
     private PasswordEncoder encoder;
 
-    // front end
     // todo paying methods
 
     @Override
@@ -69,7 +68,7 @@ public class Runner implements CommandLineRunner {
                 "+1234567890",
                 "nationalIdAdminAdmin",
                 GenderEnum.M,
-                encoder.encode("admin"),
+                encoder.encode("admin@gmail.com"),
                 LocalDate.of(1997, 11, 27),
                 rolesAdmin
         );

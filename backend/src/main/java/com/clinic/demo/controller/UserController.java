@@ -29,7 +29,7 @@ public class  UserController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
-    @PutMapping("/change-password/")
+    @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(
             @RequestBody UserUpdatePasswordDTO userUpdateDTO) {
         userService.updatePassword(userUpdateDTO);

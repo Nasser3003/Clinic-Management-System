@@ -188,7 +188,7 @@ public class BaseUserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // Using email as a username
+        return email;
     }
 
     @Override

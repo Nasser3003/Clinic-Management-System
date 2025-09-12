@@ -17,3 +17,5 @@ where do i save the fees.
 
 
  in backend in controller, do i make the controller return a dto? or a response entity or just the entity?
+
+troubles i encounterd, registering and jwt token stuff,  i cast all emails to lowercase

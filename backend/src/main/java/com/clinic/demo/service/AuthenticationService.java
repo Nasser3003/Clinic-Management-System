@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,8 @@ public class AuthenticationService {
     private final TokenService tokenService;
 
     public void registerUser(RegistrationDTO registrationDTO) {
+        String email = registrationDTO.email().toLowerCase();
+
         String firstName = registrationDTO.firstName();
         if (!Validations.isValidName(firstName))
             throw new IllegalArgumentException("Invalid first name provided");
@@ -53,7 +56,6 @@ public class AuthenticationService {
         if (!Validations.isValidName(lastName))
             throw new IllegalArgumentException("Invalid last name provided");
 
-        String email = registrationDTO.email();
         if (!Validations.isValidEmail(email))
             throw new IllegalArgumentException("Invalid email provided");
 
@@ -79,7 +81,8 @@ public class AuthenticationService {
     }
 
     public void registerEmployee(EmployeeRegistrationDTO registrationDTO) {
-        checkEmailAvailability(registrationDTO.email());
+        String email = registrationDTO.email().toLowerCase();
+        checkEmailAvailability(email);
 
         GenderEnum genderEnum = parseGender(registrationDTO.gender());
         UserTypeEnum userTypeEnum = UserTypeEnum.valueOf(registrationDTO.userType().toUpperCase());
@@ -101,6 +104,7 @@ public class AuthenticationService {
     }
 
     public LoginResponseDTO loginUser(String email, String password) {
+        email = email.toLowerCase();
         try {
             BaseUserEntity user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -125,6 +129,7 @@ public class AuthenticationService {
     }
 
     private void checkEmailAvailability(String email) {
+        email = email.toLowerCase();
         if (userRepository.findByEmail(email).isPresent())
             throw new EmailAlreadyTakenException();
     }
@@ -149,10 +154,15 @@ public class AuthenticationService {
 
     String getAuthenticatedUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+
+        if (authentication instanceof JwtAuthenticationToken jwtToken) {
+            return jwtToken.getToken().getClaimAsString("email");
+        }
+
+        throw new IllegalStateException("No JWT authentication found");
     }
 
-    Authentication authenticateUser(String email, String password) {
+    private Authentication authenticateUser(String email, String password) {
         try {
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
