@@ -21,7 +21,7 @@ public record TreatmentDetails(
         @PositiveOrZero(message = "Installment period must be zero or positive")
         int installmentPeriodInMonths,
 
-        String notes
+        String treatmentDescription
 
 
 ) {

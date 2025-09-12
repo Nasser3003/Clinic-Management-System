@@ -1,0 +1,352 @@
+/* ==================================================
+   APPOINTMENT BOOKING - BASE STYLES
+   ================================================== */
+
+.appointment-booking {
+    max-width: 32rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.booking-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* ==================================================
+   BOOKING MODE SELECTION
+   ================================================== */
+
+.booking-mode-section {
+    margin-bottom: 2rem;
+}
+
+.mode-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.mode-btn:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.mode-btn:not(.active) {
+    background-color: white;
+    color: #374151;
+    border-color: #e5e7eb;
+}
+
+.mode-btn:not(.active):hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+}
+
+.mode-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ==================================================
+   BOOKING FORM
+   ================================================== */
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.step-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* ==================================================
+   FORM INPUTS
+   ================================================== */
+
+.date-input,
+.doctor-select {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    background-color: white;
+    font-size: 0.875rem;
+}
+
+.date-input:focus,
+.doctor-select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+
+.doctor-select option:disabled {
+    color: #9ca3af;
+}
+
+/* ==================================================
+   LOADING AND EMPTY STATES
+   ================================================== */
+
+.loading-state,
+.no-doctors {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 1rem;
+    background-color: #f9fafb;
+}
+
+.loading-text,
+.no-doctors-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* ==================================================
+   DATE SELECTION ENHANCEMENTS
+   ================================================== */
+
+.date-selection {
+    margin-bottom: 1rem;
+}
+
+.availability-message {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid;
+}
+
+.availability-message.available {
+    color: #16a34a;
+    background-color: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.availability-message.unavailable {
+    color: #dc2626;
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+
+/* ==================================================
+   TIME SLOTS
+   ================================================== */
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 1rem;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: white;
+    color: #374151;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.time-slot:hover {
+    background-color: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.time-slot.selected {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    border-color: #2563eb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.no-slots {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    padding: 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+}
+
+/* ==================================================
+   MESSAGES
+   ================================================== */
+
+.error-message {
+    color: #dc2626;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.success-message {
+    color: #16a34a;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+/* ==================================================
+   SUBMIT BUTTON
+   ================================================== */
+
+.submit-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 640px) {
+    .appointment-booking {
+        padding: 0.5rem;
+    }
+
+    .booking-title {
+        font-size: 1.375rem;
+    }
+
+    .mode-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .date-input,
+    .doctor-select {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .time-slots-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================================================
+   ACCESSIBILITY & FOCUS STATES
+   ================================================== */
+
+.mode-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.time-slot:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mode-btn,
+    .date-input,
+    .doctor-select,
+    .time-slot,
+    .submit-btn {
+        transition: none;
+    }
+
+    .mode-btn:hover,
+    .time-slot:hover,
+    .submit-btn:hover {
+        transform: none;
+    }
+}

@@ -1,0 +1,507 @@
+/* ==================================================
+   CONTACT PAGE - BASE STYLES
+   ================================================== */
+
+.contact-page {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .contact-page {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .contact-page {
+        padding: 2rem;
+    }
+}
+
+/* ==================================================
+   CONTACT HEADER
+   ================================================== */
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.contact-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    max-width: 48rem;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ==================================================
+   CONTACT GRID LAYOUT
+   ================================================== */
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ==================================================
+   CONTACT INFO SECTION
+   ================================================== */
+
+.contact-info-section {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.contact-info-section:hover {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2rem;
+}
+
+.contact-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ==================================================
+   CONTACT ITEMS
+   ================================================== */
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    transform: translateY(-1px);
+}
+
+.contact-icon-wrapper {
+    flex-shrink: 0;
+}
+
+.contact-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.location-icon {
+    background: linear-gradient(135deg, #dbeafe 0%, #f0f4ff 100%);
+}
+
+.phone-icon {
+    background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+}
+
+.email-icon {
+    background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+}
+
+.hours-icon {
+    background: linear-gradient(135deg, #fed7aa 0%, #fff7ed 100%);
+}
+
+.contact-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.location-icon .icon {
+    color: #2563eb;
+}
+
+.phone-icon .icon {
+    color: #16a34a;
+}
+
+.email-icon .icon {
+    color: #7c3aed;
+}
+
+.hours-icon .icon {
+    color: #ea580c;
+}
+
+.contact-details {
+    flex: 1;
+}
+
+.contact-type {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.contact-value {
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ==================================================
+   MAP PLACEHOLDER
+   ================================================== */
+
+.map-placeholder {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    border-radius: 0.75rem;
+    height: 16rem;
+    border: 1px solid #bfdbfe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.map-placeholder:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.map-content {
+    text-align: center;
+}
+
+.map-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #60a5fa;
+    margin: 0 auto 0.5rem auto;
+    display: block;
+}
+
+.map-title {
+    color: #2563eb;
+    font-weight: 500;
+    margin: 0 0 0.25rem 0;
+}
+
+.map-subtitle {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* ==================================================
+   CONTACT FORM SECTION
+   ================================================== */
+
+.contact-form-section {
+    background-color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+}
+
+.contact-form-section:hover {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================================================
+   SUCCESS MESSAGE
+   ================================================== */
+
+.success-message {
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-icon {
+    width: 4rem;
+    height: 4rem;
+    background-color: #dcfce7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+    border: 1px solid #bbf7d0;
+}
+
+.success-icon .checkmark {
+    width: 2rem;
+    height: 2rem;
+    color: #16a34a;
+}
+
+.success-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.success-text {
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+}
+
+.another-message-btn {
+    margin-top: 1rem;
+    color: #2563eb;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #bfdbfe;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.another-message-btn:hover {
+    color: #1d4ed8;
+    background-color: #eff6ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================================================
+   CONTACT FORM
+   ================================================== */
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.form-input,
+.form-textarea {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    background-color: white;
+}
+
+.primary-input {
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 5rem;
+}
+
+.form-textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* ==================================================
+   SUBMIT BUTTON
+   ================================================== */
+
+.submit-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ==================================================
+   LOADING SPINNER
+   ================================================== */
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: white;
+}
+
+.spinner-track {
+    opacity: 0.25;
+}
+
+.spinner-fill {
+    opacity: 0.75;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 640px) {
+    .contact-title {
+        font-size: 2rem;
+    }
+
+    .contact-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .contact-info-section,
+    .contact-form-section {
+        padding: 1.5rem;
+    }
+
+    .contact-item {
+        padding: 0.75rem;
+    }
+
+    .contact-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .contact-icon .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
+/* ==================================================
+   ACCESSIBILITY & FOCUS STATES
+   ================================================== */
+
+.contact-item:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.map-placeholder:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-item,
+    .map-placeholder,
+    .form-input,
+    .form-textarea,
+    .submit-btn,
+    .another-message-btn {
+        transition: none;
+    }
+
+    .contact-item:hover,
+    .map-placeholder:hover,
+    .submit-btn:hover,
+    .another-message-btn:hover {
+        transform: none;
+    }
+
+    .loading-spinner {
+        animation: none;
+    }
+}

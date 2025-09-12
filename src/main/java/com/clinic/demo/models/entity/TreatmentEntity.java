@@ -12,8 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -23,44 +21,7 @@ import java.util.UUID;
 @Table(name = "treatment")
 public class TreatmentEntity {
 
-    private static Map<Integer, String> treatmentsMap = new HashMap<>();
-    static {
-        treatmentsMap.put(1, "Braces Metal");
-        treatmentsMap.put(2, "Braces Ceramic");
-        treatmentsMap.put(3, "Braces Lingual");
-        treatmentsMap.put(4, "Braces Invisalign");
-        treatmentsMap.put(5, "Clear aligners");
-        treatmentsMap.put(6, "Retainers");
-        treatmentsMap.put(7, "Palatal expanders");
-        treatmentsMap.put(8, "Headgear");
-        treatmentsMap.put(9, "Jaw repositioning appliances");
-        treatmentsMap.put(10, "Lip and cheek bumpers");
-        treatmentsMap.put(11, "Removable space maintainers");
-        treatmentsMap.put(12, "Splints for temporomandibular joint (TMJ) disorders");
-        treatmentsMap.put(13, "Surgical orthodontics");
-        treatmentsMap.put(14, "Dentofacial orthopedics");
-        treatmentsMap.put(15, "Orthodontic appliances for early intervention");
-        treatmentsMap.put(16, "Fixed and removable appliances for bite correction");
-        treatmentsMap.put(17, "Orthognathic surgery for severe jaw discrepancies");
-        treatmentsMap.put(18, "Treatment for impacted teeth");
-        treatmentsMap.put(19, "Cross-bite correction");
-        treatmentsMap.put(20, "Open bite correction");
-        treatmentsMap.put(21, "Overbite correction");
-        treatmentsMap.put(22, "Underbite correction");
-        treatmentsMap.put(23, "Space closure");
-        treatmentsMap.put(24, "Protraction facemask therapy");
-        treatmentsMap.put(25, "Temporary anchorage devices (TADs)");
-        treatmentsMap.put(26, "Distalizers for molar movement");
-        treatmentsMap.put(27, "Habit appliances for thumb sucking or tongue thrusting");
-        treatmentsMap.put(28, "Tongue crib appliances");
-        treatmentsMap.put(29, "Cleft lip and palate orthodontic treatment");
-        treatmentsMap.put(30, "Orthodontic treatment for sleep apnea");
-        treatmentsMap.put(31, "Other");
-    }
-    public static String getTreatmentFromMap(int key) {
-        return treatmentsMap.get(key);
-    }
-
+    
     public TreatmentEntity(EmployeeEntity doctor, PatientEntity patient, AppointmentEntity appointment, String treatment, int cost, int amountPaid, int installmentPeriodInMonths, float remainingBalance) {
         this.doctor = doctor;
         this.patient = patient;

@@ -28,27 +28,29 @@ public class TreatmentService {
         treatmentDetails.stream()
                 .map(detail -> createTreatmentEntity(
                         detail, 
-                        appointment.getDoctor(), 
-                        appointment.getPatient(), 
+                        appointment.getDoctor(),
+                        appointment.getPatient(),
+                        detail.treatmentDescription(),
                         appointment))
                 .forEach(treatmentRepository::save);
     }
     
     private TreatmentEntity createTreatmentEntity(TreatmentDetails treatmentDetail, 
                                                 EmployeeEntity doctor, 
-                                                PatientEntity patient, 
+                                                PatientEntity patient,
+                                                String treatment,
                                                 AppointmentEntity appointment) {
         int cost = treatmentDetail.cost();
         int amountPaid = treatmentDetail.amountPaid();
         int remainingBalance = cost - amountPaid;
         int installmentPeriodInMonths = treatmentDetail.installmentPeriodInMonths();
-        String treatmentDescription = TreatmentEntity.getTreatmentFromMap(treatmentDetail.treatmentId());
+
 
         return new TreatmentEntity(
                 doctor,
                 patient,
                 appointment,
-                treatmentDescription,
+                treatment,
                 cost,
                 amountPaid,
                 installmentPeriodInMonths,

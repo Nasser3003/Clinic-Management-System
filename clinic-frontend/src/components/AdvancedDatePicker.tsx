@@ -11,7 +11,7 @@ interface AdvancedDatePickerProps {
   loading?: boolean;
 }
 
-const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
+function AdvancedDatePicker({
   selectedDate,
   onDateChange,
   availableDates,
@@ -20,7 +20,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   label,
   required = false,
   loading = false
-}) => {
+}: AdvancedDatePickerProps) {
 
   // Prevent selection of unavailable dates
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +142,6 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
       )}
     </div>
   );
-};
+}
 
 export default AdvancedDatePicker;
