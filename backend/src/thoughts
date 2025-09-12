@@ -11,3 +11,9 @@ where do i save the fees.
  which will be 2 doctors. and so i made the cost per treatment since each could have a cost
 
  problems with persisting
+
+ simplicty instead of creatin a method that takes email and if doesnt get  email it changes the authenticated user data (this is helpful if admin wants to change a different users data they use the same method)
+ to maybe make 2 methods one for admin and one for user.
+
+
+ in backend in controller, do i make the controller return a dto? or a response entity or just the entity?

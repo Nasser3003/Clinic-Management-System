@@ -1,6 +1,9 @@
 package com.clinic.demo.controller;
 
+import com.clinic.demo.DTO.UserUpdatePasswordDTO;
+import com.clinic.demo.exception.UserNotFoundException;
 import com.clinic.demo.service.UserService;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,14 @@ public class  UserController {
     public ResponseEntity<String> updateProfile(
             @PathVariable String userEmail,
             @RequestBody Map<String, Object> updates) {
-        return userService.update(userEmail, updates);
+        userService.update(userEmail, updates);
+        return ResponseEntity.ok("Profile updated successfully");
+    }
+
+    @PutMapping("/change-password/")
+    public ResponseEntity<String> changePassword(
+            @RequestBody UserUpdatePasswordDTO userUpdateDTO) {
+        userService.updatePassword(userUpdateDTO);
+        return ResponseEntity.ok("Password updated successfully");
     }
 }

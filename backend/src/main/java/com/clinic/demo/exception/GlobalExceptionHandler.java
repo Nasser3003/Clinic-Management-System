@@ -47,7 +47,36 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    // Time-off related exception handlers
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<String> handleUserUpdate(UserUpdateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(RequestValidationException.class)
+    public ResponseEntity<String> handleRequestValidation(RequestValidationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ScheduleValidationException.class)
+    public ResponseEntity<String> handleScheduleValidation(ScheduleValidationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(LocalDateTimeException.class)
+    public ResponseEntity<String> handleLocalDateTime(LocalDateTimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<String> handleAuthenticationFailed(AuthenticationFailedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
     @ExceptionHandler(TimeOffNotFoundException.class)
     public ResponseEntity<String> handleTimeOffNotFound(TimeOffNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -65,6 +94,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(PasswordValidationException.class)
+    public ResponseEntity<String> handlePasswordValidation(PasswordValidationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<String> handlePasswordMismatch(PasswordMismatchException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

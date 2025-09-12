@@ -23,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -110,11 +110,7 @@ public class AuthenticationService {
                 throw new RuntimeException("Account has been deleted");
             }
 
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
-
-            String token = tokenService.generateJWT(auth);
+            String token = tokenService.generateJWT(authenticateUser(email, password));
             UserProfileDTO userProfile = UserMapper.toUserProfileDTO(user);
 
             return new LoginResponseDTO(token, userProfile);
@@ -127,10 +123,10 @@ public class AuthenticationService {
             throw new RuntimeException("Login failed: " + e.getMessage());
         }
     }
+
     private void checkEmailAvailability(String email) {
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email).isPresent())
             throw new EmailAlreadyTakenException();
-        }
     }
 
     private Set<RoleEntity> initializeUserRoles() {
@@ -150,4 +146,21 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Invalid gender value");
         }
     }
+
+    String getAuthenticatedUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+    Authentication authenticateUser(String email, String password) {
+        try {
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Invalid credentials", e);
+        }
+    }
+
+
 }

@@ -1,18 +1,24 @@
 package com.clinic.demo.service;
 
+import com.clinic.demo.DTO.UserUpdatePasswordDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
-import com.clinic.demo.exception.UserNotFoundException;
-import com.clinic.demo.models.entity.user.*;
+import com.clinic.demo.exception.*;
+import com.clinic.demo.models.entity.user.AdminEntity;
+import com.clinic.demo.models.entity.user.BaseUserEntity;
+import com.clinic.demo.models.entity.user.EmployeeEntity;
+import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.UserRepository;
+import com.clinic.demo.utils.Validations;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +39,8 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
+    private final PasswordEncoder encoder;
 
     public List<UserInfoDTO> findAllUsers() {
         List<BaseUserEntity> users = userRepository.findAll();
@@ -44,7 +52,7 @@ public class UserService {
     public BaseUserEntity findUserByEmail(String email) {
         if (email == null || email.trim().isEmpty())
             throw new IllegalArgumentException("Email cannot be null or empty");
-        
+
         Optional<BaseUserEntity> userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty())
             throw new UserNotFoundException(email + " User not found");
@@ -55,7 +63,7 @@ public class UserService {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             throw new IllegalArgumentException("Phone number cannot be null or empty");
         }
-        
+
         Optional<BaseUserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
         return typeCastUserToType(userOptional);
     }
@@ -70,24 +78,48 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<String> update(String userEmail, Map<String, Object> updates) {
+    public void update(String userEmail, Map<String, Object> updates) {
+        BaseUserEntity user = findUserByEmail(userEmail);
+        if (user == null)
+            throw new UserNotFoundException("User not found: " + userEmail);
+
         try {
-            BaseUserEntity user = findUserByEmail(userEmail);
-            if (user == null) {
-                logger.warn("Update attempted for non-existent user: {}", userEmail);
-                return ResponseEntity.notFound().build();
-            }
-            
             updateProperties(user, updates);
             userRepository.save(user);
             logger.info("Profile updated successfully for user: {}", userEmail);
-            return ResponseEntity.ok("Profile updated successfully.");
         } catch (Exception e) {
             logger.error("Error updating user {}: {}", userEmail, e.getMessage(), e);
-            throw e;
+            throw new UserUpdateException("Failed to update user profile", e);
         }
     }
 
+    @Transactional
+    public void updatePassword(UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        String authenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
+
+        if (userUpdatePasswordDTO.currentPassword() == null || userUpdatePasswordDTO.currentPassword().isBlank())
+            throw new PasswordValidationException("Current password cannot be null or empty");
+
+        try {
+            authenticationService.authenticateUser(authenticatedUserEmail, userUpdatePasswordDTO.currentPassword());
+        } catch (AuthenticationException e) {
+            throw new AuthenticationFailedException("Current password is incorrect");
+        }
+
+        if (!Validations.isValidPassword(userUpdatePasswordDTO.newPassword()))
+            throw new PasswordValidationException("New password must be at least 8 characters long");
+
+        if (!userUpdatePasswordDTO.newPassword().equals(userUpdatePasswordDTO.confirmPassword()))
+            throw new PasswordMismatchException("Passwords do not match");
+
+        BaseUserEntity user = userRepository.findByEmail(authenticatedUserEmail)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + authenticatedUserEmail));
+
+        user.setPassword(encoder.encode(userUpdatePasswordDTO.newPassword()));
+        userRepository.save(user);
+
+        logger.info("Password updated successfully for user: {}", authenticatedUserEmail);
+    }
     @Transactional
     public void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
@@ -127,7 +159,7 @@ public class UserService {
     private void updateEmail(BaseUserEntity user, Object value) {
         String email = getStringValue(value);
         if (email == null || email.trim().isEmpty()) throw new IllegalArgumentException("Email cannot be null or empty");
-        
+
         BaseUserEntity existingUser = findUserByEmail(email);
         if (existingUser != null && !existingUser.getId().equals(user.getId())) throw new DataIntegrityViolationException("Email you provided is already taken");
 
@@ -157,8 +189,8 @@ public class UserService {
                 return date;
             } catch (DateTimeParseException e) {
                 throw new DateTimeParseException(
-                        "Invalid date format. Please use yyyy-MM-dd format.", 
-                        e.getParsedString(), 
+                        "Invalid date format. Please use yyyy-MM-dd format.",
+                        e.getParsedString(),
                         e.getErrorIndex()
                 );
             }
@@ -180,7 +212,7 @@ public class UserService {
                 default -> throw new IllegalArgumentException("Unsupported user type: " + userTypeEnum);
             };
         } catch (ClassCastException e) {
-            logger.error("Error casting user to correct type. User ID: {}, Type: {}", 
+            logger.error("Error casting user to correct type. User ID: {}, Type: {}",
                     user.getId(), userTypeEnum, e);
             throw new RuntimeException("Error processing user data. User type mismatch.", e);
         }
