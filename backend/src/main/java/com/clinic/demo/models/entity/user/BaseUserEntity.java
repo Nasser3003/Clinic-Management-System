@@ -5,9 +5,7 @@ import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -34,6 +32,7 @@ public class BaseUserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     private UUID id;
 
     // Basic Information

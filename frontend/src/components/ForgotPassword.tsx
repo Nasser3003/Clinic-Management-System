@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import './css/ForgotPassword.css';
 
 function ForgotPassword() {
     const [step, setStep] = useState('email'); // 'email' or 'reset'
@@ -13,7 +14,7 @@ function ForgotPassword() {
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
-    const handleSendOTP = async (e) => {
+    const handleSendOTP = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setLoading(true);
@@ -22,15 +23,25 @@ function ForgotPassword() {
             await authService.forgotPassword({ email });
             setSuccessMessage('OTP sent to your email successfully!');
             setStep('reset');
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('Forgot password error:', err);
-            setError(err.response?.data || err.message || 'Failed to send OTP');
+
+            // Type-safe error handling
+            let errorMessage = 'Failed to send OTP';
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: string }; message?: string };
+                errorMessage = axiosError.response?.data || axiosError.message || errorMessage;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleResetPassword = async (e) => {
+    const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setLoading(true);
@@ -50,9 +61,19 @@ function ForgotPassword() {
             });
             setSuccessMessage('Password reset successfully!');
             setTimeout(() => navigate('/login'), 2000);
-        } catch (err) {
+        } catch (err: unknown) {
             console.error('Reset password error:', err);
-            setError(err.response?.data || err.message || 'Failed to reset password');
+
+            // Type-safe error handling
+            let errorMessage = 'Failed to reset password';
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: string }; message?: string };
+                errorMessage = axiosError.response?.data || axiosError.message || errorMessage;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
+
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -68,14 +89,14 @@ function ForgotPassword() {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-container">
-                <div className="login-header">
-                    <h2 className="login-title">
+        <div className="forgot-password-page">
+            <div className="forgot-password-container">
+                <div className="forgot-password-header">
+                    <h2 className="forgot-password-title">
                         {step === 'email' ? 'Forgot Password' : 'Reset Password'}
                     </h2>
-                    <p className="text-gray-600 text-sm">
-                        {step === 'email' 
+                    <p className="forgot-password-subtitle">
+                        {step === 'email'
                             ? 'Enter your email to receive a reset code'
                             : 'Enter the code sent to your email and your new password'
                         }
@@ -83,7 +104,7 @@ function ForgotPassword() {
                 </div>
 
                 {step === 'email' ? (
-                    <form className="login-form" onSubmit={handleSendOTP}>
+                    <form className="forgot-password-form" onSubmit={handleSendOTP}>
                         <div className="form-inputs">
                             <div className="input-group">
                                 <input
@@ -104,14 +125,7 @@ function ForgotPassword() {
                         )}
 
                         {successMessage && (
-                            <div style={{
-                                backgroundColor: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
-                                color: '#166534',
-                                padding: '12px 16px',
-                                borderRadius: '6px',
-                                marginBottom: '16px'
-                            }}>
+                            <div className="success-message">
                                 {successMessage}
                             </div>
                         )}
@@ -126,13 +140,13 @@ function ForgotPassword() {
                             </button>
                         </div>
 
-                        <div className="signup-link">
-                            <span className="signup-text">
+                        <div className="form-footer">
+                            <span className="form-footer-text">
                                 Remember your password?{' '}
                                 <button
                                     type="button"
                                     onClick={() => navigate('/login')}
-                                    className="signup-button"
+                                    className="form-link-button"
                                 >
                                     Back to Login
                                 </button>
@@ -140,7 +154,7 @@ function ForgotPassword() {
                         </div>
                     </form>
                 ) : (
-                    <form className="login-form" onSubmit={handleResetPassword}>
+                    <form className="forgot-password-form" onSubmit={handleResetPassword}>
                         <div className="form-inputs">
                             <div className="input-group">
                                 <input
@@ -149,7 +163,7 @@ function ForgotPassword() {
                                     type="text"
                                     required
                                     maxLength={6}
-                                    className="form-input"
+                                    className="form-input otp-input"
                                     placeholder="Enter 6-digit code"
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
@@ -186,14 +200,7 @@ function ForgotPassword() {
                         )}
 
                         {successMessage && (
-                            <div style={{
-                                backgroundColor: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
-                                color: '#166534',
-                                padding: '12px 16px',
-                                borderRadius: '6px',
-                                marginBottom: '16px'
-                            }}>
+                            <div className="success-message">
                                 {successMessage}
                             </div>
                         )}
@@ -208,13 +215,13 @@ function ForgotPassword() {
                             </button>
                         </div>
 
-                        <div className="signup-link">
-                            <span className="signup-text">
+                        <div className="form-footer">
+                            <span className="form-footer-text">
                                 Didn't receive the code?{' '}
                                 <button
                                     type="button"
                                     onClick={handleBackToEmail}
-                                    className="signup-button"
+                                    className="form-link-button"
                                 >
                                     Resend
                                 </button>

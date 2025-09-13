@@ -1,4 +1,7 @@
 package com.clinic.demo.models.enums;
 
-public class OtpPurpose {
+public enum OtpPurpose {
+    PASSWORD_RESET,
+    EMAIL_VERIFICATION,
+    TWO_FACTOR_AUTH
 }

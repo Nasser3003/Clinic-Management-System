@@ -11,21 +11,21 @@ export const appointmentService = {
   },
 
   getAvailableSlots: async (doctorEmail: string, date: string, duration: number = 30): Promise<AvailableTimeSlot[]> => {
-    const response = await api.get('/api/calendar/available-slots', {
+    const response = await api.get('/calendar/available-slots', {
       params: { doctorEmail, date, duration }
     });
     return response.data;
   },
 
   getAvailableDoctors: async (date: string, startTime: string, duration: number = 30): Promise<DoctorAvailability[]> => {
-    const response = await api.get('/api/calendar/available-doctors', {
+    const response = await api.get('/calendar/available-doctors', {
       params: { date, startTime, duration }
     });
     return response.data;
   },
 
   getDoctorCalendar: async (doctorEmail: string, startDate: string, endDate: string): Promise<any> => {
-    const response = await api.get(`/api/calendar/doctor/${doctorEmail}`, {
+    const response = await api.get(`/calendar/doctor/${doctorEmail}`, {
       params: { startDate, endDate }
     });
     return response.data;

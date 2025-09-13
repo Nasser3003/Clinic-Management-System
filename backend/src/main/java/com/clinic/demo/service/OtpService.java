@@ -1,5 +1,6 @@
 package com.clinic.demo.service;
 
+import com.clinic.demo.DTO.GenerateOtpRequest;
 import com.clinic.demo.models.entity.UserOtpEntity;
 import com.clinic.demo.models.enums.OtpPurpose;
 import com.clinic.demo.repository.UserOtpRepository;
@@ -20,10 +21,13 @@ public class OtpService {
     private final UserOtpRepository otpRepository;
     private final MailService mailService;
     
-    public void generateAndSendOtp(String email, OtpPurpose purpose) {
+    public void generateAndSendOtp(GenerateOtpRequest generateOtpRequest) {
         // Generate 6-digit OTP
         String otp = String.format("%06d", new Random().nextInt(1000000));
-        
+
+        String email = generateOtpRequest.email();
+        OtpPurpose purpose = generateOtpRequest.purpose();
+
         UserOtpEntity otpEntity = new UserOtpEntity();
         otpEntity.setEmail(email);
         otpEntity.setOtp(otp);
@@ -38,9 +42,9 @@ public class OtpService {
         }
     }
     
-    public boolean validateOtp(String email, String otp, OtpPurpose purpose) {
+    public boolean validateOtpAuthenticity(String email, String otp, OtpPurpose purpose) {
         Optional<UserOtpEntity> otpEntity = otpRepository
-            .findByEmailAndPurposeAndUsedFalse(email, purpose);
+            .findByEmailAndOtpAndPurpose(email, otp, purpose);
 
         if (otpEntity.isEmpty() || otpEntity.get().isExpired())
             return false;

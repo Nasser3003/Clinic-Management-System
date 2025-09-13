@@ -37,8 +37,7 @@ function Register() {
         }
 
         try {
-            const { confirmPassword, ...registrationData } = formData;
-            await authService.register(registrationData);
+            await authService.register(formData);
             navigate('/login', {
                 state: { message: 'Registration successful! Please log in.' }
             });

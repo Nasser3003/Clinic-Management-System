@@ -21,6 +21,9 @@ public record RegistrationDTO(
         @NotBlank(message = "Password is required")
         String password,
 
+        @NotBlank(message = "Confirm Password is required")
+        String confirmPassword,
+
         @NotBlank(message = "Phone number is required")
         String phoneNumber,
 

@@ -1,7 +1,6 @@
 package com.clinic.demo.service;
 
-import com.clinic.demo.DTO.LoginResponseDTO;
-import com.clinic.demo.DTO.UserProfileDTO;
+import com.clinic.demo.DTO.*;
 import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
 import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
 import com.clinic.demo.Mapper.UserMapper;
@@ -11,6 +10,7 @@ import com.clinic.demo.models.entity.user.BaseUserEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
+import com.clinic.demo.models.enums.OtpPurpose;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;
@@ -41,9 +41,10 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final OtpService otpService;
 
     public void registerUser(RegistrationDTO registrationDTO) {
         String email = registrationDTO.email().toLowerCase();
@@ -65,7 +66,14 @@ public class AuthenticationService {
 
         String password = registrationDTO.password();
         if (!Validations.isValidPassword(password))
-            throw new IllegalArgumentException("Invalid password provided");
+            throw new IllegalArgumentException("Password must be 8+ characters with uppercase, lowercase, digit, and special character");
+
+        String confirmPassword = registrationDTO.confirmPassword();
+        if (!Validations.isValidPassword(confirmPassword))
+            throw new IllegalArgumentException("Password must be 8+ characters with uppercase, lowercase, digit, and special character");
+
+        if (!registrationDTO.password().equals(registrationDTO.confirmPassword()))
+            throw new IllegalArgumentException("Passwords do not match");
 
         String gender = registrationDTO.gender();
         LocalDate dob = registrationDTO.dob();
@@ -76,7 +84,7 @@ public class AuthenticationService {
 
         userRepository.save(new PatientEntity(
                 firstName, lastName, email, phoneNumber, genderEnum,
-                UserTypeEnum.PATIENT, encoder.encode(password), dob, roles
+                UserTypeEnum.PATIENT, passwordEncoder.encode(password), dob, roles
         ));
     }
 
@@ -96,15 +104,16 @@ public class AuthenticationService {
                 registrationDTO.nationalId(),
                 genderEnum,
                 userTypeEnum,
-                encoder.encode(registrationDTO.password()),
+                passwordEncoder.encode(registrationDTO.password()),
                 registrationDTO.dob(),
                 registrationDTO.salary(),
                 roles
         ));
     }
 
-    public LoginResponseDTO loginUser(String email, String password) {
-        email = email.toLowerCase();
+    public LoginResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
+        String email = loginRequestDTO.email().toLowerCase();
+        String password = loginRequestDTO.password();
         try {
             BaseUserEntity user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -172,10 +181,40 @@ public class AuthenticationService {
         }
     }
 
-    public void forgotPassword(String email) {
+    public void resetPassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
+        String email = resetPasswordRequestDTO.email().toLowerCase();
+        String otp = resetPasswordRequestDTO.otp();
+        String newPassword = resetPasswordRequestDTO.newPassword();
+        String confirmNewPassword = resetPasswordRequestDTO.confirmNewPassword();
+
+
+        if (!otpService.validateOtpAuthenticity(email, otp, OtpPurpose.PASSWORD_RESET))
+            throw new RuntimeException("Invalid or expired OTP");
+
         BaseUserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+
+        if (!Validations.isValidPassword(newPassword))
+            throw new IllegalArgumentException("Password must be 8+ characters with uppercase, lowercase, digit, and special character");
+
+        if (!Validations.isValidPassword(confirmNewPassword))
+            throw new IllegalArgumentException("Password must be 8+ characters with uppercase, lowercase, digit, and special character");
+
+        if (!newPassword.equals(confirmNewPassword))
+            throw new IllegalArgumentException("Passwords do not match");
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    public void sendForgotPasswordOTP(EmailRequestDTO requestDTO) {
+
+        String email = requestDTO.email().toLowerCase();
+        BaseUserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        otpService.generateAndSendOtp(new GenerateOtpRequest(email, OtpPurpose.PASSWORD_RESET));
     }
 
 

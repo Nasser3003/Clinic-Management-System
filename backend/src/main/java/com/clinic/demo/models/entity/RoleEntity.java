@@ -3,10 +3,7 @@ package com.clinic.demo.models.entity;
 import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -22,6 +19,7 @@ public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)

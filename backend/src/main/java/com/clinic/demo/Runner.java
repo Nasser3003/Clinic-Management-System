@@ -92,11 +92,11 @@ public class Runner implements CommandLineRunner {
         PatientEntity patient = new PatientEntity(
                 "Nasser",
                 "Patient",
-                "patient@gmail.com",
+                "abdo.abdo3003@gmail.com",
                 "+1122334455",
                 GenderEnum.M,
                 UserTypeEnum.PATIENT,
-                encoder.encode("patient"),
+                encoder.encode("Abdo.abdo3003@gmail.com"),
                 LocalDate.of(1990, 8, 20),
                 rolesPatient
         );

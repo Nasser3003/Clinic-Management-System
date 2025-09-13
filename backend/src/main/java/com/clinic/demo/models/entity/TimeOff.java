@@ -3,7 +3,9 @@ package com.clinic.demo.models.entity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.enums.TimeOffStatus;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 public class TimeOff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

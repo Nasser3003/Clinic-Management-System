@@ -2,26 +2,39 @@ import api from './api';
 import { LoginRequest, LoginResponse, RegisterRequest } from '../types/auth';
 
 export const authService = {
-  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post('/auth/login', credentials);
-    return response.data;
-  },
+    login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+        const response = await api.post('/auth/login', credentials);
+        return response.data;
+    },
 
-  register: async (userData: RegisterRequest): Promise<void> => {
-    await api.post('/auth/register', userData);
-  },
+    register: async (userData: RegisterRequest): Promise<void> => {
+        await api.post('/auth/register', userData);
+    },
 
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  },
+    forgotPassword: async (data: { email: string }): Promise<void> => {
+        await api.post('/auth/forgot-password', data);
+    },
 
-  isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('token');
-  },
+    resetPassword: async (data: {
+        email: string;
+        otp: string;
+        newPassword: string;
+        confirmNewPassword: string;
+    }): Promise<void> => {
+        await api.post('/auth/reset-password', data);
+    },
 
-  getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
+    logout: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    },
+
+    isAuthenticated: (): boolean => {
+        return !!localStorage.getItem('token');
+    },
+
+    getCurrentUser: () => {
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user) : null;
+    }
 };

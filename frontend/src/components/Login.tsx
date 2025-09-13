@@ -102,6 +102,24 @@ function Login() {
                         <div className="error-message">{error}</div>
                     )}
 
+                    <div className="forgot-password-link" style={{ textAlign: 'right', marginBottom: '16px' }}>
+                        <button
+                            type="button"
+                            onClick={() => navigate('/forgot-password')}
+                            className="forgot-password-button"
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#007bff',
+                                textDecoration: 'underline',
+                                cursor: 'pointer',
+                                fontSize: '14px'
+                            }}
+                        >
+                            Forgot your password?
+                        </button>
+                    </div>
+
                     <div className="submit-section">
                         <button
                             type="submit"

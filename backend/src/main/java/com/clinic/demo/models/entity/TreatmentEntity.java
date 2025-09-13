@@ -35,6 +35,7 @@ public class TreatmentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @ManyToOne
