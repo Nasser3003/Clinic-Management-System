@@ -1,0 +1,7 @@
+Clinic Management System
+Copyright 2025 Abdelnasser Abdrabbo
+
+This product includes software developed by Abdelnasser Abdrabbo.
+
+For more information about this project, visit:
+https://github.com/Nasser3003/Clinic-Management-System
