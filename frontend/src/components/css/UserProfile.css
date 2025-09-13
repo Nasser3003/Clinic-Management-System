@@ -15,7 +15,7 @@
 .profile-header {
     background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
     border-radius: 0.75rem;
-    padding: 2rem;
+    padding: 2.5rem;
     color: white;
     margin-bottom: 2rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -24,12 +24,12 @@
 .header-content {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2.5rem;
 }
 
 .avatar-large {
-    width: 5rem;
-    height: 5rem;
+    width: 15rem;
+    height: 15rem;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
@@ -37,6 +37,7 @@
     justify-content: center;
     flex-shrink: 0;
     backdrop-filter: blur(10px);
+    border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Avatar Upload Styles */
@@ -79,28 +80,29 @@
 }
 
 .avatar-upload-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 4px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
 }
 
 .avatar-upload-text {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .upload-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid white;
-    border-top: 2px solid transparent;
+    width: 32px;
+    height: 32px;
+    border: 3px solid white;
+    border-top: 3px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 0 auto 8px;
+    margin: 0 auto 10px;
 }
 
 .upload-spinner-text {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .hidden-file-input {
@@ -113,32 +115,45 @@
 }
 
 .avatar-icon-large {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 4rem;
+    height: 4rem;
     color: white;
 }
 
 .header-info {
     flex: 1;
+    margin-left: 3rem;
 }
 
 .profile-name {
-    font-size: 1.875rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    line-height: 1.2;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-role {
     color: rgba(191, 219, 254, 1);
     text-transform: capitalize;
-    margin: 0 0 0.25rem 0;
-    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    font-size: 1.125rem;
+    letter-spacing: 0.05em;
 }
 
 .profile-email {
-    color: rgba(191, 219, 254, 1);
+    color: rgba(191, 219, 254, 0.9);
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.profile-dob {
+    color: rgba(191, 219, 254, 0.8);
     margin: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
 }
 
 /* ==================================================
@@ -582,11 +597,29 @@
     .header-content {
         flex-direction: column;
         text-align: center;
-        gap: 1rem;
+        gap: 1.5rem;
+    }
+
+    .header-info {
+        margin-left: 0;
+    }
+
+    .avatar-large {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .avatar-icon-large {
+        width: 3rem;
+        height: 3rem;
     }
 
     .profile-name {
-        font-size: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .profile-role {
+        font-size: 1rem;
     }
 
     .tab-content {
