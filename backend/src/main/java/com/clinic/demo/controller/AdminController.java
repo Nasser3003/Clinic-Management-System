@@ -6,14 +6,13 @@ import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.service.AuthenticationService;
 import com.clinic.demo.service.UserService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @RequestMapping("/admin")
 @CrossOrigin("*") // will need in the future
 public class AdminController {

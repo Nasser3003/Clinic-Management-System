@@ -5,12 +5,11 @@ import com.clinic.demo.DTO.LoginResponseDTO;
 import com.clinic.demo.DTO.registrationDTO.RegistrationDTO;
 import com.clinic.demo.service.AuthenticationService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 @CrossOrigin("*") // need to change in the future
 public class AuthenticationController {

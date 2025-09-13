@@ -64,11 +64,11 @@ public class Runner implements CommandLineRunner {
         AdminEntity admin = new AdminEntity(
                 "Admin",
                 "Admin",
-                "admin@gmail.com",
+                "admin1@gmail.com",
                 "+1234567890",
                 "nationalIdAdminAdmin",
                 GenderEnum.M,
-                encoder.encode("admin@gmail.com"),
+                encoder.encode("Admin1@gmail.com"),
                 LocalDate.of(1997, 11, 27),
                 rolesAdmin
         );

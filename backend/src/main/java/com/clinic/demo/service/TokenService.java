@@ -45,7 +45,7 @@ public class TokenService {
                 .issuer("clinic-app")
                 .issuedAt(now)
                 .expiresAt(now.plus(60, ChronoUnit.MINUTES))
-                .subject(user.getEmail())
+                .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("userType", user.getUserType().name())
                 .claim("firstName", user.getFirstName())

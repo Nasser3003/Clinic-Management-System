@@ -1,41 +1,56 @@
-# conf port
+# Server Configuration
 server:
   port: 3001
 
-# conf server or no server
+# Spring Framework Configuration
 spring:
+  # Application Profile
+  profiles:
+    active: development # Profile for logback configuration
 
+  # Web Application Configuration
+  main:
+    web-application-type: servlet
+
+  # JSON Serialization Configuration
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: UTC
 
-  profiles:
-    active: development # this is a profile for logback
-
-  main:
-    web-application-type: servlet
-
-  # conf database address and auth
+  # Database Configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/clinic
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
-  # forgot what that is
+  # JPA/Hibernate Configuration
   jpa:
     hibernate:
-      ddl-auto: create-drop
-#      ddl-auto: update
+      ddl-auto: create-drop  # Use 'update' for production
+      # ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  # conf spring security auth
+  # Spring Security Configuration
   security:
     user:
       name: spring
       password: spring
 
-# Appointment configuration properties
+  # Mail Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Custom Application Properties
 appointment:
   min:
     hours:
