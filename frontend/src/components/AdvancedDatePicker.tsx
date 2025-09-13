@@ -27,7 +27,7 @@ function AdvancedDatePicker({
     const selectedDateStr = e.target.value;
     
     if (unavailableDates.includes(selectedDateStr)) {
-      // Reset to previous value or empty
+
       e.target.value = selectedDate;
       alert('This date is not available. Please select an available date.');
       return;

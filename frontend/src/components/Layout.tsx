@@ -64,7 +64,40 @@ function Layout({ children }: LayoutProps) {
                                 className="profile-button"
                             >
                                 <div className="avatar">
-                                    <svg className="avatar-icon" fill="currentColor" viewBox="0 0 24 24">
+                                    {user?.email && (
+                                        <img
+                                            src={`http://localhost:3001/files/avatar/${encodeURIComponent(user.email)}`}
+                                            alt="Profile"
+                                            className="avatar-image"
+                                            onError={(e) => {
+                                                // Hide the image and show the SVG icon on error
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                                const svg = target.nextElementSibling as HTMLElement;
+                                                if (svg) svg.style.display = 'block';
+                                            }}
+                                            onLoad={(e) => {
+                                                // Show the image and hide the SVG icon on a successful load
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'block';
+                                                const svg = target.nextElementSibling as HTMLElement;
+                                                if (svg) svg.style.display = 'none';
+                                            }}
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                                borderRadius: 'inherit',
+                                                display: 'block'
+                                            }}
+                                        />
+                                    )}
+                                    <svg
+                                        className="avatar-icon"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                        style={{ display: user?.email ? 'none' : 'block' }}
+                                    >
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                     </svg>
                                 </div>

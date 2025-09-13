@@ -53,7 +53,9 @@ function UserProfile() {
 
     // Avatar upload handlers
     const handleAvatarClick = () => {
-        fileInputRef.current?.click();
+        if (!isUploadingAvatar) {
+            fileInputRef.current?.click();
+        }
     };
 
     const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,17 +88,30 @@ function UserProfile() {
             formData.append('email', user?.email || '');
             formData.append('file', file);
 
-            // Remove the Content-Type header - let axios handle it automatically
-            await api.post('/files/upload-avatar', formData);
+            console.log('Uploading avatar for:', user?.email);
+
+            const response = await api.post('/files/upload-avatar', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('Avatar upload response:', response);
 
             // Success - force avatar reloads
             setAvatarKey(prev => prev + 1);
             setAvatarError(false);
             setMessage({ type: 'success', text: 'Profile picture updated successfully!' });
 
+            // Clear the file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+
         } catch (error: any) {
             console.error('Avatar upload error:', error);
 
+            // Better error handling
             let errorMessage = 'Failed to upload profile picture. Please try again.';
             if (error.response?.data) {
                 if (typeof error.response.data === 'string') {
@@ -116,8 +131,15 @@ function UserProfile() {
             setIsUploadingAvatar(false);
         }
     };
+
     const handleAvatarError = () => {
+        console.log('Avatar failed to load, setting error state');
         setAvatarError(true);
+    };
+
+    const handleAvatarLoad = () => {
+        console.log('Avatar loaded successfully');
+        setAvatarError(false);
     };
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -143,7 +165,7 @@ function UserProfile() {
             const updateData = {
                 firstName: profileData.firstName,
                 lastName: profileData.lastName,
-                phone: profileData.phoneNumber,
+                phone: profileData.phoneNumber, // Backend expects 'phone'
                 gender: profileData.gender,
                 dateOfBirth: profileData.dateOfBirth,
                 emergencyContactName: profileData.emergencyContactName,
@@ -230,9 +252,12 @@ function UserProfile() {
         { id: 'medical', label: 'Medical Information', icon: '🏥' }
     ];
 
-    const avatarUrl = avatarError
-        ? '/default-avatar.png'
-        : `/api/files/avatar/${user?.email}?v=${avatarKey}`;
+    const getAvatarUrl = () => {
+        if (!user?.email) return '';
+        return `http://localhost:3001/files/avatar/${encodeURIComponent(user.email)}?v=${avatarKey}&t=${Date.now()}`;
+    };
+
+    const avatarUrl = getAvatarUrl();
 
     return (
         <Layout>
@@ -241,14 +266,25 @@ function UserProfile() {
                 <div className="profile-header">
                     <div className="header-content">
                         <div
-                            className={`avatar-large clickable`}
+                            className="avatar-large clickable"
                             onClick={handleAvatarClick}
-                            style={{
-                                backgroundImage: !avatarError ? `url(${avatarUrl})` : undefined
-                            }}
                         >
-                            {/* Default avatar icon - only show if no background image */}
-                            {avatarError && (
+                            {/* Avatar Image */}
+                            {!avatarError && avatarUrl ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt="Profile"
+                                    className="avatar-image"
+                                    onError={handleAvatarError}
+                                    onLoad={handleAvatarLoad}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        borderRadius: 'inherit'
+                                    }}
+                                />
+                            ) : (
                                 <svg className="avatar-icon-large" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
@@ -264,9 +300,7 @@ function UserProfile() {
                                 ) : (
                                     <div className="avatar-upload-content">
                                         <svg className="avatar-upload-icon" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6h-2V5H6v6H4V5z"/>
-                                            <path d="M6 13a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm8-1a1 1 0 00-1 1v.01a1 1 0 002 0V13a1 1 0 00-1-1z"/>
+                                            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
                                         </svg>
                                         <div className="avatar-upload-text">Change Photo</div>
                                     </div>
@@ -282,6 +316,7 @@ function UserProfile() {
                             onChange={handleFileSelect}
                             className="hidden-file-input"
                             disabled={isUploadingAvatar}
+                            style={{ display: 'none' }}
                         />
 
                         <div className="header-info">
@@ -463,7 +498,7 @@ function UserProfile() {
                             <div className="security-tab">
                                 <h2 className="tab-title">Security Settings</h2>
 
-                                <form onSubmit={handleChangePassword} className="password-form">
+                                <div className="password-form">
                                     <div className="form-group">
                                         <label className="form-label">Current Password</label>
                                         <input
@@ -499,13 +534,14 @@ function UserProfile() {
                                         />
                                     </div>
                                     <button
-                                        type="submit"
+                                        type="button"
+                                        onClick={handleChangePassword}
                                         disabled={isSaving}
                                         className="change-password-button"
                                     >
                                         {isSaving ? 'Changing Password...' : 'Change Password'}
                                     </button>
-                                </form>
+                                </div>
                             </div>
                         )}
 

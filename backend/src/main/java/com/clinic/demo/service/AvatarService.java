@@ -3,7 +3,6 @@ package com.clinic.demo.service;
 import com.clinic.demo.DTO.FileResponseDTO;
 import com.clinic.demo.DTO.UploadPictureDTO;
 import com.clinic.demo.models.entity.user.BaseUserEntity;
-import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -81,33 +80,14 @@ public class AvatarService {
     // ===== SERVING OPERATIONS =====
 
     public FileResponseDTO getCurrentUserProfilePicture() {
-        try {
-            String currentUserEmail = authenticationService.getAuthenticatedUserEmail();
-            BaseUserEntity user = userService.findUserByEmail(currentUserEmail);
-
-            return getUserProfilePicture(user);
-
-        } catch (Exception e) {
-            logger.error("Error getting profile picture for authenticated user: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to retrieve profile picture", e);
-        }
+        String currentUserEmail = authenticationService.getAuthenticatedUserEmail();
+        BaseUserEntity user = userService.findUserByEmail(currentUserEmail);
+        return getUserProfilePicture(user);
     }
 
     public FileResponseDTO getUserProfilePicture(String email) {
-        try {
-            String currentUserEmail = authenticationService.getAuthenticatedUserEmail();
-            BaseUserEntity currentUser = userService.findUserByEmail(currentUserEmail);
-
-            if (!canViewAvatar(currentUser, email))
-                throw new SecurityException("Not authorized to view this avatar");
-
-            BaseUserEntity targetUser = userService.findUserByEmail(email);
-            return getUserProfilePicture(targetUser);
-
-        } catch (Exception e) {
-            logger.error("Error getting profile picture for user {}: {}", email, e.getMessage(), e);
-            throw new RuntimeException("Failed to retrieve profile picture", e);
-        }
+        BaseUserEntity user = userService.findUserByEmail(email.toLowerCase());
+        return getUserProfilePicture(user);
     }
 
     // ===== PRIVATE HELPER METHODS =====
@@ -142,7 +122,6 @@ public class AvatarService {
             return getDefaultAvatarResponse();
         }
     }
-
 
     private FileResponseDTO getDefaultAvatarResponse() {
         try {
@@ -214,19 +193,6 @@ public class AvatarService {
         }
     }
 
-    private boolean canViewAvatar(BaseUserEntity currentUser, String requestedEmail) {
-        if (currentUser.getEmail().equalsIgnoreCase(requestedEmail))
-            return true;
-
-        UserTypeEnum currentUserType = currentUser.getUserType();
-
-        return currentUserType == UserTypeEnum.ADMIN ||
-                currentUserType == UserTypeEnum.DOCTOR ||
-                currentUserType == UserTypeEnum.NURSE ||
-                currentUserType == UserTypeEnum.EMPLOYEE ||
-                currentUserType == UserTypeEnum.RECEPTIONIST ||
-                currentUserType == UserTypeEnum.LAB_TECHNICIAN;
-    }
 
     private boolean isFileInAvatarDirectory(Path filePath) {
         try {
