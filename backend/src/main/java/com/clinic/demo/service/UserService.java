@@ -117,8 +117,7 @@ public class UserService {
         logger.info("Password updated successfully for user: {}", authenticatedUserEmail);
     }
 
-    @Transactional
-    public void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
+    private void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
 
         if (updates == null || updates.isEmpty()) {

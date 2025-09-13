@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, {useEffect, useRef, useState} from 'react';
+import {useAuth} from '../context/AuthContext';
 import Layout from './Layout';
 import './css/UserProfile.css';
 import api from '../services/api'; // Assuming you have an api service
@@ -10,6 +10,12 @@ function UserProfile() {
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+
+    // Avatar upload states
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+    const [avatarError, setAvatarError] = useState(false);
+    const [avatarKey, setAvatarKey] = useState(0);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Initialize with actual user data from JWT/login
     const [profileData, setProfileData] = useState({
@@ -45,6 +51,75 @@ function UserProfile() {
         confirmPassword: ''
     });
 
+    // Avatar upload handlers
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            setMessage({ type: 'error', text: 'Please select a valid image file (JPEG, PNG, or WebP)' });
+            return;
+        }
+
+        // Validate file size (5MB)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            setMessage({ type: 'error', text: 'File size must be less than 5MB' });
+            return;
+        }
+
+        await uploadAvatar(file);
+    };
+
+    const uploadAvatar = async (file: File) => {
+        setIsUploadingAvatar(true);
+        setMessage({ type: '', text: '' });
+
+        try {
+            const formData = new FormData();
+            formData.append('email', user?.email || '');
+            formData.append('file', file);
+
+            // Remove the Content-Type header - let axios handle it automatically
+            await api.post('/files/upload-avatar', formData);
+
+            // Success - force avatar reloads
+            setAvatarKey(prev => prev + 1);
+            setAvatarError(false);
+            setMessage({ type: 'success', text: 'Profile picture updated successfully!' });
+
+        } catch (error: any) {
+            console.error('Avatar upload error:', error);
+
+            let errorMessage = 'Failed to upload profile picture. Please try again.';
+            if (error.response?.data) {
+                if (typeof error.response.data === 'string') {
+                    errorMessage = error.response.data;
+                } else if (error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                }
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            setMessage({
+                type: 'error',
+                text: errorMessage
+            });
+        } finally {
+            setIsUploadingAvatar(false);
+        }
+    };
+    const handleAvatarError = () => {
+        setAvatarError(true);
+    };
+
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setProfileData({
             ...profileData,
@@ -68,7 +143,7 @@ function UserProfile() {
             const updateData = {
                 firstName: profileData.firstName,
                 lastName: profileData.lastName,
-                phone: profileData.phoneNumber, // Backend expects 'phone'
+                phone: profileData.phoneNumber,
                 gender: profileData.gender,
                 dateOfBirth: profileData.dateOfBirth,
                 emergencyContactName: profileData.emergencyContactName,
@@ -138,6 +213,7 @@ function UserProfile() {
             setIsSaving(false);
         }
     };
+
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
         try {
@@ -149,10 +225,14 @@ function UserProfile() {
 
     const tabs = [
         { id: 'profile', label: 'Profile Information', icon: '👤' },
-        { id: 'security', label: 'Security', icon: '🔐' },
+        { id: 'security', label: 'Security', icon: '🔒' },
         { id: 'preferences', label: 'Preferences', icon: '⚙️' },
         { id: 'medical', label: 'Medical Information', icon: '🏥' }
     ];
+
+    const avatarUrl = avatarError
+        ? '/default-avatar.png'
+        : `/api/files/avatar/${user?.email}?v=${avatarKey}`;
 
     return (
         <Layout>
@@ -160,11 +240,50 @@ function UserProfile() {
                 {/* Header */}
                 <div className="profile-header">
                     <div className="header-content">
-                        <div className="avatar-large">
-                            <svg className="avatar-icon-large" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
+                        <div
+                            className={`avatar-large clickable`}
+                            onClick={handleAvatarClick}
+                            style={{
+                                backgroundImage: !avatarError ? `url(${avatarUrl})` : undefined
+                            }}
+                        >
+                            {/* Default avatar icon - only show if no background image */}
+                            {avatarError && (
+                                <svg className="avatar-icon-large" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                            )}
+
+                            {/* Hover overlay */}
+                            <div className="avatar-overlay">
+                                {isUploadingAvatar ? (
+                                    <div className="avatar-upload-content">
+                                        <div className="upload-spinner"></div>
+                                        <span className="upload-spinner-text">Uploading...</span>
+                                    </div>
+                                ) : (
+                                    <div className="avatar-upload-content">
+                                        <svg className="avatar-upload-icon" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6h-2V5H6v6H4V5z"/>
+                                            <path d="M6 13a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm8-1a1 1 0 00-1 1v.01a1 1 0 002 0V13a1 1 0 00-1-1z"/>
+                                        </svg>
+                                        <div className="avatar-upload-text">Change Photo</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
+
+                        {/* Hidden file input */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            onChange={handleFileSelect}
+                            className="hidden-file-input"
+                            disabled={isUploadingAvatar}
+                        />
+
                         <div className="header-info">
                             <h1 className="profile-name">
                                 {profileData.firstName} {profileData.lastName}

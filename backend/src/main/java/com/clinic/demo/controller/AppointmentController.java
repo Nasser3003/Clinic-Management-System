@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/appointments")
 @CrossOrigin("*") // will need in the future
 public class AppointmentController {
+
     private final AppointmentService appointmentService;
 
     @PostMapping("/schedule")
