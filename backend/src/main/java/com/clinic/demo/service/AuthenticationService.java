@@ -172,5 +172,11 @@ public class AuthenticationService {
         }
     }
 
+    public void forgotPassword(String email) {
+        BaseUserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+    }
+
 
 }
