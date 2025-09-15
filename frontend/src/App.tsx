@@ -8,7 +8,7 @@ import Dashboard from './components/Dashboard';
 import AppointmentBooking from './components/AppointmentBooking';
 import Contact from './components/Contact';
 import AboutUs from './components/AboutUs';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/UserProfile'; // This should work now
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
