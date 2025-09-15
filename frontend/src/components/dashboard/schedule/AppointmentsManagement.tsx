@@ -201,11 +201,11 @@ function AppointmentsManagement() {
 
     return (
         <Layout>
-            <div className="appointments-management">
-                <div className="appointments-header">
-                    <h1>Appointments Management</h1>
-                    <p>View and manage all appointments in the system</p>
-                </div>
+                <div className="hero-section">
+                    <div className="hero-content">
+                        <h1 className="hero-title">Appointments Management</h1>
+                        <p className="hero-subtitle">iew and manage all appointments in the system</p>
+                    </div>
 
                 {error && (
                     <div className="error-message">

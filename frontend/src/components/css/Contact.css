@@ -306,6 +306,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 .form-row {
@@ -338,6 +340,7 @@
     margin-top: 0.25rem;
     display: block;
     width: 100%;
+    max-width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
@@ -345,6 +348,7 @@
     transition: all 0.2s ease;
     font-size: 0.875rem;
     background-color: white;
+    box-sizing: border-box;
 }
 
 .primary-input {
@@ -363,6 +367,9 @@
 .form-textarea {
     resize: vertical;
     min-height: 5rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
 }
 
 .form-textarea::placeholder {
@@ -375,6 +382,8 @@
 
 .submit-btn {
     width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -467,6 +476,10 @@
     .contact-icon .icon {
         width: 1.25rem;
         height: 1.25rem;
+    }
+
+    .submit-btn {
+        max-width: 100%;
     }
 }
 

@@ -68,16 +68,13 @@ function AboutUs() {
 
     return (
         <Layout>
-            <div className="about-us-page">
-                {/* Hero Section */}
                 <div className="hero-section">
                     <div className="hero-content">
                         <h1 className="hero-title">About Our Clinic</h1>
                         <p className="hero-subtitle">
-                            Dedicated to providing exceptional healthcare with compassion, expertise, and cutting-edge technology.
+                            Dedicated to providing exceptional healthcare with compassion, expertise, technology.
                         </p>
                     </div>
-                </div>
 
                 {/* Mission Section */}
                 <div className="mission-section">

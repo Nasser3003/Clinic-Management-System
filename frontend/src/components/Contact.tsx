@@ -34,14 +34,13 @@ function Contact() {
 
     return (
         <Layout>
-            <div className="contact-page">
-                {/* Header */}
-                <div className="contact-header">
-                    <h1 className="contact-title">Contact Us</h1>
-                    <p className="contact-subtitle">
-                        Get in touch with our medical team. We're here to help with your healthcare needs.
-                    </p>
-                </div>
+                <div className="hero-section">
+                    <div className="hero-content">
+                        <h1 className="hero-title">Contact Us</h1>
+                        <p className="hero-subtitle">Get in touch with our medical team. We're here to help with your healthcare needs.</p>
+                    </div>
+
+
 
                 <div className="contact-grid">
                     {/* Contact Information */}

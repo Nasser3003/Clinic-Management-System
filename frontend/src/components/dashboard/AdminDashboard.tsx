@@ -2,45 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../dashboard/shared/DashboardCard';
 import '../css/Dashboard.css';
-import {useNavigate} from "react-router-dom";
-
-
-const quickActions = [
-    {
-        title: "Manage Appointments",
-        description: "View and manage all appointments",
-        path: "/appointments/manage",
-        roles: ["ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST", "EMPLOYEE"],
-        icon: "📅",
-        color: "blue"
-    },
-    {
-        title: "Treatment Records",
-        description: "Track treatments and payments",
-        path: "/treatments",
-        roles: ["ADMIN", "DOCTOR", "NURSE", "EMPLOYEE"],
-        icon: "💊",
-        color: "green"
-    },
-    {
-        title: "Time Off Requests",
-        description: "Submit and manage time off",
-        path: "/timeoff",
-        roles: ["ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST", "EMPLOYEE", "LAB_TECHNICIAN"],
-        icon: "🏖️",
-        color: "purple"
-    }
-];
-
+import Layout from "../Layout";
 
 function AdminDashboard() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'doctors' | 'staff'>('overview');
-
-    const navigate = useNavigate();
-    const filteredQuickActions = quickActions.filter(action =>
-        action.roles.includes(user?.role || '')
-    );
 
     // Mock data - replace with API calls
     const systemStats = {
@@ -86,24 +52,17 @@ function AdminDashboard() {
     };
 
     return (
+        <Layout>
         <div className="admin-dashboard">
-            {/* Welcome Section */}
-            <div className="welcome-section">
-                <div className="welcome-content">
-                    <div className="welcome-text">
-                        <h1 className="welcome-title">Admin Dashboard</h1>
-                        <p className="welcome-subtitle">System administration and user management</p>
-                    </div>
-                    <div className="welcome-icon">
-                        <div className="icon-container">
-                            <svg className="admin-icon" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12,15C12.81,15 13.5,14.7 14.11,14.11C14.7,13.5 15,12.81 15,12C15,11.19 14.7,10.5 14.11,9.89C13.5,9.3 12.81,9 12,9C11.19,9 10.5,9.3 9.89,9.89C9.3,10.5 9,11.19 9,12C9,12.81 9.3,13.5 9.89,14.11C10.5,14.7 11.19,15 12,15M12,2C14.21,2 16.21,2.81 17.78,4.39C19.36,5.96 20.17,7.96 20.17,10.17C20.17,12.38 19.36,14.38 17.78,15.95C16.21,17.53 14.21,18.34 12,18.34C9.79,18.34 7.79,17.53 6.22,15.95C4.64,14.38 3.83,12.38 3.83,10.17C3.83,7.96 4.64,5.96 6.22,4.39C7.79,2.81 9.79,2 12,2M12,6.9C11.5,6.9 11.1,7.15 10.85,7.55C10.6,7.95 10.6,8.45 10.85,8.85C11.1,9.25 11.5,9.5 12,9.5C12.5,9.5 12.9,9.25 13.15,8.85C13.4,8.45 13.4,7.95 13.15,7.55C12.9,7.15 12.5,6.9 12,6.9Z"/>
-                            </svg>
-                        </div>
-                    </div>
+            {/* Hero Section */}
+            <div className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">Admin Dashboard</h1>
+                    <p className="hero-subtitle">
+                        System administration and user management
+                    </p>
                 </div>
             </div>
-
             {/* System Overview Stats */}
             <div className="dashboard-grid admin-grid">
                 <DashboardCard
@@ -178,22 +137,6 @@ function AdminDashboard() {
                 />
             </div>
 
-            <div className="quick-actions-section">
-                <h3 className="section-title">Quick Actions</h3>
-                <div className="dashboard-grid quick-actions-grid">
-                    {filteredQuickActions.map((action) => (
-                        <DashboardCard
-                            key={action.path}
-                            title={action.title}
-                            value={action.icon}
-                            description={action.description}
-                            color={action.color as "blue" | "green" | "purple" | "yellow" | "red" | "indigo"}
-                            onClick={() => navigate(action.path)}
-                        />
-                    ))}
-                </div>
-            </div>
-
             {/* Navigation Tabs */}
             <div className="tabs-container">
                 <div className="tabs-header">
@@ -254,7 +197,7 @@ function AdminDashboard() {
                         <div className="section-header">
                             <h3 className="section-title">User Management</h3>
                             <div className="section-actions">
-                                <button 
+                                <button
                                     className="create-btn"
                                     onClick={() => handleCreateUser('PATIENT')}
                                 >
@@ -292,13 +235,13 @@ function AdminDashboard() {
                                             <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                             <td>
                                                 <div className="action-buttons">
-                                                    <button 
+                                                    <button
                                                         className="edit-btn"
                                                         onClick={() => handleEditUser(user.id)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="deactivate-btn"
                                                         onClick={() => handleDeactivateUser(user.id)}
                                                     >
@@ -319,7 +262,7 @@ function AdminDashboard() {
                         <div className="section-header">
                             <h3 className="section-title">Doctor Management</h3>
                             <div className="section-actions">
-                                <button 
+                                <button
                                     className="create-btn"
                                     onClick={() => handleCreateUser('DOCTOR')}
                                 >
@@ -353,13 +296,13 @@ function AdminDashboard() {
                                             </td>
                                             <td>
                                                 <div className="action-buttons">
-                                                    <button 
+                                                    <button
                                                         className="edit-btn"
                                                         onClick={() => handleEditUser(doctor.id)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="view-btn"
                                                         onClick={() => console.log('View doctor schedule:', doctor.id)}
                                                     >
@@ -380,7 +323,7 @@ function AdminDashboard() {
                         <div className="section-header">
                             <h3 className="section-title">Staff Management</h3>
                             <div className="section-actions">
-                                <select 
+                                <select
                                     className="role-select"
                                     onChange={(e) => {
                                         if (e.target.value) {
@@ -428,13 +371,13 @@ function AdminDashboard() {
                                             </td>
                                             <td>
                                                 <div className="action-buttons">
-                                                    <button 
+                                                    <button
                                                         className="edit-btn"
                                                         onClick={() => handleEditUser(member.id)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         className="deactivate-btn"
                                                         onClick={() => handleDeactivateUser(member.id)}
                                                     >
@@ -451,6 +394,7 @@ function AdminDashboard() {
                 )}
             </div>
         </div>
+        </Layout>
     );
 }
 

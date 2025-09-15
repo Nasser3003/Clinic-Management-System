@@ -287,10 +287,11 @@ function TreatmentManagement() {
 
     return (
         <Layout>
-            <div className="treatment-management">
-                <div className="treatment-header">
-                    <h1>Treatment Management</h1>
-                    <p>Track treatments, costs, and payment status</p>
+
+            <div className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">Treatment Management</h1>
+                    <p className="hero-subtitle">Track treatments, costs, and payment status</p>
                 </div>
 
                 {error && (

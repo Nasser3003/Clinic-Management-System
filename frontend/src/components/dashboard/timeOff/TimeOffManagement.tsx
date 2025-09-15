@@ -230,10 +230,11 @@ function TimeOffManagement() {
 
     return (
         <Layout>
-            <div className="time-off-management">
-                <div className="time-off-header">
-                    <h1>Time Off Management</h1>
-                    <p>Request and manage time off from work</p>
+
+            <div className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">Time Off Management</h1>
+                    <p className="hero-subtitle">Request and manage time off from work</p>
                 </div>
 
                 {error && (
