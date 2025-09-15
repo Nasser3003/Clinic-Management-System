@@ -1,0 +1,309 @@
+/* ==================================================
+   PROFILE EDIT BUTTON STYLING FIX
+   ================================================== */
+
+/* Enhanced edit button styling */
+.profile-tab .edit-button {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-tab .edit-button:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.profile-tab .edit-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.profile-tab .edit-button:active {
+    transform: translateY(0);
+}
+
+/* Cancel button styling */
+.profile-tab .cancel-button {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid #d1d5db;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-tab .cancel-button:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+    border-color: #9ca3af;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.profile-tab .cancel-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.5);
+}
+
+/* Save button styling */
+.profile-tab .save-button {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-tab .save-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.profile-tab .save-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.5);
+}
+
+.profile-tab .save-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Action buttons container */
+.profile-tab .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Tab header styling */
+.profile-tab .tab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-tab .tab-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+/* Security tab password form button */
+.security-tab .change-password-button {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* ✅ add this */
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+
+.security-tab .change-password-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.security-tab .change-password-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
+}
+
+.security-tab .change-password-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Form input enhancements for editing state */
+.profile-tab .form-input.editable {
+    border-color: #d1d5db;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.profile-tab .form-input.editable:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    background-color: #fafbfc;
+    transform: translateY(-1px);
+}
+
+.profile-tab .form-input.readonly {
+    border-color: #e5e7eb;
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+.profile-tab .form-select.editable {
+    border-color: #d1d5db;
+    background-color: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.profile-tab .form-select.editable:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    background-color: #fafbfc;
+}
+
+.profile-tab .form-select.readonly {
+    border-color: #e5e7eb;
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* Loading state for buttons */
+.profile-tab .save-button:disabled,
+.security-tab .change-password-button:disabled {
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-tab .save-button:disabled::before,
+.security-tab .change-password-button:disabled::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: loading-shimmer 2s infinite;
+}
+
+@keyframes loading-shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Responsive design for buttons */
+@media (max-width: 768px) {
+    .profile-tab .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .profile-tab .tab-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .profile-tab .edit-button,
+    .profile-tab .cancel-button,
+    .profile-tab .save-button,
+    .security-tab .change-password-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Icon additions for buttons */
+.profile-tab .edit-button::before {
+    content: '✏️';
+    margin-right: 0.25rem;
+}
+
+.profile-tab .cancel-button::before {
+    content: '✖️';
+    margin-right: 0.25rem;
+}
+
+.profile-tab .save-button::before {
+    content: '💾';
+    margin-right: 0.25rem;
+}
+
+.security-tab .change-password-button::before {
+    content: '🔐';
+    margin-right: 0.25rem;
+}
+
+/* Enhanced focus states for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .profile-tab .edit-button,
+    .profile-tab .cancel-button,
+    .profile-tab .save-button,
+    .security-tab .change-password-button,
+    .profile-tab .form-input,
+    .profile-tab .form-select {
+        transition: none;
+    }
+
+    .profile-tab .edit-button:hover,
+    .profile-tab .cancel-button:hover,
+    .profile-tab .save-button:hover,
+    .security-tab .change-password-button:hover,
+    .profile-tab .form-input:focus,
+    .profile-tab .form-select:focus {
+        transform: none;
+    }
+
+    .profile-tab .save-button:disabled::before,
+    .security-tab .change-password-button:disabled::before {
+        animation: none;
+    }
+}

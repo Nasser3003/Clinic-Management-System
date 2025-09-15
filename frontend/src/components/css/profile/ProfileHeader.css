@@ -1,0 +1,82 @@
+/* ==================================================
+   PROFILE HEADER SECTION
+   ================================================== */
+
+.profile-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-3xl);
+    color: white;
+    margin-bottom: var(--spacing-2xl);
+    box-shadow: var(--shadow-primary);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3xl);
+}
+
+.header-info {
+    flex: 1;
+    margin-left: 3rem;
+}
+
+.profile-name {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-role {
+    color: var(--bg-blue-50);
+    text-transform: capitalize;
+    margin: 0 0 var(--spacing-sm) 0;
+    font-weight: 600;
+    font-size: var(--text-lg);
+    letter-spacing: 0.05em;
+}
+
+.profile-email {
+    color: var(--bg-blue-alpha);
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--text-base);
+    font-weight: 500;
+}
+
+.profile-dob {
+    color: rgba(191, 219, 254, 0.8);
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .profile-header {
+        padding: var(--spacing-xl);
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-xl);
+    }
+
+    .header-info {
+        margin-left: 0;
+    }
+
+    .profile-name {
+        font-size: var(--text-2xl);
+    }
+
+    .profile-role {
+        font-size: var(--text-base);
+    }
+}

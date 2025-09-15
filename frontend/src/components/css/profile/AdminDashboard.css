@@ -1,0 +1,622 @@
+/* ==================================================
+   ADMIN DASHBOARD - COMPLETE STYLING
+   ================================================== */
+
+.admin-dashboard {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .admin-dashboard {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-dashboard {
+        padding: 2rem;
+    }
+}
+
+/* ==================================================
+   ADMIN WELCOME SECTION
+   ================================================== */
+
+.admin-dashboard .welcome-section {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    margin-bottom: 2rem;
+}
+
+.admin-dashboard .welcome-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-dashboard .welcome-text {
+    flex: 1;
+}
+
+.admin-dashboard .welcome-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.admin-dashboard .welcome-subtitle {
+    color: rgba(191, 219, 254, 1);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.admin-dashboard .welcome-icon {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .admin-dashboard .welcome-icon {
+        display: block;
+    }
+}
+
+.admin-dashboard .icon-container {
+    width: 6rem;
+    height: 6rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.admin-dashboard .admin-icon {
+    width: 3rem;
+    height: 3rem;
+    color: white;
+}
+
+/* ==================================================
+   ADMIN DASHBOARD GRID
+   ================================================== */
+
+.admin-dashboard .dashboard-grid.admin-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .admin-dashboard .dashboard-grid.admin-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-dashboard .dashboard-grid.admin-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ==================================================
+   TABS CONTAINER
+   ================================================== */
+
+.admin-dashboard .tabs-container {
+    background-color: white;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.admin-dashboard .tabs-header {
+    display: flex;
+    padding: 0;
+    border-bottom: 1px solid #e5e7eb;
+    overflow-x: auto;
+}
+
+.admin-dashboard .tab-button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.admin-dashboard .tab-button:hover {
+    color: #2563eb;
+    background-color: #f8fafc;
+}
+
+.admin-dashboard .tab-button.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+    background-color: #f8fafc;
+}
+
+/* ==================================================
+   ADMIN CONTENT
+   ================================================== */
+
+.admin-dashboard .admin-content {
+    background-color: white;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    padding: 2rem;
+}
+
+/* ==================================================
+   SECTION HEADERS
+   ================================================== */
+
+.admin-dashboard .section-header {
+    margin-bottom: 2rem;
+}
+
+.admin-dashboard .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.admin-dashboard .section-subtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.admin-dashboard .section-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* ==================================================
+   OVERVIEW SECTION
+   ================================================== */
+
+.admin-dashboard .overview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.admin-dashboard .recent-activity {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.admin-dashboard .recent-activity h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.admin-dashboard .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-dashboard .activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.admin-dashboard .activity-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.admin-dashboard .activity-info {
+    flex: 1;
+}
+
+.admin-dashboard .activity-title {
+    font-weight: 500;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+    font-size: 0.875rem;
+}
+
+.admin-dashboard .activity-subtitle {
+    color: #6b7280;
+    font-size: 0.8125rem;
+    margin: 0;
+}
+
+.admin-dashboard .activity-date {
+    color: #9ca3af;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/* ==================================================
+   MANAGEMENT SECTIONS
+   ================================================== */
+
+.admin-dashboard .management-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.admin-dashboard .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+}
+
+/* ==================================================
+   BUTTONS
+   ================================================== */
+
+.admin-dashboard .create-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard .create-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.admin-dashboard .role-select {
+    background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard .role-select:hover {
+    background: linear-gradient(135deg, #15803d 0%, #047857 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ==================================================
+   TABLES
+   ================================================== */
+
+.admin-dashboard .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard .admin-table thead {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.admin-dashboard .admin-table thead th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-dashboard .admin-table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.875rem;
+}
+
+.admin-dashboard .admin-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.admin-dashboard .admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ==================================================
+   TABLE BADGES
+   ================================================== */
+
+.admin-dashboard .role-badge,
+.admin-dashboard .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid;
+}
+
+/* Role Badges */
+.admin-dashboard .role-badge.patient {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+
+.admin-dashboard .role-badge.doctor {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.admin-dashboard .role-badge.nurse {
+    background-color: #f3e8ff;
+    color: #7c2d12;
+    border-color: #e9d5ff;
+}
+
+.admin-dashboard .role-badge.receptionist {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.admin-dashboard .role-badge.lab_technician {
+    background-color: #fed7aa;
+    color: #ea580c;
+    border-color: #fdba74;
+}
+
+.admin-dashboard .role-badge.employee {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    border-color: #c7d2fe;
+}
+
+/* Status Badges */
+.admin-dashboard .status-badge.active {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.admin-dashboard .status-badge.inactive {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* ==================================================
+   ACTION BUTTONS
+   ================================================== */
+
+.admin-dashboard .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-dashboard .edit-btn {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-dashboard .edit-btn:hover {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard .deactivate-btn {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-dashboard .deactivate-btn:hover {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard .view-btn {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-dashboard .view-btn:hover {
+    background-color: #dcfce7;
+    color: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .admin-dashboard .admin-content {
+        padding: 1.5rem;
+    }
+
+    .admin-dashboard .tabs-header {
+        flex-direction: column;
+    }
+
+    .admin-dashboard .tab-button {
+        flex: none;
+        padding: 0.75rem 1rem;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+    }
+
+    .admin-dashboard .tab-button.active {
+        border-left-color: #2563eb;
+        border-bottom-color: transparent;
+    }
+
+    .admin-dashboard .admin-table {
+        font-size: 0.8125rem;
+    }
+
+    .admin-dashboard .admin-table thead th,
+    .admin-dashboard .admin-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .admin-dashboard .action-buttons {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-dashboard .welcome-title {
+        font-size: 1.5rem;
+    }
+
+    .admin-dashboard .welcome-section {
+        padding: 1.5rem;
+    }
+
+    .admin-dashboard .section-title {
+        font-size: 1.25rem;
+    }
+
+    .admin-dashboard .admin-table thead {
+        display: none;
+    }
+
+    .admin-dashboard .admin-table tbody td {
+        display: block;
+        padding: 0.5rem;
+        border: none;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .admin-dashboard .admin-table tbody td:before {
+        content: attr(data-label) ": ";
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .admin-dashboard .admin-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+}
+
+/* ==================================================
+   FOCUS STATES & ACCESSIBILITY
+   ================================================== */
+
+.admin-dashboard .tab-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.admin-dashboard .create-btn:focus,
+.admin-dashboard .role-select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.admin-dashboard .edit-btn:focus,
+.admin-dashboard .deactivate-btn:focus,
+.admin-dashboard .view-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-dashboard .activity-item,
+    .admin-dashboard .create-btn,
+    .admin-dashboard .role-select,
+    .admin-dashboard .edit-btn,
+    .admin-dashboard .deactivate-btn,
+    .admin-dashboard .view-btn {
+        transition: none;
+    }
+
+    .admin-dashboard .activity-item:hover,
+    .admin-dashboard .create-btn:hover,
+    .admin-dashboard .role-select:hover,
+    .admin-dashboard .edit-btn:hover,
+    .admin-dashboard .deactivate-btn:hover,
+    .admin-dashboard .view-btn:hover {
+        transform: none;
+    }
+}

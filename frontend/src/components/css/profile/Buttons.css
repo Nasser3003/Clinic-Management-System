@@ -1,0 +1,117 @@
+/* ==================================================
+   BUTTON COMPONENTS
+   ================================================== */
+
+/* Base Button Styles */
+.btn-base {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-sm);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--text-sm);
+}
+
+.btn-base:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
+}
+
+.btn-base:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Primary Buttons */
+.edit-button,
+.save-button,
+.change-password-button {
+    @extend .btn-base;
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+.edit-button:hover:not(:disabled),
+.save-button:hover:not(:disabled),
+.change-password-button:hover:not(:disabled) {
+    background-color: var(--primary-blue-hover);
+}
+
+/* Secondary Button */
+.cancel-button {
+    @extend .btn-base;
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+}
+
+.cancel-button:hover {
+    background-color: #9ca3af;
+}
+
+/* ==================================================
+   ACTION BUTTONS CONTAINER
+   ================================================== */
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+/* ==================================================
+   TOGGLE BUTTON
+   ================================================== */
+
+.toggle-button {
+    position: relative;
+    display: inline-flex;
+    height: 1.5rem;
+    width: 2.75rem;
+    align-items: center;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
+}
+
+.toggle-button.enabled {
+    background-color: var(--primary-blue);
+}
+
+.toggle-button.disabled {
+    background-color: var(--border-light);
+}
+
+.toggle-slider {
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    transform: translateX(var(--spacing-xs));
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-light);
+}
+
+.toggle-button.enabled .toggle-slider {
+    transform: translateX(1.5rem);
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}

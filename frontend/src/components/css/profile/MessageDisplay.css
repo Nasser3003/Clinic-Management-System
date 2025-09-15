@@ -1,0 +1,79 @@
+/* ==================================================
+   MESSAGE DISPLAY & NOTIFICATIONS
+   ================================================== */
+
+.message {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.message.success {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border-color: var(--success-border);
+}
+
+.message.error {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border-color: var(--error-border);
+}
+
+/* ==================================================
+   PROFILE CONTENT CONTAINER
+   ================================================== */
+
+.profile-content {
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+/* ==================================================
+   NOTICES
+   ================================================== */
+
+.medical-notice {
+    background-color: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.notice-icon {
+    flex-shrink: 0;
+}
+
+.warning-icon {
+    height: 1.25rem;
+    width: 1.25rem;
+    color: #ca8a04;
+}
+
+.notice-content {
+    flex: 1;
+}
+
+.notice-title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--warning-text);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.notice-text {
+    font-size: var(--text-sm);
+    color: var(--warning-text);
+}
+
+.notice-text p {
+    margin: 0;
+}

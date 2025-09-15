@@ -1,0 +1,93 @@
+/* ==================================================
+   FORM ELEMENTS & CONTROLS
+   ================================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-input,
+.form-select {
+    margin-top: var(--spacing-xs);
+    display: block;
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-light);
+    transition: all 0.2s ease;
+    font-size: var(--text-sm);
+}
+
+.form-input.editable,
+.form-select.editable {
+    border-color: var(--border-light);
+    background-color: var(--bg-white);
+}
+
+.form-input.editable:focus,
+.form-select.editable:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+
+.form-input.readonly,
+.form-select.readonly {
+    border-color: var(--border-color);
+    background-color: var(--bg-gray-50);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+/* ==================================================
+   SECTIONS
+   ================================================== */
+
+.address-section,
+.emergency-section {
+    margin-top: var(--spacing-2xl);
+}
+
+.section-title {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

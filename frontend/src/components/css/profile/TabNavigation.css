@@ -1,0 +1,98 @@
+/* ==================================================
+   TAB NAVIGATION SYSTEM
+   ================================================== */
+
+.tab-navigation {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-nav {
+    display: flex;
+    margin-bottom: -1px;
+    overflow-x: auto;
+}
+
+.tab-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.tab-button:not(.active) {
+    color: var(--text-muted);
+}
+
+.tab-button:not(.active):hover {
+    color: var(--text-secondary);
+    border-bottom-color: var(--border-light);
+}
+
+.tab-button.active {
+    border-bottom-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.tab-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
+}
+
+.tab-icon {
+    font-size: var(--text-base);
+}
+
+/* ==================================================
+   TAB CONTENT
+   ================================================== */
+
+.tab-content {
+    padding: var(--spacing-xl);
+}
+
+.tab-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-xl) 0;
+}
+
+.tab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .tab-content {
+        padding: var(--spacing-lg);
+    }
+
+    .tab-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-lg);
+    }
+
+    .tab-nav {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .tab-button {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--text-xs);
+    }
+}

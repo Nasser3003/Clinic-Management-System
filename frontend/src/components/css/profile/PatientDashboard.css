@@ -1,0 +1,202 @@
+/* ==================================================
+   PATIENT DASHBOARD - ALIGNMENT FIXES
+   ================================================== */
+
+/* Fix for visit items alignment */
+.patient-dashboard .visit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 5rem; /* Ensure consistent height */
+}
+
+.patient-dashboard .visit-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.patient-dashboard .visit-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.patient-dashboard .visit-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+/* Enhanced button styling for better alignment */
+.patient-dashboard .view-details-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #bfdbfe;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    color: #1d4ed8;
+    background: linear-gradient(135deg, #eff6ff 0%, #f0f4ff 100%);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    min-width: 120px; /* Consistent button width */
+    text-align: center;
+}
+
+.patient-dashboard .view-details-btn:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    border-color: #93c5fd;
+}
+
+.patient-dashboard .view-details-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.patient-dashboard .view-details-btn:active {
+    transform: translateY(0);
+}
+
+/* Status badge alignment */
+.patient-dashboard .visit-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid;
+    white-space: nowrap;
+    min-width: 100px; /* Consistent status width */
+    text-align: center;
+}
+
+/* Upcoming visit specific styling */
+.patient-dashboard .upcoming-visit .visit-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.patient-dashboard .upcoming-status {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+
+/* Better responsive behavior */
+@media (max-width: 640px) {
+    .patient-dashboard .visit-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding: 1.25rem;
+    }
+
+    .patient-dashboard .visit-info {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .patient-dashboard .visit-actions {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .patient-dashboard .view-details-btn {
+        flex: 1;
+        min-width: unset;
+        max-width: 200px;
+    }
+
+    .patient-dashboard .visit-status {
+        min-width: unset;
+        flex-shrink: 0;
+    }
+
+    /* Stack vertically on very small screens */
+    @media (max-width: 480px) {
+        .patient-dashboard .visit-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .patient-dashboard .view-details-btn,
+        .patient-dashboard .visit-status {
+            width: 100%;
+        }
+    }
+}
+
+/* Enhanced hover effects for visit items */
+.patient-dashboard .upcoming-visit:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #93c5fd;
+}
+
+.patient-dashboard .completed-visit:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #a7f3d0;
+}
+
+/* Icon alignment fixes */
+.patient-dashboard .visit-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.patient-dashboard .checkmark-icon,
+.patient-dashboard .calendar-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+/* Typography improvements */
+.patient-dashboard .visit-type {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.2;
+}
+
+.patient-dashboard .visit-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Section spacing improvements */
+.patient-dashboard .visits-section {
+    margin-bottom: 2rem;
+}
+
+.patient-dashboard .visits-section:last-child {
+    margin-bottom: 0;
+}
