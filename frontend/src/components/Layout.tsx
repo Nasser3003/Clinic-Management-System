@@ -19,6 +19,9 @@ function Layout({ children }: LayoutProps) {
 
     const navigationItems = [
         { path: '/appointments/book', label: 'Book Appointment', roles: ['PATIENT'] },
+        { path: '/appointments/manage', label: 'Manage Appointments', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE'] },
+        { path: '/treatments', label: 'Treatment Management', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'EMPLOYEE'] },
+        { path: '/timeoff', label: 'Time Off', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE', 'LAB_TECHNICIAN'] },
         { path: '/about', label: 'About Us', roles: ['ADMIN', 'EMPLOYEE', 'PATIENT'] },
         { path: '/contact', label: 'Contact', roles: ['ADMIN', 'EMPLOYEE', 'PATIENT'] },
     ];

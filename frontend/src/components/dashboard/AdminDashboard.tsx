@@ -2,10 +2,45 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../dashboard/shared/DashboardCard';
 import '../css/Dashboard.css';
+import {useNavigate} from "react-router-dom";
+
+
+const quickActions = [
+    {
+        title: "Manage Appointments",
+        description: "View and manage all appointments",
+        path: "/appointments/manage",
+        roles: ["ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST", "EMPLOYEE"],
+        icon: "📅",
+        color: "blue"
+    },
+    {
+        title: "Treatment Records",
+        description: "Track treatments and payments",
+        path: "/treatments",
+        roles: ["ADMIN", "DOCTOR", "NURSE", "EMPLOYEE"],
+        icon: "💊",
+        color: "green"
+    },
+    {
+        title: "Time Off Requests",
+        description: "Submit and manage time off",
+        path: "/timeoff",
+        roles: ["ADMIN", "DOCTOR", "NURSE", "RECEPTIONIST", "EMPLOYEE", "LAB_TECHNICIAN"],
+        icon: "🏖️",
+        color: "purple"
+    }
+];
+
 
 function AdminDashboard() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'doctors' | 'staff'>('overview');
+
+    const navigate = useNavigate();
+    const filteredQuickActions = quickActions.filter(action =>
+        action.roles.includes(user?.role || '')
+    );
 
     // Mock data - replace with API calls
     const systemStats = {
@@ -141,6 +176,22 @@ function AdminDashboard() {
                         </svg>
                     }
                 />
+            </div>
+
+            <div className="quick-actions-section">
+                <h3 className="section-title">Quick Actions</h3>
+                <div className="dashboard-grid quick-actions-grid">
+                    {filteredQuickActions.map((action) => (
+                        <DashboardCard
+                            key={action.path}
+                            title={action.title}
+                            value={action.icon}
+                            description={action.description}
+                            color={action.color as "blue" | "green" | "purple" | "yellow" | "red" | "indigo"}
+                            onClick={() => navigate(action.path)}
+                        />
+                    ))}
+                </div>
             </div>
 
             {/* Navigation Tabs */}

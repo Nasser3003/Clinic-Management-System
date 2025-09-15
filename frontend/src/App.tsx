@@ -10,6 +10,9 @@ import Contact from './components/Contact';
 import AboutUs from './components/AboutUs';
 import UserProfile from './components/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
+import TreatmentManagement from './components/TreatmentDetails';
+import TimeOffManagement from './components/dashboard/timeOff/TimeOffManagement';
+import AppointmentsManagement from './components//dashboard/schedule/AppointmentsManagement';
 
 function App() {
     return (
@@ -57,6 +60,31 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <UserProfile />
+                                </ProtectedRoute>
+                            }
+                        />
+                        {/* FIXED ROUTE BELOW */}
+                        <Route
+                            path="/treatments"
+                            element={
+                                <ProtectedRoute>
+                                    <TreatmentManagement />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/timeoff"
+                            element={
+                                <ProtectedRoute>
+                                    <TimeOffManagement />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/appointments/manage"
+                            element={
+                                <ProtectedRoute>
+                                    <AppointmentsManagement />
                                 </ProtectedRoute>
                             }
                         />
