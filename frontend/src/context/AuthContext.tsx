@@ -9,6 +9,8 @@ interface AuthContextType {
     logout: () => void;
     updateUser: (userData: User) => void;
     loading: boolean;
+    avatarKey: number;
+    refreshAvatar: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -16,6 +18,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [avatarKey, setAvatarKey] = useState(0);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -36,11 +39,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         authService.logout();
         setUser(null);
+        setAvatarKey(0); // Reset avatar key on logout
     };
 
     const updateUser = (userData: User) => {
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
+    };
+
+    const refreshAvatar = () => {
+        setAvatarKey(prev => prev + 1);
     };
 
     return (
@@ -49,8 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isAuthenticated: !!user,
             login,
             logout,
-            updateUser, // Add this to the context value
-            loading
+            updateUser,
+            loading,
+            avatarKey,
+            refreshAvatar
         }}>
             {children}
         </AuthContext.Provider>

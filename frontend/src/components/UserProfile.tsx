@@ -5,7 +5,7 @@ import './css/UserProfile.css';
 import api from '../services/api'; // Assuming you have an api service
 
 function UserProfile() {
-    const { user, updateUser } = useAuth();
+    const { user, updateUser, avatarKey, refreshAvatar } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -14,7 +14,6 @@ function UserProfile() {
     // Avatar upload states
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
     const [avatarError, setAvatarError] = useState(false);
-    const [avatarKey, setAvatarKey] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Initialize with actual user data from JWT/login
@@ -98,8 +97,8 @@ function UserProfile() {
 
             console.log('Avatar upload response:', response);
 
-            // Success - force avatar reloads
-            setAvatarKey(prev => prev + 1);
+            // Success - force avatar reloads across the entire app
+            refreshAvatar();
             setAvatarError(false);
             setMessage({ type: 'success', text: 'Profile picture updated successfully!' });
 
@@ -247,7 +246,7 @@ function UserProfile() {
 
     const tabs = [
         { id: 'profile', label: 'Profile Information', icon: '👤' },
-        { id: 'security', label: 'Security', icon: '🔒' },
+        { id: 'security', label: 'Security', icon: '🔐' },
         { id: 'preferences', label: 'Preferences', icon: '⚙️' },
         { id: 'medical', label: 'Medical Information', icon: '🏥' }
     ];

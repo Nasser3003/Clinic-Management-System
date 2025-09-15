@@ -8,7 +8,7 @@ interface LayoutProps {
 }
 
 function Layout({ children }: LayoutProps) {
-    const { user, logout } = useAuth();
+    const { user, logout, avatarKey } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -26,6 +26,11 @@ function Layout({ children }: LayoutProps) {
     const visibleNavItems = navigationItems.filter(item =>
         item.roles.includes(user?.role || '')
     );
+
+    const getAvatarUrl = () => {
+        if (!user?.email) return '';
+        return `http://localhost:3001/files/avatar/${encodeURIComponent(user.email)}?v=${avatarKey}&t=${Date.now()}`;
+    };
 
     return (
         <div className="layout-container">
@@ -66,7 +71,7 @@ function Layout({ children }: LayoutProps) {
                                 <div className="avatar">
                                     {user?.email && (
                                         <img
-                                            src={`http://localhost:3001/files/avatar/${encodeURIComponent(user.email)}`}
+                                            src={getAvatarUrl()}
                                             alt="Profile"
                                             className="avatar-image"
                                             onError={(e) => {
