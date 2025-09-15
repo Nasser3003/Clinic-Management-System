@@ -12,7 +12,8 @@ import UserProfile from './components/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import TreatmentManagement from './components/TreatmentDetails';
 import TimeOffManagement from './components/dashboard/timeOff/TimeOffManagement';
-import AppointmentsManagement from './components//dashboard/schedule/AppointmentsManagement';
+import AppointmentsManagement from './components/dashboard/schedule/AppointmentsManagement';
+import WorkingScheduleManager from './components/WorkingSchedule';
 
 function App() {
     return (
@@ -40,6 +41,14 @@ function App() {
                             }
                         />
                         <Route
+                            path="/working-schedule"
+                            element={
+                                <ProtectedRoute>
+                                    <WorkingScheduleManager />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
                             path="/contact"
                             element={
                                 <ProtectedRoute>
@@ -63,7 +72,6 @@ function App() {
                                 </ProtectedRoute>
                             }
                         />
-                        {/* FIXED ROUTE BELOW */}
                         <Route
                             path="/treatments"
                             element={

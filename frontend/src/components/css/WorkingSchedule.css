@@ -1,0 +1,597 @@
+/* ==================================================
+   WORKING SCHEDULE - CONSISTENT THEME
+   ================================================== */
+
+.working-schedule-container {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: 1rem;
+    background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 50%, #e0e7ff 100%);
+    min-height: 100vh;
+}
+
+@media (min-width: 640px) {
+    .working-schedule-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .working-schedule-container {
+        padding: 2rem;
+    }
+}
+
+/* ==================================================
+   HEADER SECTION
+   ================================================== */
+
+.schedule-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.schedule-hero-content {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    border-radius: 1rem;
+    padding: 3rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.schedule-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.schedule-subtitle {
+    font-size: 1.25rem;
+    color: rgba(191, 219, 254, 1);
+    max-width: 48rem;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ==================================================
+   MESSAGE ALERTS
+   ================================================== */
+
+.schedule-message {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.schedule-message.success {
+    background-color: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.schedule-message.error {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* ==================================================
+   SCHEDULE MAIN CONTAINER
+   ================================================== */
+
+.schedule-main-container {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.schedule-main-container:hover {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+}
+
+.schedule-section-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.schedule-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.schedule-content {
+    padding: 2rem;
+    background-color: white;
+}
+
+/* ==================================================
+   DAYS FLEXBOX LAYOUT
+   ================================================== */
+
+.schedule-days-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.schedule-day-card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    margin: 0.5rem; /* Extra margin for breathing room on hover */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    /* Flexbox sizing */
+    flex: 1 1 300px; /* grow, shrink, base width */
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.schedule-day-card:hover {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    transform: scale(1.02); /* Scale instead of translateY to avoid overlap */
+    border-color: #d1d5db;
+}
+
+.schedule-day-card.working {
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    border-color: #bfdbfe;
+}
+
+.schedule-day-card.not-working {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-color: #e5e7eb;
+}
+
+/* ==================================================
+   DAY HEADER
+   ================================================== */
+
+.day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.day-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+/* ==================================================
+   WORKING TOGGLE SWITCH
+   ================================================== */
+
+.working-toggle {
+    position: relative;
+    display: inline-flex;
+    height: 1.5rem;
+    width: 2.75rem;
+    align-items: center;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.working-toggle.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.working-toggle.inactive {
+    background-color: #d1d5db;
+}
+
+.working-toggle:hover {
+    transform: scale(1.05);
+}
+
+.working-toggle:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.toggle-slider {
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider.active {
+    transform: translateX(1.5rem);
+}
+
+.toggle-slider.inactive {
+    transform: translateX(0.25rem);
+}
+
+/* ==================================================
+   TIME SLOTS
+   ================================================== */
+
+.time-slots-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.time-slot-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.time-slot-row:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.time-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background-color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.time-input:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+}
+
+.time-separator {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0 0.25rem;
+}
+
+.remove-slot-btn {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    color: #dc2626;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.remove-slot-btn:hover {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    transform: scale(1.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.remove-slot-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.5);
+}
+
+/* ==================================================
+   ADD TIME SLOT BUTTON
+   ================================================== */
+
+.add-slot-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px dashed #bfdbfe;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(224, 231, 255, 0.8) 100%);
+    color: #2563eb;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.add-slot-btn:hover {
+    border-color: #2563eb;
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.add-slot-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ==================================================
+   NOT WORKING STATE
+   ================================================== */
+
+.not-working-message {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    font-size: 0.875rem;
+    background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(243, 244, 246, 0.8) 100%);
+    border-radius: 0.75rem;
+    border: 1px dashed #d1d5db;
+    backdrop-filter: blur(10px);
+}
+
+/* ==================================================
+   ACTION BUTTONS
+   ================================================== */
+
+.schedule-actions {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.reset-btn {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    background-color: white;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.reset-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.5);
+}
+
+.save-btn {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.save-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.save-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ==================================================
+   LOADING STATE
+   ================================================== */
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================================================
+   ICONS
+   ================================================== */
+
+.icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .working-schedule-container {
+        padding: 0.5rem;
+    }
+
+    .schedule-header {
+        padding: 1.5rem;
+    }
+
+    .schedule-title {
+        font-size: 2rem;
+    }
+
+    .schedule-content {
+        padding: 1.5rem;
+    }
+
+    .schedule-days-grid {
+        gap: 1.5rem;
+        justify-content: stretch;
+    }
+
+    .schedule-day-card {
+        padding: 1rem;
+        flex: 1 1 100%; /* Full width on mobile */
+        max-width: none;
+        margin: 0.25rem;
+    }
+
+    .schedule-actions {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+    }
+
+    .reset-btn,
+    .save-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .time-slot-row {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .time-slot-row > .time-input:first-child,
+    .time-separator,
+    .time-slot-row > .time-input:nth-child(3) {
+        display: flex;
+        align-items: center;
+    }
+
+    .time-slot-row > .time-input:first-child,
+    .time-slot-row > .time-input:nth-child(3) {
+        flex: 1;
+    }
+
+    .time-separator {
+        justify-content: center;
+        margin: 0 0.5rem;
+    }
+
+    .schedule-days-grid {
+        gap: 1rem;
+    }
+
+    .schedule-day-card {
+        margin: 0.125rem;
+    }
+}
+
+/* ==================================================
+   ACCESSIBILITY & FOCUS STATES
+   ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .schedule-day-card,
+    .working-toggle,
+    .toggle-slider,
+    .time-input,
+    .remove-slot-btn,
+    .add-slot-btn,
+    .reset-btn,
+    .save-btn {
+        transition: none;
+    }
+
+    .save-btn:hover,
+    .remove-slot-btn:hover {
+        transform: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+    .schedule-main-container {
+        border: 2px solid #000;
+    }
+
+    .schedule-day-card {
+        border: 2px solid #666;
+    }
+
+    .time-input {
+        border: 2px solid #000;
+    }
+}
