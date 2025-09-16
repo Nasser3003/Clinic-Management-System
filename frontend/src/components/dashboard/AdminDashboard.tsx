@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../dashboard/shared/DashboardCard';
-import '../css/Dashboard.css';
+import '../css/dashboard/Dashboard.css';
 import Layout from "../Layout";
 
 function AdminDashboard() {

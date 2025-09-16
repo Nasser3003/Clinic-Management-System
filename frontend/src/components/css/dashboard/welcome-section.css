@@ -1,0 +1,81 @@
+/* ==================================================
+   WELCOME SECTION
+   ================================================== */
+
+.welcome-section {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    margin-bottom: 2rem;
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.welcome-text {
+    flex: 1;
+}
+
+.welcome-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.welcome-subtitle {
+    color: rgba(191, 219, 254, 1);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.welcome-icon {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .welcome-icon {
+        display: block;
+    }
+}
+
+.icon-container {
+    width: 6rem;
+    height: 6rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.user-icon,
+.admin-icon,
+.doctor-icon,
+.nurse-icon,
+.receptionist-icon,
+.employee-icon,
+.lab-icon,
+.partner-icon {
+    width: 3rem;
+    height: 3rem;
+    color: white;
+}
+
+/* Responsive Welcome Section */
+@media (max-width: 640px) {
+    .welcome-section {
+        padding: 1.5rem;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+}

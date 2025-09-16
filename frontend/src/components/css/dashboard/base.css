@@ -1,0 +1,73 @@
+/* ==================================================
+   BASE STYLES - FOUNDATION
+   ================================================== */
+
+/* Dashboard Container & Title */
+.dashboard-container {
+    padding: 1.5rem;
+}
+
+.dashboard-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+}
+
+.unknown-role {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Dashboard Layouts */
+.admin-dashboard,
+.doctor-dashboard,
+.nurse-dashboard,
+.receptionist-dashboard,
+.employee-dashboard,
+.lab-technician-dashboard,
+.partner-dashboard {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.patient-dashboard {
+    padding: 1rem 1rem 2rem 1rem;
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .admin-dashboard,
+    .doctor-dashboard,
+    .nurse-dashboard,
+    .receptionist-dashboard,
+    .employee-dashboard,
+    .lab-technician-dashboard,
+    .partner-dashboard {
+        padding: 1.5rem;
+    }
+
+    .patient-dashboard {
+        padding: 1.5rem 1.5rem 2rem 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-dashboard,
+    .doctor-dashboard,
+    .nurse-dashboard,
+    .receptionist-dashboard,
+    .employee-dashboard,
+    .lab-technician-dashboard,
+    .partner-dashboard {
+        padding: 2rem;
+    }
+
+    .patient-dashboard {
+        padding: 2rem;
+    }
+}

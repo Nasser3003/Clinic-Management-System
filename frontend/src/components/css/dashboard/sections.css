@@ -1,0 +1,112 @@
+/* ==================================================
+   CONTENT SECTIONS & SECTION HEADERS
+   ================================================== */
+
+.admin-content,
+.doctor-content,
+.nurse-content,
+.receptionist-content,
+.employee-content,
+.lab-content,
+.partner-content {
+    background-color: white;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    padding: 2rem;
+}
+
+.appointments-section,
+.appointments-content,
+.overview-section,
+.management-section,
+.tests-content,
+.tasks-content,
+.patients-content,
+.referrals-section,
+.reports-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Section Headers */
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.section-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Visits Sections */
+.visits-section {
+    background-color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.visits-section:hover {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3);
+}
+
+.section-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.previous-header {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.upcoming-header {
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+}
+
+.visits-content {
+    padding: 2rem;
+}
+
+.visits-list,
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Responsive Sections */
+@media (max-width: 640px) {
+    .section-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .visits-content,
+    .admin-content,
+    .doctor-content,
+    .nurse-content,
+    .receptionist-content,
+    .employee-content,
+    .lab-content,
+    .partner-content {
+        padding: 1.5rem;
+    }
+}

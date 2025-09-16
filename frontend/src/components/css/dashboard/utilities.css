@@ -1,0 +1,51 @@
+/* ==================================================
+   UTILITIES & MISCELLANEOUS
+   ================================================== */
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    /* This section can be expanded for dark mode support */
+    .dashboard-card,
+    .visits-section,
+    .admin-content,
+    .doctor-content,
+    .nurse-content,
+    .receptionist-content,
+    .employee-content,
+    .lab-content,
+    .partner-content {
+        /* Dark mode styles would go here */
+    }
+}
+
+/* Print Styles */
+@media print {
+    .welcome-section,
+    .tabs-container,
+    .action-buttons,
+    .view-details-btn,
+    .approve-btn,
+    .deny-btn,
+    .create-btn,
+    .role-select,
+    .edit-btn,
+    .deactivate-btn,
+    .view-btn {
+        display: none;
+    }
+
+    .admin-content,
+    .doctor-content,
+    .nurse-content,
+    .receptionist-content,
+    .employee-content,
+    .lab-content,
+    .partner-content {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    .dashboard-card {
+        break-inside: avoid;
+    }
+}

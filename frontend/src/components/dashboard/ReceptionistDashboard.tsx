@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../dashboard/shared/DashboardCard';
 import AppointmentCard from '../dashboard/shared/AppointmentCard';
-import '../css/Dashboard.css';
+import '../css/dashboard/Dashboard.css';
 
 function ReceptionistDashboard() {
     const { user } = useAuth();

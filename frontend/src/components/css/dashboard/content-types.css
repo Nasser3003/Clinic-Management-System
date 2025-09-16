@@ -1,0 +1,218 @@
+/* ==================================================
+   SPECIAL CONTENT TYPES (Tests, Tasks, Patients, etc.)
+   ================================================== */
+
+.tests-list,
+.tasks-list,
+.patients-list,
+.referrals-list,
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.test-info,
+.task-info,
+.patient-info,
+.referral-info,
+.report-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+/* Priority Indicators */
+.test-priority,
+.task-priority {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-priority.urgent,
+.task-priority.high {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.test-priority.normal,
+.task-priority.normal {
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+}
+
+.priority-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.priority-indicator.high {
+    background-color: #dc2626;
+}
+
+.priority-indicator.normal {
+    background-color: #16a34a;
+}
+
+.priority-indicator.low {
+    background-color: #6b7280;
+}
+
+/* Content Details */
+.test-details,
+.task-details,
+.patient-details,
+.referral-details,
+.report-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.test-type,
+.task-title,
+.patient-name,
+.referral-type,
+.report-month {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.test-patient,
+.test-doctor,
+.test-time,
+.task-patient,
+.task-time,
+.patient-room,
+.patient-condition,
+.patient-last-visit,
+.referral-patient,
+.referral-doctor,
+.referral-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0.25rem 0;
+}
+
+/* Content Actions */
+.test-actions,
+.task-actions,
+.patient-actions,
+.referral-actions,
+.report-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+/* Progress and Status Indicators */
+.test-status,
+.task-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-icon,
+.completed-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-icon {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.completed-icon {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+/* Stats & Metrics Display */
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 0.875rem;
+    color: #111827;
+    font-weight: 600;
+}
+
+/* Responsive Content Types */
+@media (max-width: 768px) {
+    .test-info,
+    .task-info,
+    .patient-info,
+    .referral-info,
+    .report-info {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .test-actions,
+    .task-actions,
+    .patient-actions,
+    .referral-actions,
+    .report-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .start-test-btn,
+    .complete-test-btn,
+    .complete-task-btn,
+    .view-patient-btn,
+    .view-results-btn,
+    .download-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .equipment-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .maintenance-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

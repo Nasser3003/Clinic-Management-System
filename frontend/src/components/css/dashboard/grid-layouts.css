@@ -1,0 +1,69 @@
+/* ==================================================
+   GRID LAYOUTS
+   ================================================== */
+
+.dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+.admin-grid {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.employee-grid {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.patient-grid {
+    grid-template-columns: repeat(1, 1fr);
+    margin-bottom: 2rem;
+}
+
+.doctor-grid,
+.nurse-grid,
+.receptionist-grid,
+.lab-grid,
+.partner-grid {
+    grid-template-columns: repeat(1, 1fr);
+    margin-bottom: 2rem;
+}
+
+/* Tablet Layouts */
+@media (min-width: 768px) {
+    .admin-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .employee-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .patient-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .doctor-grid,
+    .nurse-grid,
+    .receptionist-grid,
+    .lab-grid,
+    .partner-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop Layouts */
+@media (min-width: 1024px) {
+    .admin-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .doctor-grid,
+    .nurse-grid,
+    .receptionist-grid,
+    .lab-grid,
+    .partner-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
