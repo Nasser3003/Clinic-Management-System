@@ -45,7 +45,6 @@ function Contact() {
                 <div className="contact-grid">
                     {/* Contact Information */}
                     <div className="contact-info-section">
-                        <h2 className="section-title">Get in Touch</h2>
                         <div className="contact-info-list">
                             {/* Phone */}
                             <div className="contact-item">
