@@ -23,6 +23,9 @@ interface Treatment {
     installmentPeriodInMonths: number;
     createdAt: string;
     updatedAt: string;
+    // New fields for enhanced search
+    prescriptions?: string[];
+    visitNotes?: string;
 }
 
 interface TreatmentFormData {
@@ -44,7 +47,10 @@ function TreatmentManagement() {
         doctorEmail: '',
         paid: '', // 'true', 'false', or ''
         startDate: '',
-        endDate: ''
+        endDate: '',
+        // New search filters
+        prescriptionKeyword: '',
+        visitNotesKeyword: ''
     });
 
     const [treatmentForm, setTreatmentForm] = useState<TreatmentFormData>({
@@ -82,6 +88,10 @@ function TreatmentManagement() {
             if (filters.paid) params.append('paid', filters.paid);
             if (filters.startDate) params.append('startDate', filters.startDate);
             if (filters.endDate) params.append('endDate', filters.endDate);
+
+            // New search parameters
+            if (filters.prescriptionKeyword) params.append('prescriptionKeyword', filters.prescriptionKeyword);
+            if (filters.visitNotesKeyword) params.append('visitNotesKeyword', filters.visitNotesKeyword);
 
             const queryString = params.toString();
             const url = `/api/treatments${queryString ? `?${queryString}` : ''}`;
@@ -260,6 +270,18 @@ function TreatmentManagement() {
         }
     };
 
+    const handleClearFilters = () => {
+        setFilters({
+            patientEmail: '',
+            doctorEmail: '',
+            paid: '',
+            startDate: '',
+            endDate: '',
+            prescriptionKeyword: '',
+            visitNotesKeyword: ''
+        });
+    };
+
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -286,11 +308,32 @@ function TreatmentManagement() {
         }
     };
 
+    const highlightText = (text: string, keywords: string[]) => {
+        if (!keywords.length || !text) return text;
+
+        let highlightedText = text;
+        keywords.forEach(keyword => {
+            if (keyword.trim()) {
+                const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                highlightedText = highlightedText.replace(regex, '<mark>$1</mark>');
+            }
+        });
+
+        return highlightedText;
+    };
+
+    const getSearchKeywords = () => {
+        const keywords = [];
+        if (filters.prescriptionKeyword) keywords.push(filters.prescriptionKeyword);
+        if (filters.visitNotesKeyword) keywords.push(filters.visitNotesKeyword);
+        return keywords;
+    };
+
     return (
         <Layout>
             <HeroHeader
                 title="Treatment Management"
-                subtitle="Track treatments, costs, and payment status"
+                subtitle="Track treatments, costs, and payment status with advanced search capabilities"
             />
 
             <div>
@@ -332,84 +375,136 @@ function TreatmentManagement() {
                         <div className="view-treatments-section">
                             <div className="section-header">
                                 <h3>Treatment Records</h3>
-                                <p>View and manage treatment records and payments</p>
+                                <p>View and manage treatment records and payments with comprehensive search</p>
                             </div>
 
-                            {/* Filters */}
+                            {/* Compact Filters */}
                             <div className="filters-section">
-                                <div className="filters-grid">
+                                <div className="filters-grid compact">
                                     {(isAdmin || isEmployee) && (
                                         <>
                                             <div className="filter-group">
-                                                <label>Patient Email</label>
+                                                <label>
+                                                    <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Patient
+                                                </label>
                                                 <input
                                                     type="email"
                                                     value={filters.patientEmail}
                                                     onChange={(e) => setFilters(prev => ({ ...prev, patientEmail: e.target.value }))}
-                                                    placeholder="Filter by patient email"
-                                                    className="filter-input"
+                                                    placeholder="Patient email"
+                                                    className="filter-input compact"
                                                 />
                                             </div>
 
                                             <div className="filter-group">
-                                                <label>Doctor Email</label>
+                                                <label>
+                                                    <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Doctor
+                                                </label>
                                                 <input
                                                     type="email"
                                                     value={filters.doctorEmail}
                                                     onChange={(e) => setFilters(prev => ({ ...prev, doctorEmail: e.target.value }))}
-                                                    placeholder="Filter by doctor email"
-                                                    className="filter-input"
+                                                    placeholder="Doctor email"
+                                                    className="filter-input compact"
                                                 />
                                             </div>
                                         </>
                                     )}
 
                                     <div className="filter-group">
-                                        <label>Payment Status</label>
+                                        <label>
+                                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                                            </svg>
+                                            Status
+                                        </label>
                                         <select
                                             value={filters.paid}
                                             onChange={(e) => setFilters(prev => ({ ...prev, paid: e.target.value }))}
-                                            className="filter-select"
+                                            className="filter-select compact"
                                         >
-                                            <option value="">All Payments</option>
+                                            <option value="">All</option>
                                             <option value="true">Paid</option>
                                             <option value="false">Outstanding</option>
                                         </select>
                                     </div>
 
                                     <div className="filter-group">
-                                        <label>Start Date</label>
+                                        <label>
+                                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                            </svg>
+                                            From
+                                        </label>
                                         <input
                                             type="date"
                                             value={filters.startDate}
                                             onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                                            className="filter-input"
+                                            className="filter-input compact"
                                         />
                                     </div>
 
                                     <div className="filter-group">
-                                        <label>End Date</label>
+                                        <label>
+                                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                            </svg>
+                                            To
+                                        </label>
                                         <input
                                             type="date"
                                             value={filters.endDate}
                                             onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                                            className="filter-input"
+                                            className="filter-input compact"
+                                        />
+                                    </div>
+
+                                    <div className="filter-group">
+                                        <label>
+                                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clipRule="evenodd" />
+                                            </svg>
+                                            Prescriptions
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={filters.prescriptionKeyword}
+                                            onChange={(e) => setFilters(prev => ({ ...prev, prescriptionKeyword: e.target.value }))}
+                                            placeholder="Search meds"
+                                            className="filter-input search-input compact"
+                                        />
+                                    </div>
+
+                                    <div className="filter-group">
+                                        <label>
+                                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                            </svg>
+                                            Notes
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={filters.visitNotesKeyword}
+                                            onChange={(e) => setFilters(prev => ({ ...prev, visitNotesKeyword: e.target.value }))}
+                                            placeholder="Search notes"
+                                            className="filter-input search-input compact"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="filter-actions">
+                                <div className="filter-actions compact">
                                     <button
-                                        onClick={() => setFilters({
-                                            patientEmail: '',
-                                            doctorEmail: '',
-                                            paid: '',
-                                            startDate: '',
-                                            endDate: ''
-                                        })}
+                                        onClick={handleClearFilters}
                                         className="clear-filters-btn"
                                     >
-                                        Clear Filters
+                                        Clear All
                                     </button>
                                 </div>
                             </div>
@@ -423,21 +518,78 @@ function TreatmentManagement() {
                             ) : treatments.length === 0 ? (
                                 <div className="empty-state">
                                     <p>No treatments found with the current filters</p>
+                                    <small>Try adjusting your search criteria or clearing filters</small>
                                 </div>
                             ) : (
                                 <div className="treatments-list">
+                                    <div className="results-summary">
+                                        <span className="results-count">
+                                            {treatments.length} treatment{treatments.length !== 1 ? 's' : ''} found
+                                        </span>
+                                        {(filters.prescriptionKeyword || filters.visitNotesKeyword) && (
+                                            <span className="search-indicator">
+                                                <svg className="search-icon-small" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                                                </svg>
+                                                Search results
+                                            </span>
+                                        )}
+                                    </div>
+
                                     {treatments.map((treatment) => {
                                         const paymentStatus = getPaymentStatus(treatment);
+                                        const searchKeywords = getSearchKeywords();
+
                                         return (
                                             <div key={treatment.id} className="treatment-card">
                                                 <div className="treatment-header">
                                                     <div className="treatment-info">
-                                                        <h4>{treatment.treatmentDescription}</h4>
+                                                        <h4
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: highlightText(treatment.treatmentDescription, searchKeywords)
+                                                            }}
+                                                        />
                                                         <div className="treatment-meta">
                                                             <span>Patient: {treatment.patientName}</span>
                                                             <span>Doctor: {treatment.doctorName}</span>
                                                             <span>Date: {formatDate(treatment.createdAt)}</span>
                                                         </div>
+
+                                                        {/* Display related prescriptions if available */}
+                                                        {treatment.prescriptions && treatment.prescriptions.length > 0 && (
+                                                            <div className="prescriptions-info">
+                                                                <span className="prescriptions-label">Prescriptions:</span>
+                                                                <div className="prescriptions-list">
+                                                                    {treatment.prescriptions.map((prescription, index) => (
+                                                                        <span
+                                                                            key={index}
+                                                                            className="prescription-item"
+                                                                            dangerouslySetInnerHTML={{
+                                                                                __html: highlightText(prescription, searchKeywords)
+                                                                            }}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Display visit notes excerpt if available */}
+                                                        {treatment.visitNotes && (
+                                                            <div className="visit-notes-info">
+                                                                <span className="visit-notes-label">Visit Notes:</span>
+                                                                <p
+                                                                    className="visit-notes-excerpt"
+                                                                    dangerouslySetInnerHTML={{
+                                                                        __html: highlightText(
+                                                                            treatment.visitNotes.length > 150
+                                                                                ? `${treatment.visitNotes.substring(0, 150)}...`
+                                                                                : treatment.visitNotes,
+                                                                            searchKeywords
+                                                                        )
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <span className={`payment-status ${getPaymentStatusColor(paymentStatus)}`}>
                                                         {paymentStatus}

@@ -1,0 +1,521 @@
+/* ==================================================
+   VISIT NOTES TAB - MAIN STYLES
+   ================================================== */
+
+.visit-notes-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.tab-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+}
+
+/* ==================================================
+   NOTES LIST
+   ================================================== */
+
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.note-item {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.note-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.doctor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.doctor-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.visit-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.note-actions {
+    display: flex;
+    align-items: center;
+}
+
+.expand-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+    transition: all 0.2s ease;
+}
+
+.note-item:hover .expand-icon {
+    color: #3b82f6;
+    transform: translateX(2px);
+}
+
+.note-preview {
+    margin-bottom: 1rem;
+}
+
+.note-preview p {
+    color: #4b5563;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.document-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #059669;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.document-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ==================================================
+   EMPTY STATE
+   ================================================== */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+}
+
+.empty-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+.empty-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.empty-state h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.empty-state p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+    max-width: 24rem;
+}
+
+/* ==================================================
+   MODAL STYLES
+   ================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 1rem;
+    max-width: 48rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e5e7eb;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 1rem 1rem 0 0;
+}
+
+.modal-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.modal-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.close-button {
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.close-button:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.close-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.modal-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ==================================================
+   FULL NOTES SECTION
+   ================================================== */
+
+.full-note {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.full-note h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.full-note p {
+    color: #374151;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* ==================================================
+   DOCUMENTS SECTION
+   ================================================== */
+
+.documents-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 2rem;
+}
+
+.documents-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.documents-header h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.toggle-documents-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-documents-btn:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.toggle-documents-btn:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.document-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.document-item:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.document-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.file-icon {
+    width: 2rem;
+    height: 2rem;
+    color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.document-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.document-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    word-break: break-all;
+}
+
+.document-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.download-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.document-item:hover .download-icon {
+    color: #3b82f6;
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .modal-title-section {
+        align-items: center;
+        text-align: center;
+    }
+
+    .close-button {
+        align-self: center;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .note-item {
+        padding: 1rem;
+    }
+
+    .note-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .note-actions {
+        justify-content: flex-end;
+    }
+
+    .documents-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .document-item {
+        padding: 0.75rem;
+    }
+
+    .document-info {
+        gap: 0.5rem;
+    }
+
+    .file-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .visit-notes-tab {
+        gap: 1.5rem;
+    }
+
+    .tab-title {
+        font-size: 1.5rem;
+    }
+
+    .note-item {
+        padding: 0.75rem;
+    }
+
+    .doctor-name {
+        font-size: 1rem;
+    }
+
+    .document-details {
+        gap: 0.125rem;
+    }
+
+    .document-name {
+        font-size: 0.75rem;
+    }
+
+    .document-meta {
+        font-size: 0.625rem;
+    }
+}
+
+/* ==================================================
+   ACCESSIBILITY & FOCUS STATES
+   ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .note-item,
+    .expand-icon,
+    .close-button,
+    .toggle-documents-btn,
+    .document-item {
+        transition: none;
+    }
+
+    .note-item:hover,
+    .document-item:hover {
+        transform: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+    .note-item,
+    .modal-content,
+    .document-item {
+        border: 2px solid #000;
+    }
+
+    .modal-overlay {
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+}

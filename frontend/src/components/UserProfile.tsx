@@ -1,4 +1,4 @@
-// components/UserProfile.tsx (Refactored)
+// components/UserProfile.tsx (Updated with new tabs)
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
@@ -9,13 +9,15 @@ import MessageAlert from './common/MessageAlert';
 import ProfileHeader from './UserProfile/ProfileHeader';
 import TabNavigation from './UserProfile/TabNavigation';
 import ProfileTab from './UserProfile/tabs/ProfileTab';
-import SecurityTab from './UserProfile/tabs/SecurityTab';
 import PreferencesTab from './UserProfile/tabs/PreferencesTab';
 import MedicalTab from './UserProfile/tabs/MedicalTab';
+import PrescriptionsTab from './UserProfile/tabs/PrescriptionsTab';
 
 // Import hooks
 import { useProfile } from '../hooks/useProfile';
 import { usePassword } from '../hooks/usePassword';
+import VisitNotesTab from "./VisitNotesTab";
+import SecurityTab from "./dashboard/SecurityTab";
 
 function UserProfile() {
     const { user, updateUser, avatarKey, refreshAvatar } = useAuth();
@@ -65,6 +67,10 @@ function UserProfile() {
                 return <PreferencesTab />;
             case 'medical':
                 return <MedicalTab />;
+            case 'visit-notes':
+                return <VisitNotesTab />;
+            case 'prescriptions':
+                return <PrescriptionsTab />;
             default:
                 return null;
         }
