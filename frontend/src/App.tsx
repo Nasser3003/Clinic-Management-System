@@ -10,94 +10,99 @@ import Contact from './components/Contact';
 import AboutUs from './components/AboutUs';
 import UserProfile from './components/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
-import TreatmentManagement from './components/TreatmentDetails';
+import TreatmentManagement from './components/TreatmentManagement';
 import TimeOffManagement from './components/dashboard/timeOff/TimeOffManagement';
-import AppointmentsManagement from './components/dashboard/schedule/AppointmentsManagement';
+import AppointmentsManagement from './components/AppointmentsManagement';
 import WorkingScheduleManager from './components/WorkingSchedule';
+import Footer from "./components/Footer";
+import './App.css';
 
 function App() {
     return (
         <AuthProvider>
             <Router>
-                <div className="App">
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route
-                            path="/dashboard"
-                            element={
-                                <ProtectedRoute>
-                                    <Dashboard />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/appointments/book"
-                            element={
-                                <ProtectedRoute>
-                                    <AppointmentBooking />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/working-schedule"
-                            element={
-                                <ProtectedRoute>
-                                    <WorkingScheduleManager />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/contact"
-                            element={
-                                <ProtectedRoute>
-                                    <Contact />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/about"
-                            element={
-                                <ProtectedRoute>
-                                    <AboutUs />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/profile"
-                            element={
-                                <ProtectedRoute>
-                                    <UserProfile />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/treatments"
-                            element={
-                                <ProtectedRoute>
-                                    <TreatmentManagement />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/timeoff"
-                            element={
-                                <ProtectedRoute>
-                                    <TimeOffManagement />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/appointments/manage"
-                            element={
-                                <ProtectedRoute>
-                                    <AppointmentsManagement />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
+                <div className="app-container">
+                    <main className="app-content">
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route
+                                path="/dashboard"
+                                element={
+                                    <ProtectedRoute>
+                                        <Dashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/appointments/book"
+                                element={
+                                    <ProtectedRoute>
+                                        <AppointmentBooking />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/working-schedule"
+                                element={
+                                    <ProtectedRoute>
+                                        <WorkingScheduleManager />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/contact"
+                                element={
+                                    <ProtectedRoute>
+                                        <Contact />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/about"
+                                element={
+                                    <ProtectedRoute>
+                                        <AboutUs />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/profile"
+                                element={
+                                    <ProtectedRoute>
+                                        <UserProfile />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/treatments"
+                                element={
+                                    <ProtectedRoute>
+                                        <TreatmentManagement />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/timeoff"
+                                element={
+                                    <ProtectedRoute>
+                                        <TimeOffManagement />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/appointments/manage"
+                                element={
+                                    <ProtectedRoute>
+                                        <AppointmentsManagement />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        </Routes>
+                        <Footer />
+                    </main>
                 </div>
             </Router>
         </AuthProvider>

@@ -42,7 +42,9 @@ function Dashboard() {
     };
 
     return (
-            renderDashboardContent()
+        <Layout>
+            {renderDashboardContent()}
+        </Layout>
     );
 }
 

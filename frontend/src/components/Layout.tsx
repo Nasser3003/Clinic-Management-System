@@ -17,14 +17,13 @@ function Layout({ children }: LayoutProps) {
         navigate('/login');
     };
 
+    // Removed About Us and Contact from navigation as they'll be in footer
     const navigationItems = [
         { path: '/appointments/book', label: 'Book Appointment', roles: ['PATIENT'] },
         { path: '/appointments/manage', label: 'Manage Appointments', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE'] },
         { path: '/working-schedule', label: 'Working Schedule', roles: ['ADMIN', 'DOCTOR'] },
         { path: '/treatments', label: 'Treatment Management', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'EMPLOYEE'] },
         { path: '/timeoff', label: 'Time Off', roles: ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE', 'LAB_TECHNICIAN'] },
-        { path: '/about', label: 'About Us', roles: ['ADMIN', 'EMPLOYEE', 'PATIENT'] },
-        { path: '/contact', label: 'Contact', roles: ['ADMIN', 'EMPLOYEE', 'PATIENT'] },
     ];
 
     const visibleNavItems = navigationItems.filter(item =>
@@ -129,6 +128,7 @@ function Layout({ children }: LayoutProps) {
                     {children}
                 </div>
             </div>
+
         </div>
     );
 }

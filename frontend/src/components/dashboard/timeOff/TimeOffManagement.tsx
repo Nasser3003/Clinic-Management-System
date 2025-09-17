@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useAuth} from '../../../context/AuthContext';
 import Layout from '../../Layout';
 import '../../css/TimeoffManagement.css'
+import HeroHeader from "../../common/HeroHeader";
 
 interface TimeOffRequest {
     id?: number;
@@ -232,10 +233,10 @@ function TimeOffManagement() {
         <Layout>
 
             <div className="hero-section">
-                <div className="hero-content">
-                    <h1 className="hero-title">Time Off Management</h1>
-                    <p className="hero-subtitle">Request and manage time off from work</p>
-                </div>
+                <HeroHeader
+                    title="Time Off Management"
+                    subtitle="Request and manage time off from wor"
+                />
 
                 {error && (
                     <div className="error-message">

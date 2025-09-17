@@ -3,7 +3,6 @@
    ================================================== */
 
 .layout-container {
-    min-height: 100vh;
     background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 50%, #e0e7ff 100%);
 }
 

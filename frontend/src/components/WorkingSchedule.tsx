@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/WorkingSchedule.css';
+import HeroHeader from "./common/HeroHeader";
 
 // Types
 interface TimeSlot {
@@ -261,20 +262,15 @@ function WorkingScheduleManager() {
 
     return (
         <Layout>
-            <div className="working-schedule-container">
-                {/* Header Section */}
-                <div className="schedule-header">
-                    <div className="schedule-hero-content">
-                        <h1 className="schedule-title">Working Schedule Management</h1>
-                        <p className="schedule-subtitle">
-                            Set your weekly working hours and availability for appointments
-                        </p>
-                    </div>
-                </div>
+            <div>
+                    <HeroHeader
+                        title="Working Schedule Management"
+                        subtitle="Set your weekly working hours and availability for appointments"
+                    />
 
-                {/* Message Alert */}
+
                 {message.text && (
-                    <div className={`schedule-message ${message.type}`}>
+                    <div className={`${message.type === 'error' ? 'error-message' : 'success-message'}`}>
                         {message.text}
                     </div>
                 )}

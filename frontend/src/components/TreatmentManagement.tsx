@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/TreatmentManagement.css';
+import HeroHeader from "./common/HeroHeader";
 
-interface TreatmentDetails {
+interface TreatmentManagement {
     treatmentDescription: string;
     cost: number;
     amountPaid: number;
@@ -26,7 +27,7 @@ interface Treatment {
 
 interface TreatmentFormData {
     appointmentId: string;
-    treatments: TreatmentDetails[];
+    treatments: TreatmentManagement[];
 }
 
 function TreatmentManagement() {
@@ -156,7 +157,7 @@ function TreatmentManagement() {
         }
     };
 
-    const handleTreatmentChange = (index: number, field: keyof TreatmentDetails, value: string | number) => {
+    const handleTreatmentChange = (index: number, field: keyof TreatmentManagement, value: string | number) => {
         setTreatmentForm(prev => ({
             ...prev,
             treatments: prev.treatments.map((treatment, i) =>
@@ -287,13 +288,12 @@ function TreatmentManagement() {
 
     return (
         <Layout>
+            <HeroHeader
+                title="Treatment Management"
+                subtitle="Track treatments, costs, and payment status"
+            />
 
-            <div className="hero-section">
-                <div className="hero-content">
-                    <h1 className="hero-title">Treatment Management</h1>
-                    <p className="hero-subtitle">Track treatments, costs, and payment status</p>
-                </div>
-
+            <div>
                 {error && (
                     <div className="error-message">
                         {error}

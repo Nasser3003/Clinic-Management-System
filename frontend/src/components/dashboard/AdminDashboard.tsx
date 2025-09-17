@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../dashboard/shared/DashboardCard';
 import '../css/dashboard/Dashboard.css';
 import Layout from "../Layout";
+import HeroHeader from "../common/HeroHeader";
 
 function AdminDashboard() {
     const { user } = useAuth();
@@ -63,17 +64,13 @@ function AdminDashboard() {
     };
 
     return (
-        <Layout>
-            <div className="admin-dashboard">
-                {/* Hero Section */}
-                <div className="hero-section">
-                    <div className="hero-content">
-                        <h1 className="hero-title">Admin Dashboard</h1>
-                        <p className="hero-subtitle">
-                            System administration and user management
-                        </p>
-                    </div>
-                </div>
+            <div>
+                    <HeroHeader
+                        title="Admin Dashboard"
+                        subtitle="System administration and user management"
+                    />
+
+                <div  className="admin-dashboard">
 
                 {/* System Overview Stats */}
                 <div className="dashboard-grid admin-grid">
@@ -451,7 +448,7 @@ function AdminDashboard() {
                     )}
                 </div>
             </div>
-        </Layout>
+            </div>
     );
 }
 

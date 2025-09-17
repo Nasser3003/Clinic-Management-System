@@ -1,38 +1,55 @@
+/* ==================================================
+   APP LAYOUT FIX - ELIMINATE GAP BEFORE FOOTER
+   ================================================== */
+
 .App {
-  text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Make the main content area expand to fill available space */
+.App > div:first-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Ensure individual pages fill their container */
+.login-page,
+.register-page,
+.forgot-password-page {
+    min-height: calc(100vh - 200px); /* Subtract approximate footer height */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* For pages wrapped in Layout */
+.layout-container {
+    flex: 1;
+    min-height: auto; /* Remove the previous min-height that was causing issues */
 }
 
-.App-link {
-  color: #61dafb;
+/* Alternative approach - target all direct children of Routes */
+.App main,
+.App > div > div {
+    flex: 1;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ==================================================
+   RESPONSIVE ADJUSTMENTS
+   ================================================== */
+
+@media (max-width: 768px) {
+    .login-page,
+    .register-page,
+    .forgot-password-page {
+        min-height: calc(100vh - 250px);
+    }
+}
+
+@media (max-width: 640px) {
+    .login-page,
+    .register-page,
+    .forgot-password-page {
+        min-height: calc(100vh - 300px);
+    }
 }

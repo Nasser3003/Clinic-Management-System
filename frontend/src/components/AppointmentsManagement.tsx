@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import Layout from '../../Layout';
-import './../../css/AppointmentsManagement.css';
+import { useAuth } from '../context/AuthContext';
+import Layout from './Layout';
+import './css/AppointmentsManagement.css';
+import HeroHeader from "./common/HeroHeader";
 
 interface Appointment {
     id: string;
@@ -201,11 +202,11 @@ function AppointmentsManagement() {
 
     return (
         <Layout>
-                <div className="hero-section">
-                    <div className="hero-content">
-                        <h1 className="hero-title">Appointments Management</h1>
-                        <p className="hero-subtitle">iew and manage all appointments in the system</p>
-                    </div>
+                <div>
+                    <HeroHeader
+                        title="Appointments Management"
+                        subtitle="View and manage all appointments in the system"
+                    />
 
                 {error && (
                     <div className="error-message">
