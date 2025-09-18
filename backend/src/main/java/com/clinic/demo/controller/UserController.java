@@ -31,4 +31,14 @@ public class  UserController {
         userService.updatePassword(userUpdateDTO);
         return ResponseEntity.ok("Password updated successfully");
     }
+
+//    @PostMapping("enable2fa")
+//    public ResponseEntity<String> updateTwoFactorAuth(
+//
+//    )
+//
+//    @PostMapping("disable2fa")
+//    public ResponseEntity<String> updateTwoFactorAuth(
+//
+//    )
 }

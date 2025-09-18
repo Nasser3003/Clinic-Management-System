@@ -23,7 +23,6 @@ interface Treatment {
     installmentPeriodInMonths: number;
     createdAt: string;
     updatedAt: string;
-    // New fields for enhanced search
     prescriptions?: string[];
     visitNotes?: string;
 }
@@ -33,22 +32,44 @@ interface TreatmentFormData {
     treatments: TreatmentManagement[];
 }
 
+interface Patient {
+    email: string;
+    firstName: string;
+    lastName: string;
+}
+
+interface Doctor {
+    email: string;
+    firstName: string;
+    lastName: string;
+}
+
 function TreatmentManagement() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'view-treatments' | 'add-treatment'>('view-treatments');
     const [treatments, setTreatments] = useState<Treatment[]>([]);
     const [appointments, setAppointments] = useState<any[]>([]);
+    const [patients, setPatients] = useState<Patient[]>([]);
+    const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    // Search states
+    const [patientSearch, setPatientSearch] = useState('');
+    const [doctorSearch, setDoctorSearch] = useState('');
+    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+    const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+    const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+    const [showDoctorDropdown, setShowDoctorDropdown] = useState(false);
+
     const [filters, setFilters] = useState({
         patientEmail: '',
         doctorEmail: '',
-        paid: '', // 'true', 'false', or ''
+        paid: '',
         startDate: '',
         endDate: '',
-        // New search filters
         prescriptionKeyword: '',
         visitNotesKeyword: ''
     });
@@ -74,8 +95,61 @@ function TreatmentManagement() {
             loadTreatments();
         } else if (activeTab === 'add-treatment') {
             loadCompletedAppointments();
+            loadPatientsAndDoctors();
         }
     }, [activeTab, filters]);
+
+    // Load patients and doctors for search
+    const loadPatientsAndDoctors = async () => {
+        try {
+            // Load patients for admin/employee
+            if (isAdmin || isEmployee) {
+                const patientsResponse = await fetch('/api/users/patients', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (patientsResponse.ok) {
+                    const patientsData = await patientsResponse.json();
+                    setPatients(patientsData);
+                }
+
+                // Load doctors for admin/employee
+                const doctorsResponse = await fetch('/api/users/doctors', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (doctorsResponse.ok) {
+                    const doctorsData = await doctorsResponse.json();
+                    setDoctors(doctorsData);
+                }
+            } else if (isDoctor) {
+                // For doctors, set the logged-in doctor as selected
+                setSelectedDoctor({
+                    email: user?.email || '',
+                    firstName: user?.firstName || '',
+                    lastName: user?.lastName || ''
+                });
+
+                // Load patients for the doctor
+                const patientsResponse = await fetch(`/api/users/patients/doctor/${user?.email}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (patientsResponse.ok) {
+                    const patientsData = await patientsResponse.json();
+                    setPatients(patientsData);
+                }
+            }
+        } catch (err) {
+            console.error('Error loading patients and doctors:', err);
+        }
+    };
 
     const loadTreatments = async () => {
         setLoading(true);
@@ -88,8 +162,6 @@ function TreatmentManagement() {
             if (filters.paid) params.append('paid', filters.paid);
             if (filters.startDate) params.append('startDate', filters.startDate);
             if (filters.endDate) params.append('endDate', filters.endDate);
-
-            // New search parameters
             if (filters.prescriptionKeyword) params.append('prescriptionKeyword', filters.prescriptionKeyword);
             if (filters.visitNotesKeyword) params.append('visitNotesKeyword', filters.visitNotesKeyword);
 
@@ -122,7 +194,18 @@ function TreatmentManagement() {
         setError('');
 
         try {
-            const response = await fetch('/api/appointments?status=COMPLETED', {
+            let url = '/api/appointments?status=COMPLETED';
+
+            // Add filters based on selected patient and doctor
+            const params = new URLSearchParams();
+            if (selectedPatient) params.append('patientEmail', selectedPatient.email);
+            if (selectedDoctor) params.append('doctorEmail', selectedDoctor.email);
+
+            if (params.toString()) {
+                url += `&${params.toString()}`;
+            }
+
+            const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -141,6 +224,36 @@ function TreatmentManagement() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Filter patients based on search
+    const filteredPatients = patients.filter(patient =>
+        `${patient.firstName} ${patient.lastName} ${patient.email}`
+            .toLowerCase()
+            .includes(patientSearch.toLowerCase())
+    ).slice(0, 10);
+
+    // Filter doctors based on search
+    const filteredDoctors = doctors.filter(doctor =>
+        `${doctor.firstName} ${doctor.lastName} ${doctor.email}`
+            .toLowerCase()
+            .includes(doctorSearch.toLowerCase())
+    ).slice(0, 10);
+
+    const handlePatientSelect = (patient: Patient) => {
+        setSelectedPatient(patient);
+        setPatientSearch('');
+        setShowPatientDropdown(false);
+        // Reload appointments when patient changes
+        loadCompletedAppointments();
+    };
+
+    const handleDoctorSelect = (doctor: Doctor) => {
+        setSelectedDoctor(doctor);
+        setDoctorSearch('');
+        setShowDoctorDropdown(false);
+        // Reload appointments when doctor changes
+        loadCompletedAppointments();
     };
 
     const handleAddTreatment = () => {
@@ -555,7 +668,6 @@ function TreatmentManagement() {
                                                             <span>Date: {formatDate(treatment.createdAt)}</span>
                                                         </div>
 
-                                                        {/* Display related prescriptions if available */}
                                                         {treatment.prescriptions && treatment.prescriptions.length > 0 && (
                                                             <div className="prescriptions-info">
                                                                 <span className="prescriptions-label">Prescriptions:</span>
@@ -573,7 +685,6 @@ function TreatmentManagement() {
                                                             </div>
                                                         )}
 
-                                                        {/* Display visit notes excerpt if available */}
                                                         {treatment.visitNotes && (
                                                             <div className="visit-notes-info">
                                                                 <span className="visit-notes-label">Visit Notes:</span>
@@ -644,6 +755,134 @@ function TreatmentManagement() {
                                 <p>Add treatment details for a completed appointment</p>
                             </div>
 
+                            {/* Patient and Doctor Selection */}
+                            <div className="selection-section">
+                                {/* Doctor Display for Doctors */}
+                                {isDoctor && selectedDoctor && (
+                                    <div className="search-group">
+                                        <label>Doctor</label>
+                                        <div className="selected-doctor-display">
+                                            <strong>Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}</strong>
+                                            <span>{selectedDoctor.email}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Doctor Selection - Only for Admin/Employee */}
+                                {(isAdmin || isEmployee) && (
+                                    <div className="search-group">
+                                        <label>Select Doctor</label>
+                                        <div className="search-container">
+                                            <div className="search-input-wrapper">
+                                                <input
+                                                    type="text"
+                                                    value={selectedDoctor ? `Dr. ${selectedDoctor.firstName} ${selectedDoctor.lastName} (${selectedDoctor.email})` : doctorSearch}
+                                                    onChange={(e) => {
+                                                        if (!selectedDoctor) {
+                                                            setDoctorSearch(e.target.value);
+                                                            setShowDoctorDropdown(true);
+                                                        }
+                                                    }}
+                                                    onFocus={() => {
+                                                        if (!selectedDoctor) setShowDoctorDropdown(true);
+                                                    }}
+                                                    placeholder="Search for a doctor..."
+                                                    className="search-input"
+                                                    readOnly={!!selectedDoctor}
+                                                />
+                                                {selectedDoctor && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedDoctor(null);
+                                                            setDoctorSearch('');
+                                                            setAppointments([]);
+                                                        }}
+                                                        className="clear-selection-btn"
+                                                        title="Clear selection"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {showDoctorDropdown && !selectedDoctor && filteredDoctors.length > 0 && (
+                                                <div className="search-dropdown">
+                                                    {filteredDoctors.map((doctor) => (
+                                                        <div
+                                                            key={doctor.email}
+                                                            onClick={() => handleDoctorSelect(doctor)}
+                                                            className="search-option"
+                                                        >
+                                                            <div className="option-main">
+                                                                <strong>Dr. {doctor.firstName} {doctor.lastName}</strong>
+                                                            </div>
+                                                            <div className="option-sub">{doctor.email}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Patient Search */}
+                                <div className="search-group">
+                                    <label>Select Patient</label>
+                                    <div className="search-container">
+                                        <div className="search-input-wrapper">
+                                            <input
+                                                type="text"
+                                                value={selectedPatient ? `${selectedPatient.firstName} ${selectedPatient.lastName} (${selectedPatient.email})` : patientSearch}
+                                                onChange={(e) => {
+                                                    if (!selectedPatient) {
+                                                        setPatientSearch(e.target.value);
+                                                        setShowPatientDropdown(true);
+                                                    }
+                                                }}
+                                                onFocus={() => {
+                                                    if (!selectedPatient) setShowPatientDropdown(true);
+                                                }}
+                                                placeholder="Search for a patient..."
+                                                className="search-input"
+                                                readOnly={!!selectedPatient}
+                                            />
+                                            {selectedPatient && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedPatient(null);
+                                                        setPatientSearch('');
+                                                        setAppointments([]);
+                                                    }}
+                                                    className="clear-selection-btn"
+                                                    title="Clear selection"
+                                                >
+                                                    ×
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {showPatientDropdown && !selectedPatient && filteredPatients.length > 0 && (
+                                            <div className="search-dropdown">
+                                                {filteredPatients.map((patient) => (
+                                                    <div
+                                                        key={patient.email}
+                                                        onClick={() => handlePatientSelect(patient)}
+                                                        className="search-option"
+                                                    >
+                                                        <div className="option-main">
+                                                            <strong>{patient.firstName} {patient.lastName}</strong>
+                                                        </div>
+                                                        <div className="option-sub">{patient.email}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
                             <form onSubmit={handleSubmitTreatments} className="treatment-form">
                                 <div className="form-group">
                                     <label htmlFor="appointmentId">Select Appointment</label>
@@ -653,8 +892,16 @@ function TreatmentManagement() {
                                         onChange={(e) => setTreatmentForm(prev => ({ ...prev, appointmentId: e.target.value }))}
                                         required
                                         className="form-select"
+                                        disabled={appointments.length === 0}
                                     >
-                                        <option value="">Choose an appointment</option>
+                                        <option value="">
+                                            {appointments.length === 0
+                                                ? (selectedPatient || selectedDoctor)
+                                                    ? "No completed appointments found"
+                                                    : "Select patient and doctor first"
+                                                : "Choose an appointment"
+                                            }
+                                        </option>
                                         {appointments.map((appointment) => (
                                             <option key={appointment.id} value={appointment.id}>
                                                 {appointment.patientName} - {appointment.doctorName} - {formatDate(appointment.startDateTime)}
@@ -756,7 +1003,7 @@ function TreatmentManagement() {
                                 <div className="form-actions">
                                     <button
                                         type="submit"
-                                        disabled={submitting}
+                                        disabled={submitting || !treatmentForm.appointmentId}
                                         className="submit-btn"
                                     >
                                         {submitting ? 'Adding Treatments...' : 'Add Treatments'}

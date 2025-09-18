@@ -82,7 +82,7 @@ public class Runner implements CommandLineRunner {
                 "DOC123456",
                 GenderEnum.M,
                 UserTypeEnum.DOCTOR,
-                encoder.encode("doctor"),
+                encoder.encode("Doctor@gmail.com1"),
                 LocalDate.of(1985, 5, 15),
                 5000.0f,
                 rolesDoctor
@@ -96,7 +96,7 @@ public class Runner implements CommandLineRunner {
                 "+1122334455",
                 GenderEnum.M,
                 UserTypeEnum.PATIENT,
-                encoder.encode("Abdo.abdo3003@gmail.com"),
+                encoder.encode("Abdo.abdo3003@gmail.com1"),
                 LocalDate.of(1990, 8, 20),
                 rolesPatient
         );
