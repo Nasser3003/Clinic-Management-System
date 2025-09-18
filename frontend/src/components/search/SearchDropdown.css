@@ -1,0 +1,414 @@
+/* components/search/CompactSearchDropdown.css */
+
+/* ==================================================
+   COMPACT SEARCH WRAPPER
+   ================================================== */
+
+.compact-search-wrapper {
+    position: relative;
+}
+
+/* ==================================================
+   COMPACT SEARCH BUTTON (ICON)
+   ================================================== */
+
+.compact-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.compact-search-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: scale(1.05);
+}
+
+.compact-search-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* ==================================================
+   COMPACT SEARCH DROPDOWN
+   ================================================== */
+
+.compact-search-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    width: 280px;
+    overflow: hidden;
+    animation: compactDropdownSlide 0.15s ease-out;
+}
+
+@keyframes compactDropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================================================
+   COMPACT SEARCH INPUT SECTION
+   ================================================== */
+
+.compact-search-input-section {
+    position: relative;
+    padding: 12px;
+}
+
+.compact-search-input {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.compact-search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.compact-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.compact-search-loading {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.compact-loading-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================================================
+   COMPACT FILTER SECTION
+   ================================================== */
+
+.compact-filter-section {
+    display: flex;
+    gap: 6px;
+    padding: 0 12px 12px;
+}
+
+.compact-filter-btn {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: white;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.compact-filter-btn:hover {
+    background: #f9fafb;
+}
+
+.compact-filter-btn.active.blue {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.doctor-search-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.compact-filter-btn.active.green {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.compact-filter-btn.active.purple {
+    background: #8b5cf6;
+    border-color: #8b5cf6;
+    color: white;
+}
+
+/* ==================================================
+   COMPACT SEARCH RESULTS
+   ================================================== */
+
+.compact-search-results {
+    border-top: 1px solid #f3f4f6;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.compact-result-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.compact-result-item:hover,
+.compact-result-item.selected {
+    background: #f8fafc;
+}
+
+.compact-result-item.selected {
+    background: #eff6ff;
+}
+
+.compact-result-item:last-child {
+    border-bottom: none;
+}
+
+/* ==================================================
+   COMPACT RESULT AVATAR
+   ================================================== */
+
+.compact-result-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.compact-result-avatar.patient {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.compact-result-avatar.employee {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.compact-result-avatar.partner {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* ==================================================
+   COMPACT RESULT INFO
+   ================================================== */
+
+.compact-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.compact-result-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.compact-result-details {
+    font-size: 11px;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.compact-search-highlight {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+/* ==================================================
+   COMPACT RESULT ROLE
+   ================================================== */
+
+.compact-result-role {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.compact-result-role.patient {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.compact-result-role.employee {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.compact-result-role.partner {
+    background: #f3e8ff;
+    color: #7c2d12;
+}
+
+/* ==================================================
+   COMPACT NO RESULTS & HINT
+   ================================================== */
+
+.compact-no-results,
+.compact-search-hint {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.compact-no-results {
+    border-top: 1px solid #f3f4f6;
+}
+
+/* ==================================================
+   SCROLLBAR STYLING
+   ================================================== */
+
+.compact-search-results::-webkit-scrollbar {
+    width: 4px;
+}
+
+.compact-search-results::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.compact-search-results::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.compact-search-results::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==================================================
+   RESPONSIVE DESIGN
+   ================================================== */
+
+@media (max-width: 640px) {
+    .compact-search-dropdown {
+        right: -16px;
+        left: -16px;
+        width: auto;
+    }
+
+    .compact-search-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 10px 32px 10px 12px;
+    }
+
+    .compact-filter-section {
+        padding: 0 12px 16px;
+    }
+
+    .compact-filter-btn {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .compact-search-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .compact-search-dropdown {
+        right: -24px;
+        left: -24px;
+    }
+}
+
+/* ==================================================
+   ACCESSIBILITY
+   ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .compact-search-dropdown {
+        animation: none;
+    }
+
+    .compact-search-btn:hover {
+        transform: none;
+    }
+
+    .compact-loading-spinner {
+        animation: none;
+    }
+}
+
+/* ==================================================
+   HIGH CONTRAST MODE
+   ================================================== */
+
+@media (prefers-contrast: more) {
+    .compact-search-dropdown {
+        border-width: 2px;
+        border-color: #000;
+    }
+
+    .compact-filter-btn,
+    .compact-search-input {
+        border-width: 2px;
+    }
+
+    .compact-result-item.selected {
+        outline: 2px solid #000;
+    }
+}

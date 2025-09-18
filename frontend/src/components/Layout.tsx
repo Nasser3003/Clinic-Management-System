@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './css/Layout.css';
-import './css//notification.css'; // Import the separate CSS file
+import './css/notification.css';
+import SearchDropdown from './search/SearchDropdown';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -49,7 +50,6 @@ const NotificationComponent = () => {
 
     const loadNotifications = async () => {
         try {
-            // Replace with your actual API endpoint
             const response = await fetch('/api/notifications', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -59,19 +59,16 @@ const NotificationComponent = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                // Convert date strings to Date objects
                 const processedNotifications = data.map((notif: any) => ({
                     ...notif,
                     date: new Date(notif.date)
                 }));
                 setNotifications(processedNotifications);
             } else {
-                // Fallback to mock data if API fails
                 loadMockNotifications();
             }
         } catch (error) {
             console.error('Failed to load notifications:', error);
-            // Fallback to mock data
             loadMockNotifications();
         }
     };
@@ -108,7 +105,6 @@ const NotificationComponent = () => {
 
     const handleNotificationClick = async (notificationId: string) => {
         try {
-            // Mark as read in backend
             await fetch(`/api/notifications/${notificationId}/read`, {
                 method: 'PATCH',
                 headers: {
@@ -120,7 +116,6 @@ const NotificationComponent = () => {
             console.error('Failed to mark notification as read:', error);
         }
 
-        // Update local state
         setNotifications(prev =>
             prev.map(notification =>
                 notification.id === notificationId
@@ -353,8 +348,6 @@ function Layout({ children }: LayoutProps) {
                                 alt="Clinic Logo"
                                 className="logo-image"
                             />
-                            <span className="logo-text">
-                            </span>
                         </div>
                         <div className="nav-items">
                             {visibleNavItems.map((item) => (
@@ -370,7 +363,7 @@ function Layout({ children }: LayoutProps) {
                     </div>
 
                     <div className="nav-right">
-                        {/* Notification Component */}
+                        <SearchDropdown />
                         <NotificationComponent />
 
                         <div className="user-profile">
