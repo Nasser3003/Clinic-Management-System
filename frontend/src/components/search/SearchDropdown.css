@@ -21,7 +21,7 @@
     border-radius: 50%;
     border: none;
     background: #f3f4f6;
-    color: #6b7280;
+    color: #a519c1;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
@@ -139,7 +139,7 @@
     font-weight: 500;
     color: #6b7280;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 1s ease;
     text-align: center;
 }
 

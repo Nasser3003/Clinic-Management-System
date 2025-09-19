@@ -86,6 +86,9 @@ function TreatmentManagement() {
         ]
     });
 
+    const [patientNotes, setPatientNotes] = useState('');
+    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
     const isDoctor = user?.role === 'DOCTOR';
     const isAdmin = user?.role === 'ADMIN';
     const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.role || '');
@@ -289,6 +292,17 @@ function TreatmentManagement() {
         }));
     };
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setUploadedFiles(prev => [...prev, ...files]);
+        }
+    };
+
+    const handleRemoveFile = (index: number) => {
+        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmitTreatments = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
@@ -327,17 +341,24 @@ function TreatmentManagement() {
         }
 
         try {
+            const formData = new FormData();
+            formData.append('treatments', JSON.stringify(treatmentForm.treatments));
+            if (patientNotes.trim()) formData.append('patientNotes', patientNotes);
+
+            uploadedFiles.forEach((file, index) => {
+                formData.append(`file_${index}`, file);
+            });
+
             const response = await fetch(`/api/treatments/appointment/${treatmentForm.appointmentId}`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(treatmentForm.treatments)
+                body: formData
             });
 
             if (response.ok) {
-                setSuccess('Treatments added successfully!');
+                setSuccess('Treatments, notes, and files added successfully!');
                 setTreatmentForm({
                     appointmentId: '',
                     treatments: [{
@@ -347,6 +368,8 @@ function TreatmentManagement() {
                         installmentPeriodInMonths: 0
                     }]
                 });
+                setPatientNotes('');
+                setUploadedFiles([]);
                 setActiveTab('view-treatments');
             } else {
                 const errorData = await response.text();
@@ -945,7 +968,7 @@ function TreatmentManagement() {
                                                         onChange={(e) => handleTreatmentChange(index, 'treatmentDescription', e.target.value)}
                                                         placeholder="Describe the treatment provided..."
                                                         required
-                                                        className="form-textarea"
+                                                        className="form-textarea compact"
                                                         rows={3}
                                                     />
                                                 </div>
@@ -998,6 +1021,66 @@ function TreatmentManagement() {
                                             )}
                                         </div>
                                     ))}
+                                </div>
+
+                                {/* Notes and Files Section - Side by Side */}
+                                <div className="notes-files-container">
+                                    {/* Left side - Patient Notes */}
+                                    <div className="notes-section">
+                                        <h4>Patient Notes</h4>
+                                        <textarea
+                                            value={patientNotes}
+                                            onChange={(e) => setPatientNotes(e.target.value)}
+                                            placeholder="Add any additional notes for the patient..."
+                                            className="notes-textarea"
+                                        />
+                                    </div>
+
+                                    {/* Right side - File Upload */}
+                                    <div className="files-section">
+                                        <h4>Attach Files</h4>
+                                        <div className="file-upload-area">
+                                            <input
+                                                type="file"
+                                                multiple
+                                                onChange={handleFileUpload}
+                                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt"
+                                                className="file-input"
+                                                id="file-upload"
+                                            />
+                                            <label htmlFor="file-upload" className="file-upload-label">
+                                                <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                </svg>
+                                                Choose Files
+                                                <span className="file-types">PDF, Images, Documents</span>
+                                            </label>
+                                        </div>
+
+                                        {uploadedFiles.length > 0 && (
+                                            <div className="uploaded-files">
+                                                {uploadedFiles.map((file, index) => (
+                                                    <div key={index} className="file-item">
+                                                        <div className="file-info">
+                                                            <svg className="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                            </svg>
+                                                            <span className="file-name">{file.name}</span>
+                                                        </div>
+                                                        <span className="file-size">({Math.round(file.size / 1024)}KB)</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveFile(index)}
+                                                            className="remove-file-btn"
+                                                            title="Remove file"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="form-actions">
