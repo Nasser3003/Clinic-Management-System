@@ -18,7 +18,7 @@ interface Notification {
     type: 'appointment' | 'lab' | 'payment' | 'prescription' | 'general';
 }
 
-// Notification Component
+// Notification Component (same as before - keeping existing implementation)
 const NotificationComponent = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -340,7 +340,7 @@ function Layout({ children }: LayoutProps) {
                 <div className="nav-content">
                     <div className="nav-left">
                         <div
-                            onClick={() => navigate('/dashboard')}
+                            onClick={() => navigate(user ? '/dashboard' : '/')}
                             className="logo-section"
                         >
                             <img
@@ -349,59 +349,96 @@ function Layout({ children }: LayoutProps) {
                                 className="logo-image"
                             />
                         </div>
-                        <div className="nav-items">
-                            {visibleNavItems.map((item) => (
+
+                        {/* Show navigation items only for authenticated users */}
+                        {user && (
+                            <div className="nav-items">
+                                {visibleNavItems.map((item) => (
+                                    <button
+                                        key={item.path}
+                                        onClick={() => navigate(item.path)}
+                                        className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Public navigation items for unauthenticated users */}
+                        {!user && (
+                            <div className="nav-items">
                                 <button
-                                    key={item.path}
-                                    onClick={() => navigate(item.path)}
-                                    className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                                    onClick={() => navigate('/about')}
+                                    className={`nav-item ${location.pathname === '/about' ? 'active' : ''}`}
                                 >
-                                    {item.label}
+                                    About
                                 </button>
-                            ))}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="nav-right">
-                        <SearchDropdown />
-                        <NotificationComponent />
+                        {/* Authenticated user navigation */}
+                        {user ? (
+                            <>
+                                <SearchDropdown />
+                                <NotificationComponent />
 
-                        <div className="user-profile">
-                            <button
-                                onClick={() => navigate('/profile')}
-                                className="profile-button"
-                            >
-                                <div className="avatar">
-                                    {user?.email && getAvatarUrl() ? (
-                                        <img
-                                            src={getAvatarUrl()}
-                                            alt="User Avatar"
-                                            className="avatar-image"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = 'none';
-                                            }}
-                                        />
-                                    ) : (
-                                        <svg
-                                            className="avatar-icon"
-                                            fill="white"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                    )}
+                                <div className="user-profile">
+                                    <button
+                                        onClick={() => navigate('/profile')}
+                                        className="profile-button"
+                                    >
+                                        <div className="avatar">
+                                            {user?.email && getAvatarUrl() ? (
+                                                <img
+                                                    src={getAvatarUrl()}
+                                                    alt="User Avatar"
+                                                    className="avatar-image"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <svg
+                                                    className="avatar-icon"
+                                                    fill="white"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="user-name">{user?.firstName} {user?.lastName}</span>
+                                    </button>
                                 </div>
-                                <span className="user-name">{user?.firstName} {user?.lastName}</span>
-                            </button>
-                        </div>
 
-                        <button
-                            onClick={handleLogout}
-                            className="logout-button"
-                        >
-                            Logout
-                        </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="logout-button"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            /* Unauthenticated user navigation */
+                            <div className="public-nav-actions">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="public-login-btn"
+                                >
+                                    Login
+                                </button>
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className="public-register-btn"
+                                >
+                                    Register
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>

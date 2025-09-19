@@ -53,19 +53,11 @@ function App() {
                             />
                             <Route
                                 path="/contact"
-                                element={
-                                    <ProtectedRoute>
-                                        <Contact />
-                                    </ProtectedRoute>
-                                }
+                                element={<Contact />}
                             />
                             <Route
                                 path="/about"
-                                element={
-                                    <ProtectedRoute>
-                                        <AboutUs />
-                                    </ProtectedRoute>
-                                }
+                                element={<AboutUs />}
                             />
                             <Route
                                 path="/profile"

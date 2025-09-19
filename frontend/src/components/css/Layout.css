@@ -9,6 +9,69 @@
     min-height: 100vh;
 }
 
+
+/* ==================================================
+   PUBLIC NAVIGATION STYLES (add to existing Layout.css)
+   ================================================== */
+
+.public-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .public-nav-actions {
+        gap: 1rem;
+    }
+}
+
+.public-login-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    background-color: white;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.public-login-btn:hover {
+    color: #2563eb;
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.public-register-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.public-register-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.public-register-btn:focus,
+.public-login-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
 /* ==================================================
    NAVIGATION BAR
    ================================================== */

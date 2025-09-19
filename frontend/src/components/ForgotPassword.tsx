@@ -4,7 +4,7 @@ import { authService } from '../services/authService';
 import './css/ForgotPassword.css';
 
 function ForgotPassword() {
-    const [step, setStep] = useState('email'); // 'email' or 'reset'
+    const [step, setStep] = useState('email');
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -26,7 +26,6 @@ function ForgotPassword() {
         } catch (err: unknown) {
             console.error('Forgot password error:', err);
 
-            // Type-safe error handling
             let errorMessage = 'Failed to send OTP';
             if (err && typeof err === 'object' && 'response' in err) {
                 const axiosError = err as { response?: { data?: string }; message?: string };
@@ -64,7 +63,6 @@ function ForgotPassword() {
         } catch (err: unknown) {
             console.error('Reset password error:', err);
 
-            // Type-safe error handling
             let errorMessage = 'Failed to reset password';
             if (err && typeof err === 'object' && 'response' in err) {
                 const axiosError = err as { response?: { data?: string }; message?: string };

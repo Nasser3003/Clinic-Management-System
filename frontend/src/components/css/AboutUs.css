@@ -2,6 +2,164 @@
    ABOUT US PAGE - BASE STYLES
    ================================================== */
 
+/* ==================================================
+   PUBLIC ABOUT US PAGE - BASE STYLES
+   ================================================== */
+
+.about-us-public-page {
+    background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 50%, #e0e7ff 100%);
+    min-height: 100vh;
+}
+
+/* ==================================================
+   PUBLIC NAVIGATION BAR
+   ================================================== */
+
+.public-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+}
+
+.public-nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .public-nav-content {
+        padding: 0 1.5rem;
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .public-nav-content {
+        padding: 0 2rem;
+        gap: 2rem;
+    }
+}
+
+.public-logo-section {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.public-logo-section:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+    transform: scale(1.02);
+}
+
+.public-logo-image {
+    height: 2.5rem;
+    width: auto;
+    object-fit: contain;
+}
+
+@media (min-width: 1024px) {
+    .public-logo-image {
+        height: 2.75rem;
+    }
+}
+
+.public-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .public-nav-actions {
+        gap: 1rem;
+    }
+}
+
+.public-login-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    background-color: white;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.public-login-btn:hover {
+    color: #2563eb;
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.public-register-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.public-register-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.public-register-btn:focus,
+.public-login-btn:focus,
+.public-logo-section:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* ==================================================
+   ABOUT US CONTENT
+   ================================================== */
+
+.about-us-content {
+    max-width: 88rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .about-us-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-us-content {
+        padding: 2rem;
+    }
+}
+
 .about-us-page {
     max-width: 88rem;
     margin: 0 auto;
@@ -322,10 +480,6 @@
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    flex: 1;
-}
-
-.doctor-content {
     flex: 1;
 }
 

@@ -1,8 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/AboutUs.css';
 
 function AboutUs() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
     const doctors = [
         {
             id: 1,
@@ -66,15 +71,22 @@ function AboutUs() {
         }
     ];
 
+    const handleBookAppointment = () => {
+        if (user)
+            navigate('/appointments/book');
+        else
+            navigate('/login');
+    };
+
     return (
         <Layout>
-                <div className="hero-section">
-                    <div className="hero-content">
-                        <h1 className="hero-title">About Our Clinic</h1>
-                        <p className="hero-subtitle">
-                            Dedicated to providing exceptional healthcare with compassion, expertise, technology.
-                        </p>
-                    </div>
+            <div className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">About Our Clinic</h1>
+                    <p className="hero-subtitle">
+                        Dedicated to providing exceptional healthcare with compassion, expertise, and technology.
+                    </p>
+                </div>
 
                 {/* Mission Section */}
                 <div className="mission-section">
@@ -158,7 +170,7 @@ function AboutUs() {
 
                                 {/* Doctor Info */}
                                 <div className="doctor-info">
-                                    <div className="doctor-content">
+                                    <div>
                                         <h3 className="doctor-name">{doctor.name}</h3>
                                         <p className="doctor-title">{doctor.title}</p>
 
@@ -195,9 +207,12 @@ function AboutUs() {
                                         </div>
                                     </div>
 
-                                    {/* Book Appointment Button */}
-                                    <button className="book-appointment-btn">
-                                        Book Appointment
+                                    {/* Book Appointment Button - Smart text based on auth status */}
+                                    <button
+                                        className="book-appointment-btn"
+                                        onClick={handleBookAppointment}
+                                    >
+                                        {user ? 'Book Appointment' : 'Login to Book Appointment'}
                                     </button>
                                 </div>
                             </div>

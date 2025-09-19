@@ -20,7 +20,6 @@ function Login() {
         try {
             const response = await authService.login({ email, password });
 
-            // Debug: Let's see what the backend actually returns
             console.log('Backend response:', response);
             console.log('Response structure:', {
                 hasJwt: !!response.jwt,
@@ -34,7 +33,6 @@ function Login() {
             if (!response.user)
                 throw new Error('No user data received from server');
 
-            // Now the response contains { jwt: string, user: User }
             login(response.jwt, response.user);
             navigate('/dashboard');
         } catch (err: any) {
@@ -66,9 +64,7 @@ function Login() {
         <div className="login-page">
             <div className="login-container">
                 <div className="login-header">
-                    <h2 className="login-title">
-                        Sign in to Clinic
-                    </h2>
+                    <h2 className="login-title">Sign in to Clinic</h2>
                 </div>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="form-inputs">
@@ -102,19 +98,11 @@ function Login() {
                         <div className="error-message">{error}</div>
                     )}
 
-                    <div className="forgot-password-link" style={{ textAlign: 'right', marginBottom: '16px' }}>
+                    <div className="forgot-password-link">
                         <button
                             type="button"
                             onClick={() => navigate('/forgot-password')}
                             className="forgot-password-button"
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#007bff',
-                                textDecoration: 'underline',
-                                cursor: 'pointer',
-                                fontSize: '14px'
-                            }}
                         >
                             Forgot your password?
                         </button>
@@ -131,16 +119,16 @@ function Login() {
                     </div>
 
                     <div className="signup-link">
-            <span className="signup-text">
-              Don't have an account?{' '}
-                <button
-                    type="button"
-                    onClick={() => navigate('/register')}
-                    className="signup-button"
-                >
-                Sign up
-              </button>
-            </span>
+                        <span className="signup-text">
+                            Don't have an account?{' '}
+                            <button
+                                type="button"
+                                onClick={() => navigate('/register')}
+                                className="signup-button"
+                            >
+                                Sign up
+                            </button>
+                        </span>
                     </div>
                 </form>
             </div>
