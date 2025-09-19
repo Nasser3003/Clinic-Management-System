@@ -15,8 +15,12 @@ public interface UserRepository extends JpaRepository<BaseUserEntity, Long> {
     Optional<BaseUserEntity> findByEmail(String aEmail);
     Optional<BaseUserEntity> findByPhoneNumber(String aPhoneNumber);
 
+
     List<BaseUserEntity> findAllById(Iterable<Long> longs);
 
     List<EmployeeEntity> findALlByUserType(UserTypeEnum userType);
 
+    long countByUserType(UserTypeEnum userType);
+
+    long countAllByUserTypeAndIsEnabled(UserTypeEnum userTypeEnum, boolean b);
 }

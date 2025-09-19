@@ -1,6 +1,7 @@
 package com.clinic.demo.models.entity.user;
 
 import com.clinic.demo.models.entity.RoleEntity;
+import com.clinic.demo.models.enums.EmploymentStatusEnum;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.Entity;
@@ -27,7 +28,10 @@ public class EmployeeEntity extends BaseUserEntity {
         setSalary(salary);
     }
 
+
     private String title;
+    private String department;
+    private EmploymentStatusEnum employmentStatus;
     private float salary;
     private String description;
 

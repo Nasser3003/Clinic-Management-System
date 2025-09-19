@@ -117,6 +117,20 @@ public class UserService {
         logger.info("Password updated successfully for user: {}", authenticatedUserEmail);
     }
 
+
+    public long countAllActiveStaff() {
+        return userRepository.countByUserType(UserTypeEnum.EMPLOYEE) +
+                userRepository.countByUserType(UserTypeEnum.NURSE) +
+                userRepository.countByUserType(UserTypeEnum.RECEPTIONIST) +
+                userRepository.countByUserType(UserTypeEnum.LAB_TECHNICIAN);
+    }
+    public long countAllActivePatients() {
+        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.PATIENT, true);
+    }
+    public long countAllActiveDoctors() {
+        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.DOCTOR, true);
+    }
+
     private void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
         if (user == null) throw new IllegalArgumentException("User cannot be null");
 

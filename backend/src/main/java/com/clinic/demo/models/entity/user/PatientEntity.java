@@ -2,6 +2,7 @@ package com.clinic.demo.models.entity.user;
 
 import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.TreatmentEntity;
+import com.clinic.demo.models.enums.BloodTypeEnum;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
@@ -30,5 +31,6 @@ public class PatientEntity extends BaseUserEntity {
     private Set<String> allergies;
     private Set<String> healthIssues;
     private Set<String> prescriptions;
+    private BloodTypeEnum bloodTypeEnum;
 
 }

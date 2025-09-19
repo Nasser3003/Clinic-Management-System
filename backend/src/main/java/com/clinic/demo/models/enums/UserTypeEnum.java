@@ -8,12 +8,12 @@ public enum UserTypeEnum {
 
     ADMIN("Administrator", "System administrator with full access"),
     DOCTOR("Doctor", "Medical practitioner providing patient care"),
-    NURSE("Nurse", "Healthcare professional assisting with patient care"),
+    PARTNER("Partner", "External partner organization"),
     PATIENT("Patient", "Individual receiving medical care"),
+    NURSE("Nurse", "Healthcare professional assisting with patient care"),
     EMPLOYEE("Employee", "General clinic staff member"),
     RECEPTIONIST("Receptionist", "Front desk staff managing appointments and patients"),
-    LAB_TECHNICIAN("Lab Technician", "Laboratory staff processing tests"),
-    PARTNER("Partner", "External partner organization");
+    LAB_TECHNICIAN("Lab Technician", "Laboratory staff processing tests");
 
     private final String displayName;
     private final String description;

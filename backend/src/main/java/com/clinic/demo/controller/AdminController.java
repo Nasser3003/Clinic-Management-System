@@ -7,12 +7,14 @@ import com.clinic.demo.service.AuthenticationService;
 import com.clinic.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyAuthority('USER_CREATE', 'USER_READ', 'USER_UPDATE', 'USER_DELETE')")
 @RequestMapping("/admin")
 @CrossOrigin("*") // will need in the future
 public class AdminController {
@@ -20,7 +22,7 @@ public class AdminController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/all")
+    @GetMapping("/USER_READ")
     public List<UserInfoDTO> getAllUsers() {
        return userService.findAllUsers();
     }
@@ -33,5 +35,20 @@ public class AdminController {
     @GetMapping("/email/{email}")
     public UserInfoDTO getUserByEmail (@PathVariable("email") String email) {
         return UserMapper.convertToDTO(userService.findUserByEmail(email));
+    }
+
+    @GetMapping("/api/v01/doctors-count")
+    public long getCountAllActiveDoctors () {
+        return userService.countAllActiveDoctors();
+    }
+
+    @GetMapping("/api/v01/patients-count")
+    public long getCountAllActivePatients () {
+        return userService.countAllActivePatients();
+    }
+
+    @GetMapping("/api/v01/staff-count")
+    public long getCountAllActiveStaff () {
+        return userService.countAllActiveStaff();
     }
 }

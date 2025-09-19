@@ -181,7 +181,7 @@ public class BaseUserEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .flatMap(role -> role.getPermissions().stream())
-                .map(permission -> new SimpleGrantedAuthority("ROLE_" + permission.name()))
+                .map(permission -> new SimpleGrantedAuthority(permission.name()))
                 .collect(Collectors.toSet());
     }
 
