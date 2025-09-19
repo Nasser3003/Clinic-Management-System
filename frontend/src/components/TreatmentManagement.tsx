@@ -936,13 +936,6 @@ function TreatmentManagement() {
                                 <div className="treatments-section">
                                     <div className="treatments-header">
                                         <h4>Treatment Details</h4>
-                                        <button
-                                            type="button"
-                                            onClick={handleAddTreatment}
-                                            className="add-treatment-btn"
-                                        >
-                                            Add Another Treatment
-                                        </button>
                                     </div>
 
                                     {treatmentForm.treatments.map((treatment, index) => (
@@ -1021,6 +1014,14 @@ function TreatmentManagement() {
                                             )}
                                         </div>
                                     ))}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleAddTreatment}
+                                        className="add-treatment-btn"
+                                    >
+                                        Add Another Treatment
+                                    </button>
                                 </div>
 
                                 {/* Notes and Files Section - Side by Side */}

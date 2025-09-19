@@ -879,8 +879,7 @@ mark {
 
 .search-input {
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    padding-right: 2rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
     font-size: 0.8125rem;
@@ -1042,8 +1041,7 @@ mark {
     }
 
     .search-input {
-        padding: 0.5rem 0.625rem;
-        padding-right: 2rem;
+        padding: 0.5rem 2rem 0.5rem 0.625rem;
         font-size: 0.8125rem;
     }
 
