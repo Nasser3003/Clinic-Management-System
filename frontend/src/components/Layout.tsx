@@ -374,6 +374,12 @@ function Layout({ children }: LayoutProps) {
                                 >
                                     About
                                 </button>
+                                <button
+                                    onClick={() => navigate('/contact')}
+                                    className={`nav-item ${location.pathname === '/contact' ? 'active' : ''}`}
+                                >
+                                    Contact
+                                </button>
                             </div>
                         )}
                     </div>

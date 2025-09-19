@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import './css/Login.css';
+import Layout from "./Layout";
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -61,6 +62,7 @@ function Login() {
     };
 
     return (
+        <Layout>
         <div className="login-page">
             <div className="login-container">
                 <div className="login-header">
@@ -133,6 +135,7 @@ function Login() {
                 </form>
             </div>
         </div>
+        </Layout>
     );
 }
 

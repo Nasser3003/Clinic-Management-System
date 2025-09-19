@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import './css/Register.css';
+import Layout from "./Layout";
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -67,6 +68,7 @@ function Register() {
     };
 
     return (
+        <Layout>
         <div className="register-page">
             <div className="register-container">
                 <div className="register-header">
@@ -182,6 +184,7 @@ function Register() {
                 </form>
             </div>
         </div>
+        </Layout>
     );
 }
 

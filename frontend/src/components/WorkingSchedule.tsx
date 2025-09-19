@@ -358,11 +358,9 @@ function WorkingScheduleManager() {
     if (loadingEmployees) {
         return (
             <Layout>
-                <div className="working-schedule-container">
-                    <div className="loading-state">
-                        <div className="loading-spinner"></div>
-                        <p>Loading employees list...</p>
-                    </div>
+                <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading employees list...</p>
                 </div>
             </Layout>
         );
@@ -372,7 +370,6 @@ function WorkingScheduleManager() {
     if (isAdmin && !selectedEmployee) {
         return (
             <Layout>
-                <div className="working-schedule-container">
                     <HeroHeader
                         title="Working Schedule Management"
                         subtitle="Select an employee to manage their working schedule"
@@ -473,7 +470,6 @@ function WorkingScheduleManager() {
                             )}
                         </div>
                     </div>
-                </div>
             </Layout>
         );
     }

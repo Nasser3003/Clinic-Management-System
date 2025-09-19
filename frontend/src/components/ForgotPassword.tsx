@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import './css/ForgotPassword.css';
+import Layout from "./Layout";
 
 function ForgotPassword() {
     const [step, setStep] = useState('email');
@@ -87,6 +88,7 @@ function ForgotPassword() {
     };
 
     return (
+        <Layout>
         <div className="forgot-password-page">
             <div className="forgot-password-container">
                 <div className="forgot-password-header">
@@ -229,6 +231,7 @@ function ForgotPassword() {
                 )}
             </div>
         </div>
+    </Layout>
     );
 }
 
