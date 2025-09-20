@@ -1,6 +1,7 @@
 package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.UserUpdatePasswordDTO;
+import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.exception.*;
@@ -18,13 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -121,18 +122,33 @@ public class UserService {
         logger.info("Password updated successfully for user: {}", authenticatedUserEmail);
     }
 
+//    @PreAuthorize("hasAuthority('USER_READ')")
+    public long countAllActivePatients() {
+        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.PATIENT, true);
+    }
 
+//    @PreAuthorize("hasAuthority('USER_READ')")
+    public long countAllActiveDoctors() {
+        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.DOCTOR, true);
+    }
+
+//    @PreAuthorize("hasAuthority('USER_READ')")
     public long countAllActiveStaff() {
         return userRepository.countByUserType(UserTypeEnum.EMPLOYEE) +
                 userRepository.countByUserType(UserTypeEnum.NURSE) +
                 userRepository.countByUserType(UserTypeEnum.RECEPTIONIST) +
                 userRepository.countByUserType(UserTypeEnum.LAB_TECHNICIAN);
     }
-    public long countAllActivePatients() {
-        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.PATIENT, true);
+
+//    @PreAuthorize("hasAuthority('USER_READ')")
+    public List<EmployeeDTO> getAllDoctors() {
+        return getAllSpecificEmployee(UserTypeEnum.DOCTOR);
     }
-    public long countAllActiveDoctors() {
-        return userRepository.countAllByUserTypeAndIsEnabled(UserTypeEnum.DOCTOR, true);
+
+    private List<EmployeeDTO> getAllSpecificEmployee(UserTypeEnum userTypeEnum) {
+        List<EmployeeEntity> employeeEntitiesList = userRepository.findALlByUserType(userTypeEnum);
+        return employeeEntitiesList.stream()
+                .map(UserMapper::convertToEmployeeDTO).collect(Collectors.toList());
     }
 
     private void updateProperties(BaseUserEntity user, Map<String, Object> updates) {
@@ -232,6 +248,7 @@ public class UserService {
         }
     }
 
+//    @PreAuthorize("hasAuthority('MEDICAL_RECORD_READ')")
     public long countAllAppointmentsThisMonth() {
         LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1);

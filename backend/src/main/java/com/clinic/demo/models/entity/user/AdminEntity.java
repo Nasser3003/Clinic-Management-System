@@ -1,7 +1,7 @@
 package com.clinic.demo.models.entity.user;
 
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.enums.GenderEnum;
+import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,18 +32,18 @@ public class AdminEntity extends BaseUserEntity {
     // Constructor
     public AdminEntity(String firstName, String lastName, String email, String phoneNumber,
                        String nationalId, GenderEnum gender, String password,
-                       LocalDate dateOfBirth, Set<RoleEntity> roles) {
+                       LocalDate dateOfBirth, Set<PermissionEnum> permissions) {
         super(firstName, lastName, email, phoneNumber, gender, UserTypeEnum.ADMIN,
-                password, dateOfBirth, roles);
+                password, dateOfBirth, permissions);
         this.setNationalId(nationalId);
     }
 
     // Constructor with department
     public AdminEntity(String firstName, String lastName, String email, String phoneNumber,
                        String nationalId, GenderEnum gender, String password,
-                       LocalDate dateOfBirth, String department, Set<RoleEntity> roles) {
+                       LocalDate dateOfBirth, String department, Set<PermissionEnum> permissions) {
         this(firstName, lastName, email, phoneNumber, nationalId, gender, password,
-                dateOfBirth, roles);
+                dateOfBirth, permissions);
         this.department = department;
     }
 

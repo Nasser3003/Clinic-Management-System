@@ -1,12 +1,14 @@
 package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
+import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.service.AuthenticationService;
 import com.clinic.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('USER_CREATE', 'USER_READ', 'USER_UPDATE', 'USER_DELETE','MEDICAL_RECORD_READ')")
 @RequestMapping("/admin")
 @CrossOrigin("*") // will need in the future
 public class AdminController {
@@ -57,5 +58,10 @@ public class AdminController {
     @GetMapping("/api/v01/appointments-this-month")
     public long getCountAllAppointmentsThisMonth () {
         return userService.countAllAppointmentsThisMonth();
+    }
+
+    @GetMapping("/api/v01/get-all-doctors")
+    public List<EmployeeDTO> getAllDoctors() {
+        return userService.getAllDoctors();
     }
 }

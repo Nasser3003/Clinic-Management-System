@@ -1,9 +1,9 @@
 package com.clinic.demo.models.entity.user;
 
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.TreatmentEntity;
 import com.clinic.demo.models.enums.BloodTypeEnum;
 import com.clinic.demo.models.enums.GenderEnum;
+import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,17 +20,30 @@ import java.util.Set;
 @Table(name = "user_patient")
 public class PatientEntity extends BaseUserEntity {
 
-    public PatientEntity(String firstName, String lastName, String email, String phoneNumber, GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth, Set<RoleEntity> authorities) {
-        super(firstName, lastName, email, phoneNumber, gender, userType, password, dateOfBirth, authorities);
-        this.setUserType(UserTypeEnum.PATIENT);
-    }
-
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<TreatmentEntity> pastTreatmentEntities = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "patient_allergies", joinColumns = @JoinColumn(name = "patient_id"))
+    @Column(name = "allergy")
     private Set<String> allergies;
+
+    @ElementCollection
+    @CollectionTable(name = "patient_health_issues", joinColumns = @JoinColumn(name = "patient_id"))
+    @Column(name = "health_issue")
     private Set<String> healthIssues;
+
+    @ElementCollection
+    @CollectionTable(name = "patient_prescriptions", joinColumns = @JoinColumn(name = "patient_id"))
+    @Column(name = "prescription")
     private Set<String> prescriptions;
+
+    @Enumerated(EnumType.STRING)
     private BloodTypeEnum bloodTypeEnum;
 
+    public PatientEntity(String firstName, String lastName, String email, String phoneNumber,
+                         GenderEnum gender, String password, LocalDate dateOfBirth,
+                         Set<PermissionEnum> permissions) {
+        super(firstName, lastName, email, phoneNumber, gender, UserTypeEnum.PATIENT, password, dateOfBirth, permissions);
+    }
 }

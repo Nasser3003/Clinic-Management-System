@@ -1,12 +1,11 @@
 package com.clinic.demo;
 
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.AdminEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
+import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
-import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -25,42 +24,68 @@ import java.util.Set;
 @Component
 @Transactional
 public class Runner implements CommandLineRunner {
-    private RoleRepository roleRepository;
     private UserRepository userRepository;
     private PasswordEncoder encoder;
 
-    // todo paying methods
-
     @Override
     public void run(String... args) {
-        // Check if roles already exist to avoid duplicates
-        if (roleRepository.findByName("ADMIN_ROLE").isPresent()) {
+        // Check if admin user already exists to avoid duplicates
+        if (userRepository.findByEmail("admin1@gmail.com").isPresent()) {
             System.out.println("Data already initialized, skipping...");
             return;
         }
 
         System.out.println("Initializing data...");
 
-        // Create roles with proper names
-        RoleEntity adminRole = roleRepository.save(new RoleEntity("ADMIN_ROLE"));
-        RoleEntity userRole = roleRepository.save(new RoleEntity("USER_ROLE"));
-        RoleEntity patientRole = roleRepository.save(new RoleEntity("PATIENT_ROLE"));
-        RoleEntity doctorRole = roleRepository.save(new RoleEntity("DOCTOR_ROLE"));
+        // Create admin permissions
+        Set<PermissionEnum> adminPermissions = new HashSet<>(Set.of(
+                PermissionEnum.USER_READ,
+                PermissionEnum.USER_CREATE,
+                PermissionEnum.USER_UPDATE,
+                PermissionEnum.USER_DELETE,
+                PermissionEnum.PATIENT_READ,
+                PermissionEnum.PATIENT_CREATE,
+                PermissionEnum.PATIENT_UPDATE,
+                PermissionEnum.PATIENT_DELETE,
+                PermissionEnum.MEDICAL_RECORD_READ,
+                PermissionEnum.MEDICAL_RECORD_CREATE,
+                PermissionEnum.MEDICAL_RECORD_UPDATE,
+                PermissionEnum.ADMIN_SYSTEM_CONFIG,
+                PermissionEnum.ADMIN_USER_MANAGEMENT,
+                PermissionEnum.VIEW_REPORTS,
+                PermissionEnum.CREATE_REPORTS,
+                PermissionEnum.EXPORT_REPORTS,
+                PermissionEnum.APPOINTMENT_READ,
+                PermissionEnum.APPOINTMENT_CREATE,
+                PermissionEnum.APPOINTMENT_UPDATE,
+                PermissionEnum.APPOINTMENT_DELETE
+        ));
 
-        // Create role sets
-        Set<RoleEntity> rolesAdmin = new HashSet<>();
-        rolesAdmin.add(adminRole);
-        rolesAdmin.add(userRole);
+        // Create doctor permissions
+        Set<PermissionEnum> doctorPermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ,
+                PermissionEnum.PATIENT_UPDATE,
+                PermissionEnum.MEDICAL_RECORD_READ,
+                PermissionEnum.MEDICAL_RECORD_CREATE,
+                PermissionEnum.MEDICAL_RECORD_UPDATE,
+                PermissionEnum.ORDER_TESTS,
+                PermissionEnum.VIEW_TEST_RESULTS,
+                PermissionEnum.UPDATE_TEST_RESULTS,
+                PermissionEnum.APPOINTMENT_READ,
+                PermissionEnum.APPOINTMENT_CREATE,
+                PermissionEnum.APPOINTMENT_UPDATE,
+                PermissionEnum.VIEW_REPORTS
+        ));
 
-        Set<RoleEntity> rolesDoctor = new HashSet<>();
-        rolesDoctor.add(doctorRole);
-        rolesDoctor.add(userRole);
+        // Create patient permissions
+        Set<PermissionEnum> patientPermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ_OWN,
+                PermissionEnum.MEDICAL_RECORD_READ_OWN,
+                PermissionEnum.APPOINTMENT_READ_OWN,
+                PermissionEnum.APPOINTMENT_CREATE
+        ));
 
-        Set<RoleEntity> rolesPatient = new HashSet<>();
-        rolesPatient.add(patientRole);
-        rolesPatient.add(userRole);
-
-        // Create and save users separately
+        // Create and save admin user
         AdminEntity admin = new AdminEntity(
                 "Admin",
                 "Admin",
@@ -70,10 +95,12 @@ public class Runner implements CommandLineRunner {
                 GenderEnum.M,
                 encoder.encode("Admin1@gmail.com"),
                 LocalDate.of(1997, 11, 27),
-                rolesAdmin
+                adminPermissions
         );
+        admin.setDepartment("IT");
         userRepository.save(admin);
 
+        // Create and save doctor user
         EmployeeEntity doctor = new EmployeeEntity(
                 "Doctor",
                 "Mo3a",
@@ -85,20 +112,23 @@ public class Runner implements CommandLineRunner {
                 encoder.encode("Doctor@gmail.com1"),
                 LocalDate.of(1985, 5, 15),
                 5000.0f,
-                rolesDoctor
+                doctorPermissions
         );
+        doctor.setTitle("Dr.");
+        doctor.setDepartment("Cardiology");
+        doctor.setDescription("Senior Cardiologist with 15+ years experience");
         userRepository.save(doctor);
 
+        // Create and save patient user
         PatientEntity patient = new PatientEntity(
                 "Nasser",
                 "Patient",
                 "abdo.abdo3003@gmail.com",
                 "+1122334455",
                 GenderEnum.M,
-                UserTypeEnum.PATIENT,
                 encoder.encode("Abdo.abdo3003@gmail.com1"),
                 LocalDate.of(1990, 8, 20),
-                rolesPatient
+                patientPermissions
         );
 
         Set<String> allergies = new HashSet<>(Set.of(
@@ -128,8 +158,101 @@ public class Runner implements CommandLineRunner {
 
         userRepository.save(patient);
 
-        patient.setAllergies(allergies);
-        patient.setHealthIssues(healthIssues);
-        patient.setPrescriptions(prescriptions);
+        // Create additional sample users for testing
+        createSampleNurse();
+        createSampleReceptionist();
+        createSampleLabTechnician();
+
+        System.out.println("Data initialization completed successfully!");
+        System.out.println("Users created:");
+        System.out.println("- Admin: admin1@gmail.com / Admin1@gmail.com");
+        System.out.println("- Doctor: doctor@gmail.com / Doctor@gmail.com1");
+        System.out.println("- Patient: abdo.abdo3003@gmail.com / Abdo.abdo3003@gmail.com1");
+        System.out.println("- Nurse: nurse@gmail.com / Nurse@gmail.com1");
+        System.out.println("- Receptionist: receptionist@gmail.com / Receptionist@gmail.com1");
+        System.out.println("- Lab Tech: labtech@gmail.com / LabTech@gmail.com1");
+    }
+
+    private void createSampleNurse() {
+        Set<PermissionEnum> nursePermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ,
+                PermissionEnum.PATIENT_UPDATE,
+                PermissionEnum.MEDICAL_RECORD_READ,
+                PermissionEnum.MEDICAL_RECORD_UPDATE,
+                PermissionEnum.VIEW_TEST_RESULTS,
+                PermissionEnum.APPOINTMENT_READ,
+                PermissionEnum.APPOINTMENT_UPDATE
+        ));
+
+        EmployeeEntity nurse = new EmployeeEntity(
+                "Nurse",
+                "Sarah",
+                "nurse@gmail.com",
+                "+1555666777",
+                "NURSE001",
+                GenderEnum.F,
+                UserTypeEnum.NURSE,
+                encoder.encode("Nurse@gmail.com1"),
+                LocalDate.of(1988, 3, 12),
+                3500.0f,
+                nursePermissions
+        );
+        nurse.setTitle("RN");
+        nurse.setDepartment("General Ward");
+        nurse.setDescription("Registered Nurse with 8 years experience");
+        userRepository.save(nurse);
+    }
+
+    private void createSampleReceptionist() {
+        Set<PermissionEnum> receptionistPermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ,
+                PermissionEnum.PATIENT_CREATE,
+                PermissionEnum.APPOINTMENT_READ,
+                PermissionEnum.APPOINTMENT_CREATE,
+                PermissionEnum.APPOINTMENT_UPDATE
+        ));
+
+        EmployeeEntity receptionist = new EmployeeEntity(
+                "Receptionist",
+                "Lisa",
+                "receptionist@gmail.com",
+                "+1777888999",
+                "RECEP001",
+                GenderEnum.F,
+                UserTypeEnum.RECEPTIONIST,
+                encoder.encode("Receptionist@gmail.com1"),
+                LocalDate.of(1992, 7, 8),
+                2500.0f,
+                receptionistPermissions
+        );
+        receptionist.setDepartment("Front Desk");
+        receptionist.setDescription("Front desk receptionist handling appointments and patient check-ins");
+        userRepository.save(receptionist);
+    }
+
+    private void createSampleLabTechnician() {
+        Set<PermissionEnum> labTechPermissions = new HashSet<>(Set.of(
+                PermissionEnum.ORDER_TESTS,
+                PermissionEnum.VIEW_TEST_RESULTS,
+                PermissionEnum.UPDATE_TEST_RESULTS,
+                PermissionEnum.PATIENT_READ
+        ));
+
+        EmployeeEntity labTech = new EmployeeEntity(
+                "Lab",
+                "Technician",
+                "labtech@gmail.com",
+                "+1888999000",
+                "LAB001",
+                GenderEnum.M,
+                UserTypeEnum.LAB_TECHNICIAN,
+                encoder.encode("LabTech@gmail.com1"),
+                LocalDate.of(1990, 9, 15),
+                3000.0f,
+                labTechPermissions
+        );
+        labTech.setDepartment("Laboratory");
+        labTech.setDescription("Medical Laboratory Technician specializing in blood work and diagnostics");
+        userRepository.save(labTech);
     }
 }

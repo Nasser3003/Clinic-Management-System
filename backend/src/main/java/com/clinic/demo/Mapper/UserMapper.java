@@ -9,6 +9,7 @@ import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.BaseUserEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class UserMapper {
                 user.getUserType(),
                 user.getNationalId(),
                 user.getDateOfBirth(),
-                convertAuthoritiesToRoles(user.getRoles()),
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()),
                 user.isDeleted(),
                 user.getCreateDate(),
                 user.getLastModifiedDate(),
@@ -41,16 +42,8 @@ public class UserMapper {
                 user.getNotes()
         );
     }
-    
-    public static Object convertToSpecializedDTO(BaseUserEntity user) {
-        return switch (user.getUserType()) {
-            case DOCTOR, EMPLOYEE, ADMIN -> convertToEmployeeDTO((EmployeeEntity) user);
-            case PATIENT -> convertToPatientDTO((PatientEntity) user);
-            default -> convertToDTO(user);
-        };
-    }
 
-    private static EmployeeDTO convertToEmployeeDTO(EmployeeEntity employee) {
+     public static EmployeeDTO convertToEmployeeDTO(EmployeeEntity employee) {
         return new EmployeeDTO(
                 employee.getId(),
                 employee.getFirstName(),
@@ -62,7 +55,7 @@ public class UserMapper {
                 employee.getUserType().toString(),
                 employee.getNationalId(),
                 employee.getDateOfBirth(),
-                convertAuthoritiesToRoles(employee.getRoles()),
+                employee.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()),
                 employee.isDeleted(),
                 employee.getCreateDate(),
                 employee.getLastModifiedDate(),
@@ -74,6 +67,10 @@ public class UserMapper {
                 employee.getEmergencyContactNumber(),
                 employee.getNotes(),
                 employee.getSalary(),
+                employee.getTitle(),
+                employee.getDepartment(),
+                employee.getEmploymentStatus(),
+                employee.getAvatarPath(),
                 employee.getDescription()
         );
     }
@@ -90,7 +87,7 @@ public class UserMapper {
                 patient.getUserType().toString(),
                 patient.getNationalId(),
                 patient.getDateOfBirth(),
-                convertAuthoritiesToRoles(patient.getRoles()),
+                patient.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()),
                 patient.isDeleted(),
                 patient.getCreateDate(),
                 patient.getLastModifiedDate(),
@@ -112,6 +109,7 @@ public class UserMapper {
                 .map(RoleEntity::getName)
                 .collect(Collectors.toSet());
     }
+
     public static UserProfileDTO toUserProfileDTO(BaseUserEntity user) {
         return new UserProfileDTO(
                 user.getId().toString(),

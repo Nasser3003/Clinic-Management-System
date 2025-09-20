@@ -1,6 +1,5 @@
 package com.clinic.demo.service;
 
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.entity.user.BaseUserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -37,8 +36,8 @@ public class TokenService {
     private String createTokenFromUser(BaseUserEntity user) {
         Instant now = Instant.now();
 
-        String roles = user.getRoles().stream()
-                .map(RoleEntity::getName) // Assuming RoleEntity has getName() method
+        String permissions = user.getPermissions().stream()
+                .map(Enum::name)
                 .collect(Collectors.joining(","));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -50,7 +49,7 @@ public class TokenService {
                 .claim("userType", user.getUserType().name())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
-                .claim("roles", roles)
+                .claim("permissions", permissions)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

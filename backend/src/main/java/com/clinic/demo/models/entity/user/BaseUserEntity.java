@@ -1,6 +1,5 @@
 package com.clinic.demo.models.entity.user;
 
-import com.clinic.demo.models.entity.RoleEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
@@ -15,10 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -109,19 +105,17 @@ public class BaseUserEntity implements UserDetails {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    // Roles and Permissions
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles = new HashSet<>();
+    // Permissions
+    @ElementCollection(targetClass = PermissionEnum.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "permission")
+    private Set<PermissionEnum> permissions = new HashSet<>();
 
     // Constructor for creating users
     public BaseUserEntity(String firstName, String lastName, String email, String phoneNumber,
                           GenderEnum gender, UserTypeEnum userType, String password,
-                          LocalDate dateOfBirth, Set<RoleEntity> roles) {
+                          LocalDate dateOfBirth, Set<PermissionEnum> permissions) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -130,32 +124,62 @@ public class BaseUserEntity implements UserDetails {
         this.userType = userType;
         this.password = password;
         this.dateOfBirth = dateOfBirth;
-        this.roles = roles != null ? roles : new HashSet<>();
+        this.permissions = permissions != null ? permissions : new HashSet<>();
         this.createDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
     }
 
-    // Role Management
-    public void addRole(RoleEntity role) {
-        if (role != null) {
-            roles.add(role);
-        }
+    // Permission Management
+    public void addPermission(PermissionEnum permission) {
+        if (permission != null)
+            permissions.add(permission);
     }
 
-    public void removeRole(RoleEntity role) {
-        if (role != null) {
-            roles.remove(role);
-        }
-    }
-
-    public boolean hasRole(RoleEntity role) {
-        return role != null && roles.contains(role);
+    public void removePermission(PermissionEnum permission) {
+        if (permission != null)
+            permissions.remove(permission);
     }
 
     public boolean hasPermission(PermissionEnum permission) {
-        return permission != null && roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .anyMatch(p -> p.equals(permission));
+        return permission != null && permissions.contains(permission);
+    }
+
+    public void addPermissions(Set<PermissionEnum> newPermissions) {
+        if (newPermissions != null)
+            permissions.addAll(newPermissions);
+    }
+
+    public void removePermissions(Set<PermissionEnum> permissionsToRemove) {
+        if (permissionsToRemove != null)
+            permissions.removeAll(permissionsToRemove);
+    }
+
+    public void clearAllPermissions() {
+        permissions.clear();
+    }
+
+    public Set<PermissionEnum> getPermissions() {
+        return new HashSet<>(permissions);
+    }
+
+    public void setPermissions(Set<PermissionEnum> permissions) {
+        this.permissions = permissions != null ? permissions : new HashSet<>();
+    }
+
+    // Check if user has any of the specified permissions
+    public boolean hasAnyPermission(PermissionEnum... permissionsToCheck) {
+        if (permissionsToCheck == null || permissionsToCheck.length == 0)
+            return false;
+        return Arrays.stream(permissionsToCheck)
+                .anyMatch(permissions::contains);
+    }
+
+    // Check if user has all specified permissions
+    public boolean hasAllPermissions(PermissionEnum... permissionsToCheck) {
+        if (permissionsToCheck == null || permissionsToCheck.length == 0)
+            return true;
+        return Arrays.stream(permissionsToCheck)
+                .allMatch(permissions::contains);
     }
 
     // Utility Methods
@@ -170,17 +194,15 @@ public class BaseUserEntity implements UserDetails {
     }
 
     public int getAge() {
-        if (dateOfBirth == null) {
+        if (dateOfBirth == null)
             return 0;
-        }
         return LocalDate.now().getYear() - dateOfBirth.getYear();
     }
 
     // Spring Security UserDetails Implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .flatMap(role -> role.getPermissions().stream())
+        return permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.name()))
                 .collect(Collectors.toSet());
     }

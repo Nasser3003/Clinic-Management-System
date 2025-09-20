@@ -11,6 +11,7 @@ import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.OtpPurpose;
+import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.RoleRepository;
 import com.clinic.demo.repository.UserRepository;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -83,8 +85,14 @@ public class AuthenticationService {
         GenderEnum genderEnum = parseGender(gender);
 
         userRepository.save(new PatientEntity(
-                firstName, lastName, email, phoneNumber, genderEnum,
-                UserTypeEnum.PATIENT, passwordEncoder.encode(password), dob, roles
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                genderEnum,
+                passwordEncoder.encode(password),
+                dob,
+                Set.of()
         ));
     }
 
@@ -107,7 +115,7 @@ public class AuthenticationService {
                 passwordEncoder.encode(registrationDTO.password()),
                 registrationDTO.dob(),
                 registrationDTO.salary(),
-                roles
+                Set.of(PermissionEnum.USER_READ, PermissionEnum.USER_CREATE, PermissionEnum.USER_UPDATE, PermissionEnum.USER_DELETE)
         ));
     }
 

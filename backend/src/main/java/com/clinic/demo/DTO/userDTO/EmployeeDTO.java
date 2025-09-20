@@ -1,5 +1,6 @@
 package com.clinic.demo.DTO.userDTO;
 
+import com.clinic.demo.models.enums.EmploymentStatusEnum;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
@@ -31,6 +32,10 @@ public record EmployeeDTO(
         String emergencyContactNumber,
         String notes,
         float salary,
+        String title,                    // Added
+        String department,               // Added
+        EmploymentStatusEnum employmentStatus,  // Added
+        String avatarPath,               // Added
         String description
 ) implements UserDTO {
 }
