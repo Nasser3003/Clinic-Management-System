@@ -10,11 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('USER_CREATE', 'USER_READ', 'USER_UPDATE', 'USER_DELETE')")
+@PreAuthorize("hasAnyAuthority('USER_CREATE', 'USER_READ', 'USER_UPDATE', 'USER_DELETE','MEDICAL_RECORD_READ')")
 @RequestMapping("/admin")
 @CrossOrigin("*") // will need in the future
 public class AdminController {
@@ -50,5 +52,10 @@ public class AdminController {
     @GetMapping("/api/v01/staff-count")
     public long getCountAllActiveStaff () {
         return userService.countAllActiveStaff();
+    }
+
+    @GetMapping("/api/v01/appointments-this-month")
+    public long getCountAllAppointmentsThisMonth () {
+        return userService.countAllAppointmentsThisMonth();
     }
 }

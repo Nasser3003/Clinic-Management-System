@@ -10,6 +10,7 @@ import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
+import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.UserRepository;
 import com.clinic.demo.utils.Validations;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -40,6 +43,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final PasswordEncoder encoder;
+    private final AppointmentRepository appointmentRepository;
 
     public List<UserInfoDTO> findAllUsers() {
         List<BaseUserEntity> users = userRepository.findAll();
@@ -228,4 +232,9 @@ public class UserService {
         }
     }
 
+    public long countAllAppointmentsThisMonth() {
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
+        return appointmentRepository.countByStartDateTimeBetween(startOfMonth, endOfMonth);
+    }
 }

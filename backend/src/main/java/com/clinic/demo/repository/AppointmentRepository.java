@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +24,9 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findAllByDoctorAndIsDoneIsFalseAndStartDateTimeBeforeAndEndDateTimeAfter(EmployeeEntity doctor, LocalDateTime startDateTime, LocalDateTime endDateTime);
     Optional<AppointmentEntity> findByStartDateTimeIsAfter(LocalDateTime afterDate);
     Optional<AppointmentEntity> findByStartDateTimeIsBefore(LocalDateTime beforeDate);
-
+    List<AppointmentEntity> findByStartDateTimeBetween(LocalDateTime startOfMonth, LocalDateTime endOfMonth);
     List<AppointmentEntity> findByPatient_EmailAndStartDateTimeBetween(String patientEmail, LocalDateTime start, LocalDateTime end);
+    long countByStartDateTimeBetween(LocalDateTime startOfMonth, LocalDateTime endOfMonth);
 //    List<AppointmentEntity> findByPatientEmailAndStartDateTimeBetween(String patientEmail, LocalDateTime localDateTime, LocalDateTime localDateTime1);
 
 }
