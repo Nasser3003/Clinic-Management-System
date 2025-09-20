@@ -39,8 +39,8 @@ function TimeOffManagement() {
         reason: ''
     });
 
-    const isAdmin = user?.role === 'ADMIN';
-    const isEmployee = ['DOCTOR', 'NURSE', 'EMPLOYEE', 'LAB_TECHNICIAN', 'RECEPTIONIST'].includes(user?.role || '');
+    const isAdmin = user?.userType === 'ADMIN';
+    const isEmployee = ['DOCTOR', 'NURSE', 'EMPLOYEE', 'LAB_TECHNICIAN', 'RECEPTIONIST'].includes(user?.userType || '');
 
     useEffect(() => {
         if (activeTab === 'my-requests') {

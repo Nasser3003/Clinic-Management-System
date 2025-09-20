@@ -17,7 +17,6 @@ import com.clinic.demo.repository.PatientRepository;
 import com.clinic.demo.repository.UserRepository;
 import com.clinic.demo.utils.Validations;
 import lombok.AllArgsConstructor;
-import org.apache.catalina.mapper.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -239,7 +235,7 @@ public class UserService {
 
         try {
             return switch (userTypeEnum) {
-                case DOCTOR, EMPLOYEE -> (EmployeeEntity) user;
+                case DOCTOR, EMPLOYEE, RECEPTIONIST, NURSE, LAB_TECHNICIAN -> (EmployeeEntity) user;
                 case PATIENT -> (PatientEntity) user;
                 case ADMIN -> (AdminEntity) user;
                 default -> throw new IllegalArgumentException("Unsupported user type: " + userTypeEnum);
@@ -272,5 +268,10 @@ public class UserService {
     public List<PatientDTO> getAllPatients() {
         return patientRepository.findAll().stream()
                 .map(UserMapper::convertToPatientDTO).collect(Collectors.toList());
+    }
+
+    BaseUserEntity findUserById(String id) {
+        return userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 }

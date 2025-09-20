@@ -326,7 +326,7 @@ function Layout({ children }: LayoutProps) {
     ];
 
     const visibleNavItems = navigationItems.filter(item =>
-        item.roles.includes(user?.role || '')
+        item.roles.includes(user?.userType || '')
     );
 
     const getAvatarUrl = () => {

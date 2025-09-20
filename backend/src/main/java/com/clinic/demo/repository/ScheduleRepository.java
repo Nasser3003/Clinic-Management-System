@@ -3,6 +3,9 @@ package com.clinic.demo.repository;
 import com.clinic.demo.models.entity.ScheduleEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
@@ -19,4 +22,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     Optional<ScheduleEntity> findByEmployeeAndDayOfWeek(EmployeeEntity doctor, DayOfWeek dayOfWeek);
 
     List<ScheduleEntity> findByEmployee(EmployeeEntity doctor);
+
+    @Modifying
+    @Query("DELETE FROM ScheduleEntity s WHERE s.employee = :employee")
+    int deleteByEmployee(@Param("employee") EmployeeEntity employee);
 }

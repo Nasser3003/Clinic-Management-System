@@ -89,9 +89,9 @@ function TreatmentManagement() {
     const [patientNotes, setPatientNotes] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
-    const isDoctor = user?.role === 'DOCTOR';
-    const isAdmin = user?.role === 'ADMIN';
-    const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.role || '');
+    const isDoctor = user?.userType === 'DOCTOR';
+    const isAdmin = user?.userType === 'ADMIN';
+    const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.userType || '');
 
     useEffect(() => {
         if (activeTab === 'view-treatments') {

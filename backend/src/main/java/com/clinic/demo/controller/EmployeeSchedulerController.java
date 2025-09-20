@@ -31,17 +31,5 @@ public class EmployeeSchedulerController {
         return ResponseEntity.ok("Schedule created successfully");
     }
 
-    @PatchMapping("/update-schedule")
-    public ResponseEntity<String> updateEmployeeSchedule(@Valid @RequestBody CreateScheduleRequestDTO request) {
-        scheduleService.updateEmployeeSchedule(request.email(), request.schedule());
-        return ResponseEntity.ok("Schedule updated successfully");
-    }
-
-//     should have special permission
-//    @DeleteMapping("/delete-schedule")
-//    public ResponseEntity<String> deleteEmployeeSchedule(@RequestParam String email) {
-//        scheduleService.deleteEmployeeSchedule(email);
-//        return ResponseEntity.ok("Schedule deleted successfully");
-//    }
 
 }

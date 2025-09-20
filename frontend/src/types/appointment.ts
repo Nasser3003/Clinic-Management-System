@@ -11,7 +11,7 @@ export interface Appointment {
 export interface AppointmentRequest {
   patientEmail: string;
   doctorEmail: string;
-  dateTime: string;  // Changed from appointmentDateTime to match backend
+  dateTime: string;
   duration: number;
 }
 

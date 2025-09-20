@@ -29,7 +29,7 @@ function SearchDropdown() {
 
     // Set filters based on user role
     useEffect(() => {
-        if (user?.role === 'DOCTOR') {
+        if (user?.userType === 'DOCTOR') {
             // Doctors can only search patients
             setUserTypeFilters([
                 { key: 'PATIENT', label: 'Patients', enabled: true, color: 'blue' },
@@ -37,7 +37,7 @@ function SearchDropdown() {
                 { key: 'PARTNER', label: 'Partners', enabled: false, color: 'purple' }
             ]);
         }
-    }, [user?.role]);
+    }, [user?.userType]);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -143,7 +143,7 @@ function SearchDropdown() {
 
     const toggleUserType = (typeKey: string) => {
         // Doctors can only search patients - prevent them from changing filters
-        if (user?.role === 'DOCTOR') {
+        if (user?.userType === 'DOCTOR') {
             return;
         }
 
@@ -181,7 +181,7 @@ function SearchDropdown() {
         return 'employee';
     };
 
-    const canSearch = user && ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user.role);
+    const canSearch = user && ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user.userType);
 
     if (!canSearch) return null;
 
@@ -218,7 +218,7 @@ function SearchDropdown() {
                     </div>
 
                     {/* Quick filters - hide for doctors since they can only search patients */}
-                    {user?.role !== 'DOCTOR' ? (
+                    {user?.userType !== 'DOCTOR' ? (
                         <div className="compact-filter-section">
                             {userTypeFilters.map((filter) => (
                                 <button

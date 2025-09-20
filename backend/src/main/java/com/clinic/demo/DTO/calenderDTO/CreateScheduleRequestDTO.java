@@ -13,7 +13,6 @@ public record CreateScheduleRequestDTO(
     @Email(message = "Invalid email format")
     String email,
     
-    @NotEmpty(message = "Schedule slots are required")
     @Valid
     List<ScheduleSlotDTO> schedule
 ) {}

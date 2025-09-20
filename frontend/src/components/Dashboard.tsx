@@ -14,7 +14,7 @@ function Dashboard() {
     const { user } = useAuth();
 
     const renderDashboardContent = () => {
-        switch (user?.role) {
+        switch (user?.userType) {
             case 'ADMIN':
                 return <AdminDashboard />;
             case 'DOCTOR':

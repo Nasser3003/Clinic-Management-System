@@ -41,10 +41,10 @@ function AppointmentsManagement() {
         endDate: ''
     });
 
-    const isAdmin = user?.role === 'ADMIN';
-    const isDoctor = user?.role === 'DOCTOR';
-    const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.role || '');
-    const isPatient = user?.role === 'PATIENT';
+    const isAdmin = user?.userType === 'ADMIN';
+    const isDoctor = user?.userType === 'DOCTOR';
+    const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.userType || '');
+    const isPatient = user?.userType === 'PATIENT';
 
     useEffect(() => {
         if (activeTab === 'all') {
