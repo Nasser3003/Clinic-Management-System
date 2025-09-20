@@ -71,7 +71,8 @@ public class UserMapper {
                 employee.getDepartment(),
                 employee.getEmploymentStatus(),
                 employee.getAvatarPath(),
-                employee.getDescription()
+                employee.getDescription(),
+                employee.getPublicPhotoPath()
         );
     }
 

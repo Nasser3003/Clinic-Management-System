@@ -25,6 +25,7 @@ public class EmployeeEntity extends BaseUserEntity {
     private EmploymentStatusEnum employmentStatus;
     private float salary;
     private String description;
+    String publicPhotoPath;
 
     public EmployeeEntity(String firstName, String lastName, String email, String phoneNumber, String nationalId,
                           GenderEnum gender, UserTypeEnum userType, String password, LocalDate dateOfBirth,

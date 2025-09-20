@@ -64,4 +64,9 @@ public class AdminController {
     public List<EmployeeDTO> getAllDoctors() {
         return userService.getAllDoctors();
     }
+
+    @GetMapping("/api/v01/get-all-staff")
+    public List<EmployeeDTO> getAllStaff() {
+        return userService.getAllStaff();
+    }
 }

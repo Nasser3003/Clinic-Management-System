@@ -254,4 +254,14 @@ public class UserService {
         LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
         return appointmentRepository.countByStartDateTimeBetween(startOfMonth, endOfMonth);
     }
+
+//        @PreAuthorize("hasAuthority('USER_READ')")
+    public List<EmployeeDTO> getAllStaff() {
+
+        List<EmployeeDTO> allStaff = getAllSpecificEmployee(UserTypeEnum.EMPLOYEE);
+        allStaff.addAll(getAllSpecificEmployee(UserTypeEnum.RECEPTIONIST));
+        allStaff.addAll(getAllSpecificEmployee(UserTypeEnum.NURSE));
+        allStaff.addAll(getAllSpecificEmployee(UserTypeEnum.LAB_TECHNICIAN));
+        return allStaff;
+    }
 }

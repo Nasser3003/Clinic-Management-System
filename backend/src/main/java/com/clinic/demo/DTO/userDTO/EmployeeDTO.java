@@ -36,6 +36,8 @@ public record EmployeeDTO(
         String department,               // Added
         EmploymentStatusEnum employmentStatus,  // Added
         String avatarPath,               // Added
-        String description
+        String description,
+        String publicPhotoPath
+
 ) implements UserDTO {
 }
