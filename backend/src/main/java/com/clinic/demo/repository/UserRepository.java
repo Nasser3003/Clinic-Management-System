@@ -8,15 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<BaseUserEntity, Long> {
-    Optional<BaseUserEntity> findById(Long aLong);
+public interface UserRepository extends JpaRepository<BaseUserEntity, UUID> {
+    Optional<BaseUserEntity> findById(UUID id);
     Optional<BaseUserEntity> findByEmail(String aEmail);
     Optional<BaseUserEntity> findByPhoneNumber(String aPhoneNumber);
 
 
-    List<BaseUserEntity> findAllById(Iterable<Long> longs);
+    List<BaseUserEntity> findAllById(Iterable<UUID> ids);
 
     List<EmployeeEntity> findALlByUserType(UserTypeEnum userType);
 

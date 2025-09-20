@@ -2,6 +2,7 @@ package com.clinic.demo.service;
 
 import com.clinic.demo.DTO.UserUpdatePasswordDTO;
 import com.clinic.demo.DTO.userDTO.EmployeeDTO;
+import com.clinic.demo.DTO.userDTO.PatientDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.exception.*;
@@ -12,14 +13,15 @@ import com.clinic.demo.models.entity.user.PatientEntity;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.AppointmentRepository;
+import com.clinic.demo.repository.PatientRepository;
 import com.clinic.demo.repository.UserRepository;
 import com.clinic.demo.utils.Validations;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.mapper.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ public class UserService {
     private final AuthenticationService authenticationService;
     private final PasswordEncoder encoder;
     private final AppointmentRepository appointmentRepository;
+    private final PatientRepository patientRepository;
 
     public List<UserInfoDTO> findAllUsers() {
         List<BaseUserEntity> users = userRepository.findAll();
@@ -263,5 +266,11 @@ public class UserService {
         allStaff.addAll(getAllSpecificEmployee(UserTypeEnum.NURSE));
         allStaff.addAll(getAllSpecificEmployee(UserTypeEnum.LAB_TECHNICIAN));
         return allStaff;
+    }
+
+//    @PreAuthorize("hasAuthority('USER_READ')")
+    public List<PatientDTO> getAllPatients() {
+        return patientRepository.findAll().stream()
+                .map(UserMapper::convertToPatientDTO).collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package com.clinic.demo.controller;
 
 import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
 import com.clinic.demo.DTO.userDTO.EmployeeDTO;
+import com.clinic.demo.DTO.userDTO.PatientDTO;
 import com.clinic.demo.DTO.userDTO.UserInfoDTO;
 import com.clinic.demo.Mapper.UserMapper;
 import com.clinic.demo.service.AuthenticationService;
@@ -68,5 +69,10 @@ public class AdminController {
     @GetMapping("/api/v01/get-all-staff")
     public List<EmployeeDTO> getAllStaff() {
         return userService.getAllStaff();
+    }
+
+    @GetMapping("/api/v01/get-all-patients")
+    public List<PatientDTO> getAllPatients() {
+        return userService.getAllPatients();
     }
 }

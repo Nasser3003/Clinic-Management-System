@@ -43,7 +43,7 @@ public class UserMapper {
         );
     }
 
-     public static EmployeeDTO convertToEmployeeDTO(EmployeeEntity employee) {
+    public static EmployeeDTO convertToEmployeeDTO(EmployeeEntity employee) {
         return new EmployeeDTO(
                 employee.getId(),
                 employee.getFirstName(),
@@ -76,7 +76,7 @@ public class UserMapper {
         );
     }
 
-    private static PatientDTO convertToPatientDTO(PatientEntity patient) {
+    public static PatientDTO convertToPatientDTO(PatientEntity patient) {
         return new PatientDTO(
                 patient.getId(),
                 patient.getFirstName(),
