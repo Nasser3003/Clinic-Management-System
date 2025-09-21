@@ -22,68 +22,48 @@ export interface SearchResponse {
 export const searchService = {
     searchUsers: async (
         query: string,
-        userTypes: string[] = ['PATIENT'],
+        userTypes: string[] = [],
         limit: number = 6
     ): Promise<SearchResponse> => {
-        const typeParams = userTypes.map(type => `types=${type}`).join('&');
-        const response = await api.get(
-            `/user/search?q=${encodeURIComponent(query)}&${typeParams}&limit=${limit}`
-        );
+        const params = new URLSearchParams();
+        params.append('q', query);
+        userTypes.forEach(type => params.append('types', type));
+        params.append('limit', limit.toString());
+
+        const response = await api.get(`/admin/search/employee?${params.toString()}`);
         return response.data;
     },
 
     searchPatients: async (query: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchUsers(query, ['PATIENT'], limit);
+        const params = new URLSearchParams();
+        params.append('q', query);
+        params.append('limit', limit.toString());
+
+        const response = await api.get(`/admin/search/patient?${params.toString()}`);
+        return response.data;
+    },
+
+    searchEmployees: async (query: string, limit: number = 6): Promise<SearchResponse> => {
+        return searchService.searchUsers(
+            query,
+            ['EMPLOYEE', 'DOCTOR', 'NURSE', 'ADMIN', 'RECEPTIONIST', 'LAB_TECHNICIAN'],
+            limit
+        );
     },
 
     searchDoctors: async (query: string, limit: number = 6): Promise<SearchResponse> => {
         return searchService.searchUsers(query, ['DOCTOR'], limit);
     },
 
-    searchEmployees: async (query: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchUsers(query, ['EMPLOYEE', 'DOCTOR', 'NURSE', 'ADMIN', 'RECEPTIONIST', 'LAB_TECHNICIAN'], limit);
+    searchReceptionists: async (query: string, limit: number = 6): Promise<SearchResponse> => {
+        return searchService.searchUsers(query, ['RECEPTIONIST'], limit);
     },
 
-    searchStaff: async (query: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchUsers(query, ['NURSE', 'EMPLOYEE', 'RECEPTIONIST', 'LAB_TECHNICIAN'], limit);
+    searchNurses: async (query: string, limit: number = 6): Promise<SearchResponse> => {
+        return searchService.searchUsers(query, ['NURSE'], limit);
     },
 
-    searchMedicalStaff: async (query: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchUsers(query, ['DOCTOR', 'NURSE'], limit);
+    searchLabTechnicians: async (query: string, limit: number = 6): Promise<SearchResponse> => {
+        return searchService.searchUsers(query, ['LAB_TECHNICIAN'], limit);
     },
-
-    searchAll: async (query: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchUsers(query, ['PATIENT', 'EMPLOYEE', 'DOCTOR', 'NURSE', 'ADMIN', 'RECEPTIONIST', 'LAB_TECHNICIAN'], limit);
-    },
-
-    // Advanced search with multiple filters
-    searchAdvanced: async (filters: {
-        query?: string;
-        userTypes?: string[];
-        speciality?: string;
-        isActive?: boolean;
-        limit?: number;
-    }): Promise<SearchResponse> => {
-        const params = new URLSearchParams();
-
-        if (filters.query) params.append('q', filters.query);
-        if (filters.userTypes) {
-            filters.userTypes.forEach(type => params.append('types', type));
-        }
-        if (filters.speciality) params.append('speciality', filters.speciality);
-        if (filters.isActive !== undefined) params.append('isActive', filters.isActive.toString());
-        if (filters.limit) params.append('limit', filters.limit.toString());
-
-        const response = await api.get(`/user/search?${params.toString()}`);
-        return response.data;
-    },
-
-    // Search doctors by speciality
-    searchDoctorsBySpeciality: async (speciality: string, limit: number = 6): Promise<SearchResponse> => {
-        return searchService.searchAdvanced({
-            userTypes: ['DOCTOR'],
-            speciality,
-            limit
-        });
-    }
 };

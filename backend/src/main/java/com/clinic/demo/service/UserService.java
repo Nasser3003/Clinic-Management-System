@@ -281,31 +281,37 @@ public class UserService {
 
 
     public SearchResponseDTO<EmployeeDTO> searchEmployeesByName(String searchTerm, List<String> userTypes, int limit) {
-        if (searchTerm == null || searchTerm.trim().isEmpty())
-            throw new IllegalArgumentException("Search term cannot be null or empty");
+        Page<BaseUserEntity> pageResults = searchByNameAndUsertype(searchTerm, userTypes, limit);
 
-        if (userTypes == null || userTypes.isEmpty())
-            throw new IllegalArgumentException("At least one user type must be specified");
-
-        Pageable pageable = PageRequest.of(0, limit);
-
-        List<UserTypeEnum> enumTypes = userTypes.stream()
-                .map(type -> {
-                    try {
-                        return UserTypeEnum.valueOf(type.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        throw new IllegalArgumentException("Invalid user type: " + type);
-                    }
-                })
-                .collect(Collectors.toList());
-
-        Page<BaseUserEntity> pageResults = userRepository.findAllByUserTypesAndName(enumTypes, searchTerm, pageable);
-
-         List<EmployeeDTO> results = pageResults.getContent()
+        List<EmployeeDTO> results = pageResults.getContent()
                 .stream()
                 .filter(user -> user instanceof EmployeeEntity)
                 .map(user -> UserMapper.convertToEmployeeDTO((EmployeeEntity) user))
-                .collect(Collectors.toList());
+                .toList();
 
         return new SearchResponseDTO<>(results, pageResults.getTotalElements());
-    }}
+    }
+
+    public SearchResponseDTO<PatientDTO> searchPatientsByName(String searchTerm, int limit) {
+        Page<BaseUserEntity> pageResults = searchByNameAndUsertype(searchTerm, List.of(UserTypeEnum.PATIENT.toString()), limit);
+
+        List<PatientDTO> results = pageResults.getContent()
+                .stream()
+                .filter(user -> user instanceof PatientEntity)
+                .map(user -> UserMapper.convertToPatientDTO((PatientEntity) user))
+                .toList();
+
+        return new SearchResponseDTO<>(results, pageResults.getTotalElements());
+    }
+
+    private Page<BaseUserEntity> searchByNameAndUsertype(String searchTerm, List<String> userTypes, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<UserTypeEnum> enumTypes = userTypes.stream()
+                .map(type -> UserTypeEnum.valueOf(type.toUpperCase())) // invalid types auto-throw
+                .toList();
+
+        return userRepository.findAllByUserTypesAndName(enumTypes, searchTerm, pageable);
+    }
+
+}

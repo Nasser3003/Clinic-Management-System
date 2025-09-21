@@ -1,5 +1,6 @@
 package com.clinic.demo.controller;
 
+import com.clinic.demo.DTO.SearchResponseDTO;
 import com.clinic.demo.DTO.registrationDTO.EmployeeRegistrationDTO;
 import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.PatientDTO;
@@ -10,11 +11,8 @@ import com.clinic.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 @RestController
@@ -75,4 +73,25 @@ public class AdminController {
     public List<PatientDTO> getAllPatients() {
         return userService.getAllPatients();
     }
+
+    @GetMapping("/search/employee")
+    public ResponseEntity<SearchResponseDTO<EmployeeDTO>> searchDoctors(
+            @RequestParam(name = "q") String searchTerm,
+            @RequestParam(name = "types", required = false) List<String> userTypes,
+            @RequestParam(name = "limit", required = false, defaultValue = "5") int limit) {
+
+        SearchResponseDTO<EmployeeDTO> response = userService.searchEmployeesByName(searchTerm, userTypes, limit);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search/patient")
+    public ResponseEntity<SearchResponseDTO<PatientDTO>> searchDoctors(
+            @RequestParam(name = "q") String searchTerm,
+            @RequestParam(name = "limit", required = false, defaultValue = "5") int limit) {
+
+        SearchResponseDTO<PatientDTO> response = userService.searchPatientsByName(searchTerm, limit);
+        return ResponseEntity.ok(response);
+    }
+
+
 }
