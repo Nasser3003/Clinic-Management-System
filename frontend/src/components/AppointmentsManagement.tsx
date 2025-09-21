@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/AppointmentsManagement.css';
 import HeroHeader from "./common/HeroHeader";
-import { searchService } from '../services/searchService';
+import { searchService, SearchResult } from '../services/searchService';
 import { appointmentService } from '../services/appointmentService';
 
 interface Appointment {
@@ -57,18 +57,115 @@ function AppointmentsManagement() {
         endDate: ''
     });
 
+    // Autocomplete states
+    const [doctorSuggestions, setDoctorSuggestions] = useState<SearchResult[]>([]);
+    const [patientSuggestions, setPatientSuggestions] = useState<SearchResult[]>([]);
+    const [showDoctorDropdown, setShowDoctorDropdown] = useState(false);
+    const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+    const [searchingDoctors, setSearchingDoctors] = useState(false);
+    const [searchingPatients, setSearchingPatients] = useState(false);
+    const [selectedDoctorEmail, setSelectedDoctorEmail] = useState('');
+    const [selectedPatientEmail, setSelectedPatientEmail] = useState('');
+
+    // Refs for handling clicks outside
+    const doctorInputRef = useRef<HTMLDivElement>(null);
+    const patientInputRef = useRef<HTMLDivElement>(null);
+
     const isAdmin = user?.userType === 'ADMIN';
     const isDoctor = user?.userType === 'DOCTOR';
     const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.userType || '');
     const isPatient = user?.userType === 'PATIENT';
 
+    // Handle clicks outside dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (doctorInputRef.current && !doctorInputRef.current.contains(event.target as Node)) {
+                setShowDoctorDropdown(false);
+            }
+            if (patientInputRef.current && !patientInputRef.current.contains(event.target as Node)) {
+                setShowPatientDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Search doctors with debouncing
+    useEffect(() => {
+        if (appointmentForm.doctorName.length >= 2) {
+            const timeoutId = setTimeout(async () => {
+                setSearchingDoctors(true);
+                try {
+                    const results = await searchService.searchDoctors(appointmentForm.doctorName, 5);
+                    setDoctorSuggestions(results.results);
+                    setShowDoctorDropdown(true);
+                } catch (err) {
+                    console.error('Error searching doctors:', err);
+                    setDoctorSuggestions([]);
+                }
+                setSearchingDoctors(false);
+            }, 300);
+
+            return () => clearTimeout(timeoutId);
+        } else {
+            setDoctorSuggestions([]);
+            setShowDoctorDropdown(false);
+        }
+    }, [appointmentForm.doctorName]);
+
+    // Search patients with debouncing
+    useEffect(() => {
+        if (appointmentForm.patientName.length >= 2) {
+            const timeoutId = setTimeout(async () => {
+                setSearchingPatients(true);
+                try {
+                    const results = await searchService.searchPatients(appointmentForm.patientName, 5);
+                    setPatientSuggestions(results.results);
+                    setShowPatientDropdown(true);
+                } catch (err) {
+                    console.error('Error searching patients:', err);
+                    setPatientSuggestions([]);
+                }
+                setSearchingPatients(false);
+            }, 300);
+
+            return () => clearTimeout(timeoutId);
+        } else {
+            setPatientSuggestions([]);
+            setShowPatientDropdown(false);
+        }
+    }, [appointmentForm.patientName]);
+
+    // Handle doctor selection
+    const handleDoctorSelect = (doctor: SearchResult) => {
+        setAppointmentForm(prev => ({
+            ...prev,
+            doctorName: `${doctor.firstName} ${doctor.lastName}`
+        }));
+        setSelectedDoctorEmail(doctor.email);
+        setShowDoctorDropdown(false);
+    };
+
+    // Handle patient selection
+    const handlePatientSelect = (patient: SearchResult) => {
+        setAppointmentForm(prev => ({
+            ...prev,
+            patientName: `${patient.firstName} ${patient.lastName}`
+        }));
+        setSelectedPatientEmail(patient.email);
+        setShowPatientDropdown(false);
+    };
+
     // Auto-fill doctor name if user is a doctor
     useEffect(() => {
         if (isDoctor && user?.firstName && user?.lastName) {
+            const doctorName = `${user.firstName} ${user.lastName}`;
             setAppointmentForm(prev => ({
                 ...prev,
-                doctorName: `${user.firstName} ${user.lastName}`
+                doctorName
             }));
+            setSelectedDoctorEmail(user.email);
         }
     }, [isDoctor, user]);
 
@@ -88,20 +185,29 @@ function AppointmentsManagement() {
         clearMessages();
 
         try {
-            // Search for doctor by name
-            const doctorResults = await searchService.searchDoctors(appointmentForm.doctorName, 1);
-            if (doctorResults.results.length === 0) {
-                throw new Error('Doctor not found with that name');
+            let doctorEmail = selectedDoctorEmail;
+            let patientEmail = selectedPatientEmail;
+
+            // If no email selected (user typed without selecting), search for exact match
+            if (!doctorEmail && appointmentForm.doctorName) {
+                const doctorResults = await searchService.searchDoctors(appointmentForm.doctorName, 1);
+                if (doctorResults.results.length === 0) {
+                    throw new Error('Doctor not found with that name. Please select from the dropdown suggestions.');
+                }
+                doctorEmail = doctorResults.results[0].email;
             }
 
-            // Search for patient by name
-            const patientResults = await searchService.searchPatients(appointmentForm.patientName, 1);
-            if (patientResults.results.length === 0) {
-                throw new Error('Patient not found with that name');
+            if (!patientEmail && appointmentForm.patientName) {
+                const patientResults = await searchService.searchPatients(appointmentForm.patientName, 1);
+                if (patientResults.results.length === 0) {
+                    throw new Error('Patient not found with that name. Please select from the dropdown suggestions.');
+                }
+                patientEmail = patientResults.results[0].email;
             }
 
-            const doctorEmail = doctorResults.results[0].email;
-            const patientEmail = patientResults.results[0].email;
+            if (!doctorEmail || !patientEmail) {
+                throw new Error('Please select both doctor and patient from the dropdown suggestions.');
+            }
 
             // Format datetime for backend
             const formattedDateTime = new Date(appointmentForm.dateTime)
@@ -125,6 +231,8 @@ function AppointmentsManagement() {
                 duration: 60,
                 dateTime: ''
             });
+            setSelectedDoctorEmail(isDoctor && user?.email ? user.email : '');
+            setSelectedPatientEmail('');
         } catch (err: any) {
             console.error('Error creating appointment:', err);
             setError(err.message || 'Failed to schedule appointment');
@@ -143,39 +251,25 @@ function AppointmentsManagement() {
             if (filters.startDate) params.append('startDate', filters.startDate);
             if (filters.endDate) params.append('endDate', filters.endDate);
 
-            // Convert names to emails for API filtering
+            // Convert names to emails for API filtering using searchService
             if (filters.doctorName) {
                 try {
-                    const doctorEmailResponse = await fetch(`/api/users/doctor/email-by-name/${encodeURIComponent(filters.doctorName)}`, {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (doctorEmailResponse.ok) {
-                        const doctorEmail = await doctorEmailResponse.text();
-                        params.append('doctorEmail', doctorEmail);
+                    const doctorResults = await searchService.searchDoctors(filters.doctorName, 1);
+                    if (doctorResults.results.length > 0) {
+                        params.append('doctorEmail', doctorResults.results[0].email);
                     }
                 } catch (err) {
-                    // Continue without doctor filter if name not found
                     console.warn('Doctor name not found for filtering:', filters.doctorName);
                 }
             }
 
             if (filters.patientName) {
                 try {
-                    const patientEmailResponse = await fetch(`/api/users/patient/email-by-name/${encodeURIComponent(filters.patientName)}`, {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (patientEmailResponse.ok) {
-                        const patientEmail = await patientEmailResponse.text();
-                        params.append('patientEmail', patientEmail);
+                    const patientResults = await searchService.searchPatients(filters.patientName, 1);
+                    if (patientResults.results.length > 0) {
+                        params.append('patientEmail', patientResults.results[0].email);
                     }
                 } catch (err) {
-                    // Continue without patient filter if name not found
                     console.warn('Patient name not found for filtering:', filters.patientName);
                 }
             }
@@ -354,6 +448,8 @@ function AppointmentsManagement() {
             duration: 60,
             dateTime: ''
         });
+        setSelectedDoctorEmail(isDoctor && user?.email ? user.email : '');
+        setSelectedPatientEmail('');
         clearMessages();
     };
 
@@ -432,29 +528,91 @@ function AppointmentsManagement() {
                             <form onSubmit={createAppointment} className="appointment-form">
                                 <div className="form-group">
                                     <label htmlFor="doctorName">Doctor Name</label>
-                                    <input
-                                        id="doctorName"
-                                        type="text"
-                                        className="form-input"
-                                        value={appointmentForm.doctorName}
-                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, doctorName: e.target.value }))}
-                                        placeholder="Enter doctor name"
-                                        required
-                                        disabled={isDoctor}
-                                    />
+                                    <div className="autocomplete-container" ref={doctorInputRef}>
+                                        <input
+                                            id="doctorName"
+                                            type="text"
+                                            className="form-input"
+                                            value={appointmentForm.doctorName}
+                                            onChange={(e) => {
+                                                setAppointmentForm(prev => ({ ...prev, doctorName: e.target.value }));
+                                                setSelectedDoctorEmail('');
+                                            }}
+                                            placeholder="Enter doctor name"
+                                            required
+                                            disabled={isDoctor}
+                                            autoComplete="off"
+                                        />
+                                        {showDoctorDropdown && (
+                                            <div className="autocomplete-dropdown">
+                                                {searchingDoctors ? (
+                                                    <div className="autocomplete-loading">Searching...</div>
+                                                ) : doctorSuggestions.length > 0 ? (
+                                                    doctorSuggestions.map((doctor) => (
+                                                        <div
+                                                            key={doctor.id}
+                                                            className="autocomplete-item"
+                                                            onClick={() => handleDoctorSelect(doctor)}
+                                                        >
+                                                            <div className="autocomplete-item-name">
+                                                                {doctor.firstName} {doctor.lastName}
+                                                            </div>
+                                                            <div className="autocomplete-item-details">
+                                                                {doctor.email}
+                                                                {doctor.speciality && ` • ${doctor.speciality}`}
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="autocomplete-no-results">No doctors found</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="patientName">Patient Name</label>
-                                    <input
-                                        id="patientName"
-                                        type="text"
-                                        className="form-input"
-                                        value={appointmentForm.patientName}
-                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, patientName: e.target.value }))}
-                                        placeholder="Enter patient name"
-                                        required
-                                    />
+                                    <div className="autocomplete-container" ref={patientInputRef}>
+                                        <input
+                                            id="patientName"
+                                            type="text"
+                                            className="form-input"
+                                            value={appointmentForm.patientName}
+                                            onChange={(e) => {
+                                                setAppointmentForm(prev => ({ ...prev, patientName: e.target.value }));
+                                                setSelectedPatientEmail('');
+                                            }}
+                                            placeholder="Enter patient name"
+                                            required
+                                            autoComplete="off"
+                                        />
+                                        {showPatientDropdown && (
+                                            <div className="autocomplete-dropdown">
+                                                {searchingPatients ? (
+                                                    <div className="autocomplete-loading">Searching...</div>
+                                                ) : patientSuggestions.length > 0 ? (
+                                                    patientSuggestions.map((patient) => (
+                                                        <div
+                                                            key={patient.id}
+                                                            className="autocomplete-item"
+                                                            onClick={() => handlePatientSelect(patient)}
+                                                        >
+                                                            <div className="autocomplete-item-name">
+                                                                {patient.firstName} {patient.lastName}
+                                                            </div>
+                                                            <div className="autocomplete-item-details">
+                                                                {patient.email}
+                                                                {patient.phone && ` • ${patient.phone}`}
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="autocomplete-no-results">No patients found</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="form-group">

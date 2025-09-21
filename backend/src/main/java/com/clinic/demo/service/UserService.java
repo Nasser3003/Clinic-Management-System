@@ -1,5 +1,6 @@
 package com.clinic.demo.service;
 
+import com.clinic.demo.DTO.SearchResponseDTO;
 import com.clinic.demo.DTO.UserUpdatePasswordDTO;
 import com.clinic.demo.DTO.userDTO.EmployeeDTO;
 import com.clinic.demo.DTO.userDTO.PatientDTO;
@@ -21,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -274,4 +278,34 @@ public class UserService {
         return userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
-}
+
+
+    public SearchResponseDTO<EmployeeDTO> searchEmployeesByName(String searchTerm, List<String> userTypes, int limit) {
+        if (searchTerm == null || searchTerm.trim().isEmpty())
+            throw new IllegalArgumentException("Search term cannot be null or empty");
+
+        if (userTypes == null || userTypes.isEmpty())
+            throw new IllegalArgumentException("At least one user type must be specified");
+
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<UserTypeEnum> enumTypes = userTypes.stream()
+                .map(type -> {
+                    try {
+                        return UserTypeEnum.valueOf(type.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Invalid user type: " + type);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        Page<BaseUserEntity> pageResults = userRepository.findAllByUserTypesAndName(enumTypes, searchTerm, pageable);
+
+         List<EmployeeDTO> results = pageResults.getContent()
+                .stream()
+                .filter(user -> user instanceof EmployeeEntity)
+                .map(user -> UserMapper.convertToEmployeeDTO((EmployeeEntity) user))
+                .collect(Collectors.toList());
+
+        return new SearchResponseDTO<>(results, pageResults.getTotalElements());
+    }}

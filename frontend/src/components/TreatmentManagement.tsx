@@ -56,6 +56,7 @@ function TreatmentManagement() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+
     // Search states
     const [patientSearch, setPatientSearch] = useState('');
     const [doctorSearch, setDoctorSearch] = useState('');
@@ -107,7 +108,7 @@ function TreatmentManagement() {
         try {
             // Load patients for admin/employee
             if (isAdmin || isEmployee) {
-                const patientsResponse = await fetch('/api/users/patients', {
+                const patientsResponse = await fetch('/api/user/patients', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
@@ -119,7 +120,7 @@ function TreatmentManagement() {
                 }
 
                 // Load doctors for admin/employee
-                const doctorsResponse = await fetch('/api/users/doctors', {
+                const doctorsResponse = await fetch('/api/user/doctors', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
@@ -138,7 +139,7 @@ function TreatmentManagement() {
                 });
 
                 // Load patients for the doctor
-                const patientsResponse = await fetch(`/api/users/patients/doctor/${user?.email}`, {
+                const patientsResponse = await fetch(`/api/user/patients/doctor/${user?.email}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'

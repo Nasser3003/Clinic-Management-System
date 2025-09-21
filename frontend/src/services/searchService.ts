@@ -27,7 +27,7 @@ export const searchService = {
     ): Promise<SearchResponse> => {
         const typeParams = userTypes.map(type => `types=${type}`).join('&');
         const response = await api.get(
-            `/users/search?q=${encodeURIComponent(query)}&${typeParams}&limit=${limit}`
+            `/user/search?q=${encodeURIComponent(query)}&${typeParams}&limit=${limit}`
         );
         return response.data;
     },
@@ -74,7 +74,7 @@ export const searchService = {
         if (filters.isActive !== undefined) params.append('isActive', filters.isActive.toString());
         if (filters.limit) params.append('limit', filters.limit.toString());
 
-        const response = await api.get(`/users/search?${params.toString()}`);
+        const response = await api.get(`/user/search?${params.toString()}`);
         return response.data;
     },
 

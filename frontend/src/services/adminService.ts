@@ -1,7 +1,7 @@
 import api from './api';
 import {EmployeeDTO, EmployeeRegistrationDTO, UserInfoDTO} from '../types/admin';
-import { hasPermission, hasAnyPermission } from '../utils/jwtDecoder';
-import { PERMISSIONS } from '../types/auth';
+import {hasAnyPermission, hasPermission} from '../utils/jwtDecoder';
+import {PERMISSIONS} from '../types/auth';
 
 export const adminService = {
     // Permission checking helper
