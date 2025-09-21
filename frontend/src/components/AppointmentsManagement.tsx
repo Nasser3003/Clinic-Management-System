@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import './css/AppointmentsManagement.css';
 import HeroHeader from "./common/HeroHeader";
+import { searchService } from '../services/searchService';
+import { appointmentService } from '../services/appointmentService';
 
 interface Appointment {
     id: string;
@@ -26,17 +28,31 @@ interface CalendarView {
     appointments: Appointment[];
 }
 
+interface AppointmentForm {
+    doctorName: string;
+    patientName: string;
+    duration: number;
+    dateTime: string;
+}
+
 function AppointmentsManagement() {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'all' | 'doctor-calendar' | 'patient-calendar'>('all');
+    const [activeTab, setActiveTab] = useState<'create' | 'all' | 'doctor-calendar' | 'patient-calendar'>('create');
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [calendarView, setCalendarView] = useState<CalendarView | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [appointmentForm, setAppointmentForm] = useState<AppointmentForm>({
+        doctorName: '',
+        patientName: '',
+        duration: 60,
+        dateTime: ''
+    });
     const [filters, setFilters] = useState({
         status: '',
-        doctorEmail: '',
-        patientEmail: '',
+        doctorName: '',
+        patientName: '',
         startDate: '',
         endDate: ''
     });
@@ -46,24 +62,123 @@ function AppointmentsManagement() {
     const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.userType || '');
     const isPatient = user?.userType === 'PATIENT';
 
+    // Auto-fill doctor name if user is a doctor
     useEffect(() => {
-        if (activeTab === 'all') {
-            loadAllAppointments();
+        if (isDoctor && user?.firstName && user?.lastName) {
+            setAppointmentForm(prev => ({
+                ...prev,
+                doctorName: `${user.firstName} ${user.lastName}`
+            }));
         }
+    }, [isDoctor, user]);
+
+    useEffect(() => {
+        if (activeTab === 'all')
+            loadAllAppointments();
     }, [activeTab, filters]);
+
+    const clearMessages = () => {
+        setError('');
+        setSuccess('');
+    };
+
+    const createAppointment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        clearMessages();
+
+        try {
+            // Search for doctor by name
+            const doctorResults = await searchService.searchDoctors(appointmentForm.doctorName, 1);
+            if (doctorResults.results.length === 0) {
+                throw new Error('Doctor not found with that name');
+            }
+
+            // Search for patient by name
+            const patientResults = await searchService.searchPatients(appointmentForm.patientName, 1);
+            if (patientResults.results.length === 0) {
+                throw new Error('Patient not found with that name');
+            }
+
+            const doctorEmail = doctorResults.results[0].email;
+            const patientEmail = patientResults.results[0].email;
+
+            // Format datetime for backend
+            const formattedDateTime = new Date(appointmentForm.dateTime)
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ');
+
+            // Use the appointmentService to schedule
+            await appointmentService.scheduleAppointment({
+                doctorEmail,
+                patientEmail,
+                dateTime: formattedDateTime,
+                duration: appointmentForm.duration
+            });
+
+            setSuccess('Appointment scheduled successfully!');
+            // Clear form
+            setAppointmentForm({
+                doctorName: isDoctor && user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
+                patientName: '',
+                duration: 60,
+                dateTime: ''
+            });
+        } catch (err: any) {
+            console.error('Error creating appointment:', err);
+            setError(err.message || 'Failed to schedule appointment');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const loadAllAppointments = async () => {
         setLoading(true);
-        setError('');
+        clearMessages();
 
         try {
-            // Build query parameters
             const params = new URLSearchParams();
             if (filters.status) params.append('status', filters.status);
-            if (filters.doctorEmail) params.append('doctorEmail', filters.doctorEmail);
-            if (filters.patientEmail) params.append('patientEmail', filters.patientEmail);
             if (filters.startDate) params.append('startDate', filters.startDate);
             if (filters.endDate) params.append('endDate', filters.endDate);
+
+            // Convert names to emails for API filtering
+            if (filters.doctorName) {
+                try {
+                    const doctorEmailResponse = await fetch(`/api/users/doctor/email-by-name/${encodeURIComponent(filters.doctorName)}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (doctorEmailResponse.ok) {
+                        const doctorEmail = await doctorEmailResponse.text();
+                        params.append('doctorEmail', doctorEmail);
+                    }
+                } catch (err) {
+                    // Continue without doctor filter if name not found
+                    console.warn('Doctor name not found for filtering:', filters.doctorName);
+                }
+            }
+
+            if (filters.patientName) {
+                try {
+                    const patientEmailResponse = await fetch(`/api/users/patient/email-by-name/${encodeURIComponent(filters.patientName)}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (patientEmailResponse.ok) {
+                        const patientEmail = await patientEmailResponse.text();
+                        params.append('patientEmail', patientEmail);
+                    }
+                } catch (err) {
+                    // Continue without patient filter if name not found
+                    console.warn('Patient name not found for filtering:', filters.patientName);
+                }
+            }
 
             const queryString = params.toString();
             const url = `/api/appointments${queryString ? `?${queryString}` : ''}`;
@@ -89,27 +204,22 @@ function AppointmentsManagement() {
         }
     };
 
-    const loadDoctorCalendar = async (doctorEmail: string, startDate: string, endDate: string) => {
+    const loadDoctorCalendar = async (doctorName: string, startDate: string, endDate: string) => {
         setLoading(true);
-        setError('');
+        clearMessages();
 
         try {
-            const response = await fetch(
-                `/api/calendar/doctor/${doctorEmail}?startDate=${startDate}&endDate=${endDate}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                setCalendarView(data);
-            } else {
-                throw new Error('Failed to load doctor calendar');
+            // Search for doctor by name using searchService
+            const doctorResults = await searchService.searchDoctors(doctorName, 1);
+            if (doctorResults.results.length === 0) {
+                throw new Error('Doctor not found with that name');
             }
+
+            const doctorEmail = doctorResults.results[0].email;
+
+            // Use appointmentService to get doctor calendar
+            const data = await appointmentService.getDoctorCalendar(doctorEmail, startDate, endDate);
+            setCalendarView(data);
         } catch (err: any) {
             console.error('Error loading doctor calendar:', err);
             setError('Failed to load doctor calendar');
@@ -118,11 +228,20 @@ function AppointmentsManagement() {
         }
     };
 
-    const loadPatientCalendar = async (patientEmail: string, startDate: string, endDate: string) => {
+    const loadPatientCalendar = async (patientName: string, startDate: string, endDate: string) => {
         setLoading(true);
-        setError('');
+        clearMessages();
 
         try {
+            // Search for patient by name using searchService
+            const patientResults = await searchService.searchPatients(patientName, 1);
+            if (patientResults.results.length === 0) {
+                throw new Error('Patient not found with that name');
+            }
+
+            const patientEmail = patientResults.results[0].email;
+
+            // Make API call for patient calendar
             const response = await fetch(
                 `/api/calendar/patient/${patientEmail}?startDate=${startDate}&endDate=${endDate}`,
                 {
@@ -147,25 +266,53 @@ function AppointmentsManagement() {
         }
     };
 
-    const handleUpdateAppointmentStatus = async (appointmentId: string, status: 'COMPLETED' | 'CANCELLED') => {
+    const cancelAppointment = async (appointmentId: string) => {
         try {
-            const response = await fetch(`/api/appointments/${appointmentId}/status`, {
-                method: 'PUT',
+            const response = await fetch('/appointments/cancel', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ status })
+                body: appointmentId
             });
 
             if (response.ok) {
+                setSuccess('Appointment cancelled successfully');
                 loadAllAppointments();
             } else {
-                throw new Error('Failed to update appointment status');
+                throw new Error('Failed to cancel appointment');
             }
         } catch (err: any) {
-            console.error('Error updating appointment status:', err);
-            setError('Failed to update appointment status');
+            console.error('Error cancelling appointment:', err);
+            setError('Failed to cancel appointment');
+        }
+    };
+
+    const completeAppointment = async (appointmentId: string) => {
+        try {
+            const response = await fetch(`/appointments/${appointmentId}/complete`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    // Add any required completion data here
+                    notes: '',
+                    prescription: ''
+                })
+            });
+
+            if (response.ok) {
+                setSuccess('Appointment completed successfully');
+                loadAllAppointments();
+            } else {
+                throw new Error('Failed to complete appointment');
+            }
+        } catch (err: any) {
+            console.error('Error completing appointment:', err);
+            setError('Failed to complete appointment');
         }
     };
 
@@ -189,24 +336,40 @@ function AppointmentsManagement() {
     const handleCalendarSubmit = (e: React.FormEvent, type: 'doctor' | 'patient') => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
-        const email = formData.get('email') as string;
+        const name = formData.get('name') as string;
         const startDate = formData.get('startDate') as string;
         const endDate = formData.get('endDate') as string;
 
         if (type === 'doctor') {
-            loadDoctorCalendar(email, startDate, endDate);
+            loadDoctorCalendar(name, startDate, endDate);
         } else {
-            loadPatientCalendar(email, startDate, endDate);
+            loadPatientCalendar(name, startDate, endDate);
         }
+    };
+
+    const clearForm = () => {
+        setAppointmentForm({
+            doctorName: isDoctor && user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
+            patientName: '',
+            duration: 60,
+            dateTime: ''
+        });
+        clearMessages();
+    };
+
+    const getCurrentDateTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
     };
 
     return (
         <Layout>
-                <div>
-                    <HeroHeader
-                        title="Appointments Management"
-                        subtitle="View and manage all appointments in the system"
-                    />
+            <div className="appointments-management">
+                <HeroHeader
+                    title="Appointments Management"
+                    subtitle="Schedule and manage appointments in the system"
+                />
 
                 {error && (
                     <div className="error-message">
@@ -214,9 +377,23 @@ function AppointmentsManagement() {
                     </div>
                 )}
 
+                {success && (
+                    <div className="success-message">
+                        {success}
+                    </div>
+                )}
+
                 {/* Tab Navigation */}
                 <div className="tabs-container">
                     <div className="tabs-header">
+                        {(isAdmin || isEmployee || isDoctor) && (
+                            <button
+                                className={`tab-button ${activeTab === 'create' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('create')}
+                            >
+                                Create Appointment
+                            </button>
+                        )}
                         <button
                             className={`tab-button ${activeTab === 'all' ? 'active' : ''}`}
                             onClick={() => setActiveTab('all')}
@@ -244,6 +421,94 @@ function AppointmentsManagement() {
 
                 {/* Tab Content */}
                 <div className="tab-content">
+                    {/* Create Appointment Tab */}
+                    {activeTab === 'create' && (isAdmin || isEmployee || isDoctor) && (
+                        <div className="create-appointment-section">
+                            <div className="section-header">
+                                <h3>Schedule New Appointment</h3>
+                                <p>Create a new appointment for a patient</p>
+                            </div>
+
+                            <form onSubmit={createAppointment} className="appointment-form">
+                                <div className="form-group">
+                                    <label htmlFor="doctorName">Doctor Name</label>
+                                    <input
+                                        id="doctorName"
+                                        type="text"
+                                        className="form-input"
+                                        value={appointmentForm.doctorName}
+                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, doctorName: e.target.value }))}
+                                        placeholder="Enter doctor name"
+                                        required
+                                        disabled={isDoctor}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="patientName">Patient Name</label>
+                                    <input
+                                        id="patientName"
+                                        type="text"
+                                        className="form-input"
+                                        value={appointmentForm.patientName}
+                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, patientName: e.target.value }))}
+                                        placeholder="Enter patient name"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="duration">Duration (minutes)</label>
+                                    <select
+                                        id="duration"
+                                        className="form-select"
+                                        value={appointmentForm.duration}
+                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
+                                        required
+                                    >
+                                        <option value={30}>30 minutes</option>
+                                        <option value={60}>60 minutes</option>
+                                        <option value={90}>90 minutes</option>
+                                        <option value={120}>120 minutes</option>
+                                        <option value={150}>150 minutes</option>
+                                        <option value={180}>180 minutes</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="dateTime">Date & Time</label>
+                                    <input
+                                        id="dateTime"
+                                        type="datetime-local"
+                                        className="form-input"
+                                        value={appointmentForm.dateTime}
+                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, dateTime: e.target.value }))}
+                                        min={getCurrentDateTime()}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        onClick={clearForm}
+                                        className="clear-btn"
+                                    >
+                                        Clear Form
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="create-btn"
+                                    >
+                                        {loading ? 'Scheduling...' : 'Schedule Appointment'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* All Appointments Tab */}
                     {activeTab === 'all' && (
                         <div className="all-appointments-section">
                             <div className="section-header">
@@ -271,23 +536,23 @@ function AppointmentsManagement() {
                                     {(isAdmin || isEmployee) && (
                                         <>
                                             <div className="filter-group">
-                                                <label>Doctor Email</label>
+                                                <label>Doctor Name</label>
                                                 <input
-                                                    type="email"
-                                                    value={filters.doctorEmail}
-                                                    onChange={(e) => setFilters(prev => ({ ...prev, doctorEmail: e.target.value }))}
-                                                    placeholder="Filter by doctor email"
+                                                    type="text"
+                                                    value={filters.doctorName}
+                                                    onChange={(e) => setFilters(prev => ({ ...prev, doctorName: e.target.value }))}
+                                                    placeholder="Filter by doctor name"
                                                     className="filter-input"
                                                 />
                                             </div>
 
                                             <div className="filter-group">
-                                                <label>Patient Email</label>
+                                                <label>Patient Name</label>
                                                 <input
-                                                    type="email"
-                                                    value={filters.patientEmail}
-                                                    onChange={(e) => setFilters(prev => ({ ...prev, patientEmail: e.target.value }))}
-                                                    placeholder="Filter by patient email"
+                                                    type="text"
+                                                    value={filters.patientName}
+                                                    onChange={(e) => setFilters(prev => ({ ...prev, patientName: e.target.value }))}
+                                                    placeholder="Filter by patient name"
                                                     className="filter-input"
                                                 />
                                             </div>
@@ -319,8 +584,8 @@ function AppointmentsManagement() {
                                     <button
                                         onClick={() => setFilters({
                                             status: '',
-                                            doctorEmail: '',
-                                            patientEmail: '',
+                                            doctorName: '',
+                                            patientName: '',
                                             startDate: '',
                                             endDate: ''
                                         })}
@@ -345,61 +610,58 @@ function AppointmentsManagement() {
                                 <div className="appointments-table">
                                     <table className="appointments-grid">
                                         <thead>
-                                            <tr>
-                                                <th>Date & Time</th>
-                                                <th>Doctor</th>
-                                                <th>Patient</th>
-                                                <th>Duration</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
+                                        <tr>
+                                            <th>Date & Time</th>
+                                            <th>Doctor</th>
+                                            <th>Patient</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {appointments.map((appointment) => (
-                                                <tr key={appointment.id}>
-                                                    <td>
-                                                        <div className="appointment-time">
+                                        {appointments.map((appointment) => (
+                                            <tr key={appointment.id}>
+                                                <td data-label="Date & Time">
+                                                    <div className="appointment-time">
                                                             <span className="start-time">
                                                                 {formatDateTime(appointment.startDateTime)}
                                                             </span>
-                                                            <span className="end-time">
+                                                        <span className="end-time">
                                                                 to {new Date(appointment.endDateTime).toLocaleTimeString()}
                                                             </span>
-                                                        </div>
-                                                    </td>
-                                                    <td>{appointment.doctorName}</td>
-                                                    <td>{appointment.patientName}</td>
-                                                    <td>{appointment.duration} min</td>
-                                                    <td>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Doctor">{appointment.doctorName}</td>
+                                                <td data-label="Patient">{appointment.patientName}</td>
+                                                <td data-label="Duration">{appointment.duration} min</td>
+                                                <td data-label="Status">
                                                         <span className={`status-badge ${getStatusColor(appointment.status)}`}>
                                                             {appointment.status}
                                                         </span>
-                                                    </td>
-                                                    <td>
-                                                        <div className="appointment-actions">
-                                                            {appointment.status === 'SCHEDULED' && (isDoctor || isAdmin) && (
-                                                                <>
-                                                                    <button
-                                                                        onClick={() => handleUpdateAppointmentStatus(appointment.id, 'COMPLETED')}
-                                                                        className="complete-btn"
-                                                                    >
-                                                                        Complete
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleUpdateAppointmentStatus(appointment.id, 'CANCELLED')}
-                                                                        className="cancel-btn"
-                                                                    >
-                                                                        Cancel
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                            <button className="view-details-btn">
-                                                                View Details
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                </td>
+                                                <td data-label="Actions">
+                                                    <div className="appointment-actions">
+                                                        {appointment.status === 'SCHEDULED' && (isDoctor || isAdmin) && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => completeAppointment(appointment.id)}
+                                                                    className="complete-btn"
+                                                                >
+                                                                    Complete
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => cancelAppointment(appointment.id)}
+                                                                    className="cancel-btn"
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -407,6 +669,7 @@ function AppointmentsManagement() {
                         </div>
                     )}
 
+                    {/* Doctor Calendar Tab */}
                     {activeTab === 'doctor-calendar' && (
                         <div className="doctor-calendar-section">
                             <div className="section-header">
@@ -417,14 +680,14 @@ function AppointmentsManagement() {
                             <form onSubmit={(e) => handleCalendarSubmit(e, 'doctor')} className="calendar-form">
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>Doctor Email</label>
+                                        <label>Doctor Name</label>
                                         <input
-                                            type="email"
-                                            name="email"
+                                            type="text"
+                                            name="name"
                                             required
-                                            placeholder="Enter doctor email"
+                                            placeholder="Enter doctor name"
                                             className="form-input"
-                                            defaultValue={isDoctor ? user?.email : ''}
+                                            defaultValue={isDoctor && user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : ''}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -470,11 +733,13 @@ function AppointmentsManagement() {
                                                 {calendarView.appointments.map((appointment) => (
                                                     <div key={appointment.id} className="calendar-appointment-card">
                                                         <div className="appointment-info">
-                                                            <h5>{appointment.patientName}</h5>
-                                                            <p className="appointment-time">
-                                                                {formatDateTime(appointment.startDateTime)} - 
-                                                                {new Date(appointment.endDateTime).toLocaleTimeString()}
-                                                            </p>
+                                                            <div>
+                                                                <h5>{appointment.patientName}</h5>
+                                                                <p className="appointment-time">
+                                                                    {formatDateTime(appointment.startDateTime)} -
+                                                                    {new Date(appointment.endDateTime).toLocaleTimeString()}
+                                                                </p>
+                                                            </div>
                                                             <span className={`status-badge ${getStatusColor(appointment.status)}`}>
                                                                 {appointment.status}
                                                             </span>
@@ -489,6 +754,7 @@ function AppointmentsManagement() {
                         </div>
                     )}
 
+                    {/* Patient Calendar Tab */}
                     {activeTab === 'patient-calendar' && (
                         <div className="patient-calendar-section">
                             <div className="section-header">
@@ -499,14 +765,14 @@ function AppointmentsManagement() {
                             <form onSubmit={(e) => handleCalendarSubmit(e, 'patient')} className="calendar-form">
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label>Patient Email</label>
+                                        <label>Patient Name</label>
                                         <input
-                                            type="email"
-                                            name="email"
+                                            type="text"
+                                            name="name"
                                             required
-                                            placeholder="Enter patient email"
+                                            placeholder="Enter patient name"
                                             className="form-input"
-                                            defaultValue={isPatient ? user?.email : ''}
+                                            defaultValue={isPatient && user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : ''}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -538,7 +804,7 @@ function AppointmentsManagement() {
                             {calendarView && (
                                 <div className="calendar-results">
                                     <div className="calendar-header">
-                                        <h4>Appointments for {calendarView.patientEmail}</h4>
+                                        <h4>Appointments for {calendarView.patientEmail || 'Patient'}</h4>
                                         <p>
                                             {formatDate(calendarView.startDate)} - {formatDate(calendarView.endDate)}
                                         </p>
@@ -552,11 +818,13 @@ function AppointmentsManagement() {
                                                 {calendarView.appointments.map((appointment) => (
                                                     <div key={appointment.id} className="calendar-appointment-card">
                                                         <div className="appointment-info">
-                                                            <h5>Dr. {appointment.doctorName}</h5>
-                                                            <p className="appointment-time">
-                                                                {formatDateTime(appointment.startDateTime)} - 
-                                                                {new Date(appointment.endDateTime).toLocaleTimeString()}
-                                                            </p>
+                                                            <div>
+                                                                <h5>Dr. {appointment.doctorName}</h5>
+                                                                <p className="appointment-time">
+                                                                    {formatDateTime(appointment.startDateTime)} -
+                                                                    {new Date(appointment.endDateTime).toLocaleTimeString()}
+                                                                </p>
+                                                            </div>
                                                             <span className={`status-badge ${getStatusColor(appointment.status)}`}>
                                                                 {appointment.status}
                                                             </span>
