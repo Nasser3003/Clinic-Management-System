@@ -79,12 +79,10 @@ function AppointmentsManagement() {
     // Handle clicks outside dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (doctorInputRef.current && !doctorInputRef.current.contains(event.target as Node)) {
+            if (doctorInputRef.current && !doctorInputRef.current.contains(event.target as Node))
                 setShowDoctorDropdown(false);
-            }
-            if (patientInputRef.current && !patientInputRef.current.contains(event.target as Node)) {
+            if (patientInputRef.current && !patientInputRef.current.contains(event.target as Node))
                 setShowPatientDropdown(false);
-            }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
@@ -93,7 +91,7 @@ function AppointmentsManagement() {
 
     // Search doctors with debouncing
     useEffect(() => {
-        if (appointmentForm.doctorName.length >= 2) {
+        if (appointmentForm.doctorName.length >= 2 && !selectedDoctorEmail) {
             const timeoutId = setTimeout(async () => {
                 setSearchingDoctors(true);
                 try {
@@ -112,11 +110,11 @@ function AppointmentsManagement() {
             setDoctorSuggestions([]);
             setShowDoctorDropdown(false);
         }
-    }, [appointmentForm.doctorName]);
+    }, [appointmentForm.doctorName, selectedDoctorEmail]);
 
     // Search patients with debouncing
     useEffect(() => {
-        if (appointmentForm.patientName.length >= 2) {
+        if (appointmentForm.patientName.length >= 2 && !selectedPatientEmail) {
             const timeoutId = setTimeout(async () => {
                 setSearchingPatients(true);
                 try {
@@ -135,7 +133,7 @@ function AppointmentsManagement() {
             setPatientSuggestions([]);
             setShowPatientDropdown(false);
         }
-    }, [appointmentForm.patientName]);
+    }, [appointmentForm.patientName, selectedPatientEmail]);
 
     // Handle doctor selection
     const handleDoctorSelect = (doctor: SearchResult) => {
@@ -145,6 +143,7 @@ function AppointmentsManagement() {
         }));
         setSelectedDoctorEmail(doctor.email);
         setShowDoctorDropdown(false);
+        setDoctorSuggestions([]);
     };
 
     // Handle patient selection
@@ -155,6 +154,21 @@ function AppointmentsManagement() {
         }));
         setSelectedPatientEmail(patient.email);
         setShowPatientDropdown(false);
+        setPatientSuggestions([]);
+    };
+
+    // Handle doctor input change
+    const handleDoctorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAppointmentForm(prev => ({ ...prev, doctorName: e.target.value }));
+        if (selectedDoctorEmail)
+            setSelectedDoctorEmail('');
+    };
+
+    // Handle patient input change
+    const handlePatientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAppointmentForm(prev => ({ ...prev, patientName: e.target.value }));
+        if (selectedPatientEmail)
+            setSelectedPatientEmail('');
     };
 
     // Auto-fill doctor name if user is a doctor
@@ -191,23 +205,20 @@ function AppointmentsManagement() {
             // If no email selected (user typed without selecting), search for exact match
             if (!doctorEmail && appointmentForm.doctorName) {
                 const doctorResults = await searchService.searchDoctors(appointmentForm.doctorName, 1);
-                if (doctorResults.results.length === 0) {
+                if (doctorResults.results.length === 0)
                     throw new Error('Doctor not found with that name. Please select from the dropdown suggestions.');
-                }
                 doctorEmail = doctorResults.results[0].email;
             }
 
             if (!patientEmail && appointmentForm.patientName) {
                 const patientResults = await searchService.searchPatients(appointmentForm.patientName, 1);
-                if (patientResults.results.length === 0) {
+                if (patientResults.results.length === 0)
                     throw new Error('Patient not found with that name. Please select from the dropdown suggestions.');
-                }
                 patientEmail = patientResults.results[0].email;
             }
 
-            if (!doctorEmail || !patientEmail) {
+            if (!doctorEmail || !patientEmail)
                 throw new Error('Please select both doctor and patient from the dropdown suggestions.');
-            }
 
             // Format datetime for backend
             const formattedDateTime = new Date(appointmentForm.dateTime)
@@ -255,9 +266,8 @@ function AppointmentsManagement() {
             if (filters.doctorName) {
                 try {
                     const doctorResults = await searchService.searchDoctors(filters.doctorName, 1);
-                    if (doctorResults.results.length > 0) {
+                    if (doctorResults.results.length > 0)
                         params.append('doctorEmail', doctorResults.results[0].email);
-                    }
                 } catch (err) {
                     console.warn('Doctor name not found for filtering:', filters.doctorName);
                 }
@@ -266,9 +276,8 @@ function AppointmentsManagement() {
             if (filters.patientName) {
                 try {
                     const patientResults = await searchService.searchPatients(filters.patientName, 1);
-                    if (patientResults.results.length > 0) {
+                    if (patientResults.results.length > 0)
                         params.append('patientEmail', patientResults.results[0].email);
-                    }
                 } catch (err) {
                     console.warn('Patient name not found for filtering:', filters.patientName);
                 }
@@ -305,9 +314,8 @@ function AppointmentsManagement() {
         try {
             // Search for doctor by name using searchService
             const doctorResults = await searchService.searchDoctors(doctorName, 1);
-            if (doctorResults.results.length === 0) {
+            if (doctorResults.results.length === 0)
                 throw new Error('Doctor not found with that name');
-            }
 
             const doctorEmail = doctorResults.results[0].email;
 
@@ -329,9 +337,8 @@ function AppointmentsManagement() {
         try {
             // Search for patient by name using searchService
             const patientResults = await searchService.searchPatients(patientName, 1);
-            if (patientResults.results.length === 0) {
+            if (patientResults.results.length === 0)
                 throw new Error('Patient not found with that name');
-            }
 
             const patientEmail = patientResults.results[0].email;
 
@@ -392,7 +399,6 @@ function AppointmentsManagement() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // Add any required completion data here
                     notes: '',
                     prescription: ''
                 })
@@ -450,6 +456,10 @@ function AppointmentsManagement() {
         });
         setSelectedDoctorEmail(isDoctor && user?.email ? user.email : '');
         setSelectedPatientEmail('');
+        setDoctorSuggestions([]);
+        setPatientSuggestions([]);
+        setShowDoctorDropdown(false);
+        setShowPatientDropdown(false);
         clearMessages();
     };
 
@@ -526,124 +536,120 @@ function AppointmentsManagement() {
                             </div>
 
                             <form onSubmit={createAppointment} className="appointment-form">
-                                <div className="form-group">
-                                    <label htmlFor="doctorName">Doctor Name</label>
-                                    <div className="autocomplete-container" ref={doctorInputRef}>
-                                        <input
-                                            id="doctorName"
-                                            type="text"
-                                            className="form-input"
-                                            value={appointmentForm.doctorName}
-                                            onChange={(e) => {
-                                                setAppointmentForm(prev => ({ ...prev, doctorName: e.target.value }));
-                                                setSelectedDoctorEmail('');
-                                            }}
-                                            placeholder="Enter doctor name"
-                                            required
-                                            disabled={isDoctor}
-                                            autoComplete="off"
-                                        />
-                                        {showDoctorDropdown && (
-                                            <div className="autocomplete-dropdown">
-                                                {searchingDoctors ? (
-                                                    <div className="autocomplete-loading">Searching...</div>
-                                                ) : doctorSuggestions.length > 0 ? (
-                                                    doctorSuggestions.map((doctor) => (
-                                                        <div
-                                                            key={doctor.id}
-                                                            className="autocomplete-item"
-                                                            onClick={() => handleDoctorSelect(doctor)}
-                                                        >
-                                                            <div className="autocomplete-item-name">
-                                                                {doctor.firstName} {doctor.lastName}
+                                {/* Top Row: Doctor and Patient Names */}
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label htmlFor="doctorName">Doctor Name</label>
+                                        <div className="autocomplete-container" ref={doctorInputRef}>
+                                            <input
+                                                id="doctorName"
+                                                type="text"
+                                                className="form-input"
+                                                value={appointmentForm.doctorName}
+                                                onChange={handleDoctorInputChange}
+                                                placeholder="Enter doctor name"
+                                                required
+                                                disabled={isDoctor}
+                                                autoComplete="off"
+                                            />
+                                            {showDoctorDropdown && doctorSuggestions.length > 0 && (
+                                                <div className="autocomplete-dropdown">
+                                                    {searchingDoctors ? (
+                                                        <div className="autocomplete-loading">Searching...</div>
+                                                    ) : (
+                                                        doctorSuggestions.map((doctor) => (
+                                                            <div
+                                                                key={doctor.id}
+                                                                className="autocomplete-item"
+                                                                onClick={() => handleDoctorSelect(doctor)}
+                                                            >
+                                                                <div className="autocomplete-item-name">
+                                                                    {doctor.firstName} {doctor.lastName}
+                                                                </div>
+                                                                <div className="autocomplete-item-details">
+                                                                    {doctor.email}
+                                                                    {doctor.speciality && ` • ${doctor.speciality}`}
+                                                                </div>
                                                             </div>
-                                                            <div className="autocomplete-item-details">
-                                                                {doctor.email}
-                                                                {doctor.speciality && ` • ${doctor.speciality}`}
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="patientName">Patient Name</label>
+                                        <div className="autocomplete-container" ref={patientInputRef}>
+                                            <input
+                                                id="patientName"
+                                                type="text"
+                                                className="form-input"
+                                                value={appointmentForm.patientName}
+                                                onChange={handlePatientInputChange}
+                                                placeholder="Enter patient name"
+                                                required
+                                                autoComplete="off"
+                                            />
+                                            {showPatientDropdown && patientSuggestions.length > 0 && (
+                                                <div className="autocomplete-dropdown">
+                                                    {searchingPatients ? (
+                                                        <div className="autocomplete-loading">Searching...</div>
+                                                    ) : (
+                                                        patientSuggestions.map((patient) => (
+                                                            <div
+                                                                key={patient.id}
+                                                                className="autocomplete-item"
+                                                                onClick={() => handlePatientSelect(patient)}
+                                                            >
+                                                                <div className="autocomplete-item-name">
+                                                                    {patient.firstName} {patient.lastName}
+                                                                </div>
+                                                                <div className="autocomplete-item-details">
+                                                                    {patient.email}
+                                                                    {patient.phone && ` • ${patient.phone}`}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="autocomplete-no-results">No doctors found</div>
-                                                )}
-                                            </div>
-                                        )}
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="patientName">Patient Name</label>
-                                    <div className="autocomplete-container" ref={patientInputRef}>
+                                {/* Bottom Row: DateTime and Duration */}
+                                <div className="form-grid-bottom">
+                                    <div className="form-group">
+                                        <label htmlFor="dateTime">Date & Time</label>
                                         <input
-                                            id="patientName"
-                                            type="text"
+                                            id="dateTime"
+                                            type="datetime-local"
                                             className="form-input"
-                                            value={appointmentForm.patientName}
-                                            onChange={(e) => {
-                                                setAppointmentForm(prev => ({ ...prev, patientName: e.target.value }));
-                                                setSelectedPatientEmail('');
-                                            }}
-                                            placeholder="Enter patient name"
+                                            value={appointmentForm.dateTime}
+                                            onChange={(e) => setAppointmentForm(prev => ({ ...prev, dateTime: e.target.value }))}
+                                            min={getCurrentDateTime()}
                                             required
-                                            autoComplete="off"
                                         />
-                                        {showPatientDropdown && (
-                                            <div className="autocomplete-dropdown">
-                                                {searchingPatients ? (
-                                                    <div className="autocomplete-loading">Searching...</div>
-                                                ) : patientSuggestions.length > 0 ? (
-                                                    patientSuggestions.map((patient) => (
-                                                        <div
-                                                            key={patient.id}
-                                                            className="autocomplete-item"
-                                                            onClick={() => handlePatientSelect(patient)}
-                                                        >
-                                                            <div className="autocomplete-item-name">
-                                                                {patient.firstName} {patient.lastName}
-                                                            </div>
-                                                            <div className="autocomplete-item-details">
-                                                                {patient.email}
-                                                                {patient.phone && ` • ${patient.phone}`}
-                                                            </div>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="autocomplete-no-results">No patients found</div>
-                                                )}
-                                            </div>
-                                        )}
                                     </div>
-                                </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="duration">Duration (minutes)</label>
-                                    <select
-                                        id="duration"
-                                        className="form-select"
-                                        value={appointmentForm.duration}
-                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                                        required
-                                    >
-                                        <option value={30}>30 minutes</option>
-                                        <option value={60}>60 minutes</option>
-                                        <option value={90}>90 minutes</option>
-                                        <option value={120}>120 minutes</option>
-                                        <option value={150}>150 minutes</option>
-                                        <option value={180}>180 minutes</option>
-                                    </select>
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="dateTime">Date & Time</label>
-                                    <input
-                                        id="dateTime"
-                                        type="datetime-local"
-                                        className="form-input"
-                                        value={appointmentForm.dateTime}
-                                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, dateTime: e.target.value }))}
-                                        min={getCurrentDateTime()}
-                                        required
-                                    />
+                                    <div className="form-group">
+                                        <label htmlFor="duration">Duration (minutes)</label>
+                                        <select
+                                            id="duration"
+                                            className="form-select"
+                                            value={appointmentForm.duration}
+                                            onChange={(e) => setAppointmentForm(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
+                                            required
+                                        >
+                                            <option value={30}>30 minutes</option>
+                                            <option value={60}>60 minutes</option>
+                                            <option value={90}>90 minutes</option>
+                                            <option value={120}>120 minutes</option>
+                                            <option value={150}>150 minutes</option>
+                                            <option value={180}>180 minutes</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="form-actions">
@@ -747,7 +753,7 @@ function AppointmentsManagement() {
                                             startDate: '',
                                             endDate: ''
                                         })}
-                                        className="clear-filters-btn"
+                                        className="clear-btn"
                                     >
                                         Clear Filters
                                     </button>
@@ -782,21 +788,21 @@ function AppointmentsManagement() {
                                             <tr key={appointment.id}>
                                                 <td data-label="Date & Time">
                                                     <div className="appointment-time">
-                                                            <span className="start-time">
-                                                                {formatDateTime(appointment.startDateTime)}
-                                                            </span>
+                                                        <span className="start-time">
+                                                            {formatDateTime(appointment.startDateTime)}
+                                                        </span>
                                                         <span className="end-time">
-                                                                to {new Date(appointment.endDateTime).toLocaleTimeString()}
-                                                            </span>
+                                                            to {new Date(appointment.endDateTime).toLocaleTimeString()}
+                                                        </span>
                                                     </div>
                                                 </td>
                                                 <td data-label="Doctor">{appointment.doctorName}</td>
                                                 <td data-label="Patient">{appointment.patientName}</td>
                                                 <td data-label="Duration">{appointment.duration} min</td>
                                                 <td data-label="Status">
-                                                        <span className={`status-badge ${getStatusColor(appointment.status)}`}>
-                                                            {appointment.status}
-                                                        </span>
+                                                    <span className={`status-badge ${getStatusColor(appointment.status)}`}>
+                                                        {appointment.status}
+                                                    </span>
                                                 </td>
                                                 <td data-label="Actions">
                                                     <div className="appointment-actions">

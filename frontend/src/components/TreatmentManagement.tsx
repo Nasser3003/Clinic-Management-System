@@ -639,7 +639,7 @@ function TreatmentManagement() {
                                 <div className="filter-actions compact">
                                     <button
                                         onClick={handleClearFilters}
-                                        className="clear-filters-btn"
+                                        className="clear-btn"
                                     >
                                         Clear All
                                     </button>
