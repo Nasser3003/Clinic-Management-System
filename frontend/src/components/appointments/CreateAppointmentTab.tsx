@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { searchService, SearchResult } from '../../services/searchService';
 import { appointmentService } from '../../services/appointmentService';
 import { User } from '../../types/auth';
-import AutocompleteDropdown from "./AutoCompleteDropdown";
+import AutocompleteDropdown from "../AutoCompleteDropdown";
 
 interface AppointmentForm {
     doctorName: string;

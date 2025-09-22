@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { searchService, SearchResult } from '../../services/searchService';
-import AutocompleteDropdown from './AutoCompleteDropdown';
+import AutocompleteDropdown from '../AutoCompleteDropdown';
 
 interface CalendarFormProps {
     onSubmit: (data: {
