@@ -16,8 +16,21 @@ function AppointmentsTable({
                                onCancelAppointment,
                                onCompleteAppointment
                            }: AppointmentsTableProps) {
-    const formatDateTime = (dateTimeString: string) => {
-        return new Date(dateTimeString).toLocaleString();
+    const formatDate = (dateTimeString: string) => {
+        return new Date(dateTimeString).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    const formatTime = (dateTimeString: string) => {
+        return new Date(dateTimeString).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
     };
 
     const getStatusColor = (status: string) => {
@@ -33,7 +46,11 @@ function AppointmentsTable({
     const calculateEndTime = (startDateTime: string, duration: number) => {
         const startTime = new Date(startDateTime);
         const endTime = new Date(startTime.getTime() + duration * 60000);
-        return endTime.toLocaleTimeString();
+        return endTime.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
     };
 
     // Get display names from email addresses - for now showing email until we can fetch names
@@ -60,16 +77,16 @@ function AppointmentsTable({
                     <tr key={appointment.id}>
                         <td data-label="Date & Time">
                             <div className="appointment-time">
-                                <span className="start-time">
-                                    {formatDateTime(appointment.appointmentDateTime)}
+                                <span className="appointment-date">
+                                    {formatDate(appointment.startDateTime)}
                                 </span>
-                                <span className="end-time">
-                                    to {calculateEndTime(appointment.appointmentDateTime, appointment.duration)}
+                                <span className="appointment-time-range">
+                                    {formatTime(appointment.startDateTime)} → {calculateEndTime(appointment.startDateTime, appointment.duration)}
                                 </span>
                             </div>
                         </td>
-                        <td data-label="Doctor">{getDisplayName(appointment.doctorEmail)}</td>
-                        <td data-label="Patient">{getDisplayName(appointment.patientEmail)}</td>
+                        <td data-label="Doctor">{getDisplayName(appointment.doctorName)}</td>
+                        <td data-label="Patient">{getDisplayName(appointment.patientName)}</td>
                         <td data-label="Duration">{appointment.duration} min</td>
                         <td data-label="Status">
                             <span className={`status-badge ${getStatusColor(appointment.status)}`}>

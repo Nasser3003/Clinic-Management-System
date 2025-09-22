@@ -1,29 +1,32 @@
 export interface Appointment {
-  id: string;
-  patientEmail: string;
-  doctorEmail: string;
-  appointmentDateTime: string;
-  duration: number;
-  status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
-  treatmentDetails?: string;
+    id: string;
+    doctorName: string;
+    patientName: string;
+    startDateTime: string;
+    endDateTime?: string;
+    duration: number;
+    status: 'SCHEDULED' | 'COMPLETED' | 'CANCELED';
+    reason: string;
+    treatmentDetails?: string;
 }
 
 export interface AppointmentRequest {
-  patientEmail: string;
-  doctorEmail: string;
-  dateTime: string;
-  duration: number;
+    doctorEmail: string;
+    patientEmail: string;
+    dateTime: string;
+    duration: number;
+    reason: string;
 }
 
 export interface AvailableTimeSlot {
-  startTime: string;
-  endTime: string;
-  available: boolean;
+    startTime: string;
+    endTime: string;
+    available: boolean;
 }
 
 export interface DoctorAvailability {
-  doctorEmail: string;
-  firstName: string;
-  lastName: string;
-  available: boolean;
+    doctorEmail: string;
+    firstName: string;
+    lastName: string;
+    available: boolean;
 }

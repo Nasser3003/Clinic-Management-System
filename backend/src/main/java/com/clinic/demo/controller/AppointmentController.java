@@ -43,13 +43,11 @@ public class AppointmentController {
         return appointmentService.getAllAppointments();
     }
 
-    // Single consolidated search endpoint that handles all scenarios
     @GetMapping("/search")
     public List<AppointmentDTO> searchAppointments(AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
-    // Keep these for backward compatibility if needed, but they all use the same service method
     @GetMapping("/search/doctor")
     public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);

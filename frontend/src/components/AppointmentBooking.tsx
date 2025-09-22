@@ -21,6 +21,7 @@ function AppointmentBooking() {
     const [success, setSuccess] = useState('');
     const [availableDates, setAvailableDates] = useState<string[]>([]);
     const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
+    const [reason, setReason] = useState('General consultation');
 
     const handleModeChange = (mode: 'date' | 'doctor') => {
         setBookingMode(mode);
@@ -289,7 +290,8 @@ function AppointmentBooking() {
                 patientEmail: user?.email || 'unknown@example.com',
                 doctorEmail: selectedDoctor,
                 dateTime,
-                duration: 30
+                duration: 30,
+                reason: reason.trim() || 'General consultation'
             };
 
             await appointmentService.scheduleAppointment(appointmentData);
@@ -299,6 +301,7 @@ function AppointmentBooking() {
             setSelectedDoctor('');
             setAvailableSlots([]);
             setAvailableDoctors([]);
+            setReason('General consultation');
         } catch (err: any) {
             console.error('Appointment scheduling error:', err);
 
@@ -508,6 +511,23 @@ function AppointmentBooking() {
                             {availableSlots.filter(slot => slot.available).length === 0 && (
                                 <p className="no-slots">No available time slots for this doctor on the selected date.</p>
                             )}
+                        </div>
+                    )}
+
+                    {/* Reason field */}
+                    {selectedDate && selectedDoctor && selectedTime && (
+                        <div className="form-step">
+                            <label htmlFor="reason" className="step-label">
+                                Reason for Visit (Optional)
+                            </label>
+                            <textarea
+                                id="reason"
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                                placeholder="Enter the reason for your appointment..."
+                                className="reason-input"
+                                rows={3}
+                            />
                         </div>
                     )}
 

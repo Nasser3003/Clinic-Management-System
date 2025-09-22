@@ -26,7 +26,6 @@ interface PatientCalendarTabProps {
 
 function PatientCalendarTab({
                                 calendarView,
-                                loading,
                                 isPatient,
                                 user,
                                 onCalendarLoaded,
@@ -85,13 +84,11 @@ function PatientCalendarTab({
 
             <CalendarForm
                 onSubmit={handleCalendarSubmit}
-                loading={loading}
                 nameLabel="Patient Name"
                 namePlaceholder="Enter patient name"
                 defaultName={getDefaultName()}
                 buttonText="Load Calendar"
-                searchType="patient"
-            />
+                searchType="patient"           />
 
             {calendarView && (
                 <CalendarResults

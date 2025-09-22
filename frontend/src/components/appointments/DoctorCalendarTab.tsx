@@ -86,7 +86,6 @@ function DoctorCalendarTab({
 
             <CalendarForm
                 onSubmit={handleCalendarSubmit}
-                loading={loading}
                 nameLabel="Doctor Name"
                 namePlaceholder="Enter doctor name"
                 defaultName={getDefaultName()}

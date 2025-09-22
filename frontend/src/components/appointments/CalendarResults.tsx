@@ -16,11 +16,24 @@ interface CalendarResultsProps {
 }
 
 function CalendarResults({ calendarView, type }: CalendarResultsProps) {
-    const formatDateTime = (dateTimeString: string) => {
-        return new Date(dateTimeString).toLocaleString();
+    const formatDate = (dateTimeString: string) => {
+        return new Date(dateTimeString).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
     };
 
-    const formatDate = (dateString: string) => {
+    const formatTime = (dateTimeString: string) => {
+        return new Date(dateTimeString).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
+    const formatDateOnly = (dateString: string) => {
         return new Date(dateString).toLocaleDateString();
     };
 
@@ -44,7 +57,11 @@ function CalendarResults({ calendarView, type }: CalendarResultsProps) {
     const calculateEndTime = (startDateTime: string, duration: number) => {
         const startTime = new Date(startDateTime);
         const endTime = new Date(startTime.getTime() + duration * 60000);
-        return endTime.toLocaleTimeString();
+        return endTime.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
     };
 
     // Get display names from email addresses - for now showing email until we can fetch names
@@ -58,7 +75,7 @@ function CalendarResults({ calendarView, type }: CalendarResultsProps) {
             <div className="calendar-header">
                 <h4>{type === 'doctor' ? 'Calendar for' : 'Appointments for'} {getDisplayName()}</h4>
                 <p>
-                    {formatDate(calendarView.startDate)} - {formatDate(calendarView.endDate)}
+                    {formatDateOnly(calendarView.startDate)} - {formatDateOnly(calendarView.endDate)}
                 </p>
             </div>
 
@@ -73,13 +90,17 @@ function CalendarResults({ calendarView, type }: CalendarResultsProps) {
                                     <div>
                                         <h5>
                                             {type === 'doctor'
-                                                ? getDisplayNameFromEmail(appointment.patientEmail)
-                                                : `Dr. ${getDisplayNameFromEmail(appointment.doctorEmail)}`
+                                                ? getDisplayNameFromEmail(appointment.patientName)
+                                                : `Dr. ${getDisplayNameFromEmail(appointment.doctorName)}`
                                             }
                                         </h5>
                                         <p className="appointment-time">
-                                            {formatDateTime(appointment.appointmentDateTime)} -
-                                            {calculateEndTime(appointment.appointmentDateTime, appointment.duration)}
+                                            <span className="appointment-date">
+                                                {formatDate(appointment.startDateTime)}
+                                            </span>
+                                            <span className="appointment-time-range">
+                                                {formatTime(appointment.startDateTime)} → {calculateEndTime(appointment.startDateTime, appointment.duration)}
+                                            </span>
                                         </p>
                                         {appointment.treatmentDetails && (
                                             <p className="treatment-details">

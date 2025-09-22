@@ -10,7 +10,6 @@ interface CalendarFormProps {
         endDate: string;
         status: string;
     }) => void;
-    loading: boolean;
     nameLabel: string;
     namePlaceholder: string;
     defaultName?: string;
@@ -23,7 +22,6 @@ interface CalendarFormProps {
 
 function CalendarForm({
                           onSubmit,
-                          loading,
                           nameLabel,
                           namePlaceholder,
                           defaultName = '',
@@ -220,9 +218,15 @@ function CalendarForm({
                     </select>
                 </div>
             </div>
-            <button type="submit" disabled={loading} className="load-calendar-btn">
-                {loading ? 'Loading...' : buttonText}
-            </button>
+
+            <div className="form-actions">
+                <button
+                    type="submit"
+                    className="submit-btn"
+                >
+                    {buttonText}
+                </button>
+            </div>
         </form>
     );
 }
