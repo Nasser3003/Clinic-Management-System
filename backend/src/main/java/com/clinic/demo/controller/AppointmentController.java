@@ -1,18 +1,21 @@
 package com.clinic.demo.controller;
 
+import com.clinic.demo.DTO.AppSearchStatusInBetweenDTO;
 import com.clinic.demo.DTO.AppointmentRequestDTO;
 import com.clinic.demo.DTO.FinalizingAppointmentDTO;
+import com.clinic.demo.DTO.calenderDTO.AppointmentDTO;
 import com.clinic.demo.service.AppointmentService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @RequestMapping("/appointments")
-@CrossOrigin("*") // will need in the future
+@CrossOrigin("*")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -22,8 +25,9 @@ public class AppointmentController {
         appointmentService.scheduleAppointment(requestDTO);
         return ResponseEntity.ok("Appointment scheduled successfully");
     }
+
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelAppointment(String uuid) {
+    public ResponseEntity<String> cancelAppointment(@RequestParam String uuid) {
         appointmentService.cancelAppointment(uuid);
         return ResponseEntity.ok("Appointment cancelled successfully");
     }
@@ -34,5 +38,30 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment completed successfully");
     }
 
+    @GetMapping("/all")
+    public List<AppointmentDTO> getAllAppointments() {
+        return appointmentService.getAllAppointments();
+    }
 
+    // Single consolidated search endpoint that handles all scenarios
+    @GetMapping("/search")
+    public List<AppointmentDTO> searchAppointments(AppSearchStatusInBetweenDTO dto) {
+        return appointmentService.searchAppointments(dto);
+    }
+
+    // Keep these for backward compatibility if needed, but they all use the same service method
+    @GetMapping("/search/doctor")
+    public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+        return appointmentService.searchAppointments(dto);
+    }
+
+    @GetMapping("/search/patient")
+    public List<AppointmentDTO> getAppointmentsByPatientStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+        return appointmentService.searchAppointments(dto);
+    }
+
+    @GetMapping("/search/doctor-and-patient")
+    public List<AppointmentDTO> getAppointmentsByPatientAndDoctorStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+        return appointmentService.searchAppointments(dto);
+    }
 }

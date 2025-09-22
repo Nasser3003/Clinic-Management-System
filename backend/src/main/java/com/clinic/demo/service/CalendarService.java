@@ -86,15 +86,15 @@ public class CalendarService {
         // Get time off periods in date range
         List<TimeOff> timeOffPeriods = getTimeOffInRange(doctor, startDate, endDate);
 
-        return DoctorCalendarViewDTO.builder()
-                .doctorName(doctor.getFirstName() + " " + doctor.getLastName())
-                .doctorEmail(doctor.getEmail())
-                .startDate(startDate)
-                .endDate(endDate)
-                .appointments(appointments.stream().map(this::mapToAppointmentDTO).collect(Collectors.toList()))
-                .weeklySchedule(weeklySchedule.stream().map(this::mapToScheduleDTO).collect(Collectors.toList()))
-                .timeOffPeriods(timeOffPeriods.stream().map(this::mapToTimeOffDTO).collect(Collectors.toList()))
-                .build();
+        return new DoctorCalendarViewDTO(
+                doctor.getFirstName() + " " + doctor.getLastName(),
+                doctor.getEmail(),
+                startDate,
+                endDate,
+                appointments.stream().map(this::mapToAppointmentDTO).collect(Collectors.toList()),
+                weeklySchedule.stream().map(this::mapToScheduleDTO).collect(Collectors.toList()),
+                timeOffPeriods.stream().map(this::mapToTimeOffDTO).collect(Collectors.toList())
+        );
     }
 
     /**
@@ -283,17 +283,18 @@ public class CalendarService {
     }
 
     private AppointmentDTO mapToAppointmentDTO(AppointmentEntity appointment) {
-        return AppointmentDTO.builder()
-                .id(appointment.getId())
-                .doctorName(appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName())
-                .patientName(appointment.getPatient().getFirstName() + " " + appointment.getPatient().getLastName())
-                .startDateTime(appointment.getStartDateTime())
-                .endDateTime(appointment.getEndDateTime())
-                .duration(appointment.getDurationInMins())
-                .status(appointment.getStatus())
-                .isDone(appointment.isDone())
-                .build();
+        return new AppointmentDTO(
+                appointment.getId(),
+                appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
+                appointment.getPatient().getFirstName() + " " + appointment.getPatient().getLastName(),
+                appointment.getStartDateTime(),
+                appointment.getEndDateTime(),
+                appointment.getDurationInMins(),
+                appointment.getStatus(),
+                appointment.getReason()
+        );
     }
+
 
     private ScheduleDTO mapToScheduleDTO(ScheduleEntity schedule) {
         return new ScheduleDTO(

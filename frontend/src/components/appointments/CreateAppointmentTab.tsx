@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { searchService, SearchResult } from '../../services/searchService';
 import { appointmentService } from '../../services/appointmentService';
-import { AppointmentRequest } from '../../types/appointment';
 import { User } from '../../types/auth';
 import AutocompleteDropdown from "./AutoCompleteDropdown";
 
@@ -10,6 +9,15 @@ interface AppointmentForm {
     patientName: string;
     duration: number;
     dateTime: string;
+    reason: string;
+}
+
+interface AppointmentRequestDTO {
+    doctorEmail: string;
+    patientEmail: string;
+    dateTime: string;
+    duration: number;
+    reason: string;
 }
 
 interface CreateAppointmentTabProps {
@@ -35,7 +43,8 @@ function CreateAppointmentTab({
         doctorName: '',
         patientName: '',
         duration: 60,
-        dateTime: ''
+        dateTime: '',
+        reason: ''
     });
 
     // Autocomplete states
@@ -159,6 +168,12 @@ function CreateAppointmentTab({
         }
     }, [isDoctor, user]);
 
+    // Format datetime to match backend expected format
+    const formatDateTimeForBackend = (dateTimeString: string): string => {
+        const date = new Date(dateTimeString);
+        return date.toISOString().slice(0, 19).replace('T', ' ');
+    };
+
     const createAppointment = async (e: React.FormEvent) => {
         e.preventDefault();
         onLoading(true);
@@ -167,6 +182,13 @@ function CreateAppointmentTab({
         try {
             let doctorEmail = selectedDoctorEmail;
             let patientEmail = selectedPatientEmail;
+
+            // Validate required fields
+            if (!appointmentForm.reason.trim())
+                throw new Error('Please provide a reason for the appointment.');
+
+            if (!appointmentForm.dateTime)
+                throw new Error('Please select date and time for the appointment.');
 
             // If no email selected (user typed without selecting), search for exact match
             if (!doctorEmail && appointmentForm.doctorName) {
@@ -186,17 +208,12 @@ function CreateAppointmentTab({
             if (!doctorEmail || !patientEmail)
                 throw new Error('Please select both doctor and patient from the dropdown suggestions.');
 
-            // Format datetime for backend using your AppointmentRequest interface
-            const formattedDateTime = new Date(appointmentForm.dateTime)
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ');
-
-            const appointmentRequest: AppointmentRequest = {
+            const appointmentRequest: AppointmentRequestDTO = {
                 doctorEmail,
                 patientEmail,
-                dateTime: formattedDateTime,
-                duration: appointmentForm.duration
+                dateTime: formatDateTimeForBackend(appointmentForm.dateTime),
+                duration: appointmentForm.duration,
+                reason: appointmentForm.reason.trim()
             };
 
             await appointmentService.scheduleAppointment(appointmentRequest);
@@ -216,7 +233,8 @@ function CreateAppointmentTab({
             doctorName: isDoctor && user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
             patientName: '',
             duration: 60,
-            dateTime: ''
+            dateTime: '',
+            reason: ''
         });
         setSelectedDoctorEmail(isDoctor && user?.email ? user.email : '');
         setSelectedPatientEmail('');
@@ -291,7 +309,7 @@ function CreateAppointmentTab({
                     </div>
                 </div>
 
-                {/* Bottom Row: DateTime and Duration */}
+                {/* Middle Row: Date/Time and Duration */}
                 <div className="form-grid-bottom">
                     <div className="form-group">
                         <label htmlFor="dateTime">Date & Time</label>
@@ -323,6 +341,20 @@ function CreateAppointmentTab({
                             <option value={180}>180 minutes</option>
                         </select>
                     </div>
+                </div>
+
+                {/* Bottom Row: Reason */}
+                <div className="form-group full-width">
+                    <label htmlFor="reason">Reason for Appointment</label>
+                    <textarea
+                        id="reason"
+                        className="form-textarea"
+                        value={appointmentForm.reason}
+                        onChange={(e) => setAppointmentForm(prev => ({ ...prev, reason: e.target.value }))}
+                        placeholder="Enter the reason for this appointment (e.g., Regular checkup, Follow-up, Consultation)"
+                        required
+                        rows={3}
+                    />
                 </div>
 
                 <div className="form-actions">

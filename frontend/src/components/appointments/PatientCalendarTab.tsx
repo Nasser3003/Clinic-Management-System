@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from '../../types/auth';
 import { Appointment } from '../../types/appointment';
-import { searchService } from '../../services/searchService';
+import { appointmentService } from '../../services/appointmentService';
 import CalendarForm from './CalendarForm';
 import CalendarResults from "./CalendarResults";
 
@@ -33,64 +33,47 @@ function PatientCalendarTab({
                                 onError,
                                 onLoading
                             }: PatientCalendarTabProps) {
-    const loadPatientCalendar = async (patientName: string, startDate: string, endDate: string) => {
+
+    const handleCalendarSubmit = async (data: {
+        name: string;
+        email: string;
+        startDate: string;
+        endDate: string;
+        status: string;
+    }) => {
         onLoading(true);
 
         try {
-            // Search for patient by name using searchService
-            const patientResults = await searchService.searchPatients(patientName, 1);
-            if (patientResults.results.length === 0)
-                throw new Error('Patient not found with that name');
+            // Use appointmentService to search patient appointments
+            const searchParams = {
+                patientEmail: data.email,
+                ...(data.startDate && { startDate: data.startDate }),
+                ...(data.endDate && { endDate: data.endDate }),
+                ...(data.status && { statusEnum: data.status as 'SCHEDULED' | 'COMPLETED' | 'CANCELED' })
+            };
 
-            const patientEmail = patientResults.results[0].email;
+            const appointments = await appointmentService.searchPatientAppointments(searchParams);
 
-            // Make API call for patient calendar
-            const response = await fetch(
-                `/api/calendar/patient/${patientEmail}?startDate=${startDate}&endDate=${endDate}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
+            const calendarData: CalendarView = {
+                patientEmail: data.email,
+                startDate: data.startDate || '',
+                endDate: data.endDate || '',
+                appointments
+            };
 
-            if (response.ok) {
-                const data = await response.json();
-                onCalendarLoaded(data);
-            } else {
-                throw new Error('Failed to load patient calendar');
-            }
+            onCalendarLoaded(calendarData);
         } catch (err: any) {
             console.error('Error loading patient calendar:', err);
-            onError('Failed to load patient calendar');
+            onError(err.message || 'Failed to load patient calendar');
         } finally {
             onLoading(false);
         }
-    };
-
-    const handleCalendarSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const name = formData.get('name') as string;
-        const startDate = formData.get('startDate') as string;
-        const endDate = formData.get('endDate') as string;
-
-        loadPatientCalendar(name, startDate, endDate);
     };
 
     const getDefaultName = () => {
         if (isPatient && user?.firstName && user?.lastName)
             return `${user.firstName} ${user.lastName}`;
         return '';
-    };
-
-    const getDefaultStartDate = () => {
-        return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    };
-
-    const getDefaultEndDate = () => {
-        return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     };
 
     return (
@@ -106,9 +89,8 @@ function PatientCalendarTab({
                 nameLabel="Patient Name"
                 namePlaceholder="Enter patient name"
                 defaultName={getDefaultName()}
-                defaultStartDate={getDefaultStartDate()}
-                defaultEndDate={getDefaultEndDate()}
                 buttonText="Load Calendar"
+                searchType="patient"
             />
 
             {calendarView && (

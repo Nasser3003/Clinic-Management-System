@@ -1,11 +1,14 @@
 package com.clinic.demo;
 
+import com.clinic.demo.models.entity.AppointmentEntity;
 import com.clinic.demo.models.entity.user.AdminEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
+import com.clinic.demo.models.enums.AppointmentStatus;
 import com.clinic.demo.models.enums.GenderEnum;
 import com.clinic.demo.models.enums.PermissionEnum;
 import com.clinic.demo.models.enums.UserTypeEnum;
+import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +29,7 @@ import java.util.Set;
 @Transactional
 public class Runner implements CommandLineRunner {
     private UserRepository userRepository;
+    private AppointmentRepository appointmentRepository;
     private PasswordEncoder encoder;
 
     @Override
@@ -37,6 +42,17 @@ public class Runner implements CommandLineRunner {
 
         System.out.println("Initializing data...");
 
+        // Create users first
+        createUsers();
+
+        // Create sample appointments
+        createSampleAppointments();
+
+        System.out.println("Data initialization completed successfully!");
+        printUserCredentials();
+    }
+
+    private void createUsers() {
         // Create admin permissions
         Set<PermissionEnum> adminPermissions = new HashSet<>(Set.of(
                 PermissionEnum.USER_READ,
@@ -162,15 +178,7 @@ public class Runner implements CommandLineRunner {
         createSampleNurse();
         createSampleReceptionist();
         createSampleLabTechnician();
-
-        System.out.println("Data initialization completed successfully!");
-        System.out.println("Users created:");
-        System.out.println("- Admin: admin1@gmail.com / Admin1@gmail.com");
-        System.out.println("- Doctor: doctor@gmail.com / Doctor@gmail.com1");
-        System.out.println("- Patient: abdo.abdo3003@gmail.com / Abdo.abdo3003@gmail.com1");
-        System.out.println("- Nurse: nurse@gmail.com / Nurse@gmail.com1");
-        System.out.println("- Receptionist: receptionist@gmail.com / Receptionist@gmail.com1");
-        System.out.println("- Lab Tech: labtech@gmail.com / LabTech@gmail.com1");
+        createAdditionalDoctorsAndPatients();
     }
 
     private void createSampleNurse() {
@@ -254,5 +262,214 @@ public class Runner implements CommandLineRunner {
         labTech.setDepartment("Laboratory");
         labTech.setDescription("Medical Laboratory Technician specializing in blood work and diagnostics");
         userRepository.save(labTech);
+    }
+
+    private void createAdditionalDoctorsAndPatients() {
+        Set<PermissionEnum> doctorPermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ,
+                PermissionEnum.PATIENT_UPDATE,
+                PermissionEnum.MEDICAL_RECORD_READ,
+                PermissionEnum.MEDICAL_RECORD_CREATE,
+                PermissionEnum.MEDICAL_RECORD_UPDATE,
+                PermissionEnum.ORDER_TESTS,
+                PermissionEnum.VIEW_TEST_RESULTS,
+                PermissionEnum.UPDATE_TEST_RESULTS,
+                PermissionEnum.APPOINTMENT_READ,
+                PermissionEnum.APPOINTMENT_CREATE,
+                PermissionEnum.APPOINTMENT_UPDATE,
+                PermissionEnum.VIEW_REPORTS
+        ));
+
+        Set<PermissionEnum> patientPermissions = new HashSet<>(Set.of(
+                PermissionEnum.PATIENT_READ_OWN,
+                PermissionEnum.MEDICAL_RECORD_READ_OWN,
+                PermissionEnum.APPOINTMENT_READ_OWN,
+                PermissionEnum.APPOINTMENT_CREATE
+        ));
+
+        // Additional Doctor
+        EmployeeEntity doctor2 = new EmployeeEntity(
+                "Emma",
+                "Smith",
+                "emma.smith@clinic.com",
+                "+1234567891",
+                "DOC789012",
+                GenderEnum.F,
+                UserTypeEnum.DOCTOR,
+                encoder.encode("Emma.smith123"),
+                LocalDate.of(1982, 9, 22),
+                5500.0f,
+                doctorPermissions
+        );
+        doctor2.setTitle("Dr.");
+        doctor2.setDepartment("Pediatrics");
+        doctor2.setDescription("Pediatrician specializing in child healthcare");
+        userRepository.save(doctor2);
+
+        // Additional Patients
+        PatientEntity patient2 = new PatientEntity(
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                "+1987654321",
+                GenderEnum.M,
+                encoder.encode("John.doe123"),
+                LocalDate.of(1985, 6, 15),
+                patientPermissions
+        );
+        userRepository.save(patient2);
+
+        PatientEntity patient3 = new PatientEntity(
+                "Jane",
+                "Wilson",
+                "jane.wilson@example.com",
+                "+1876543210",
+                GenderEnum.F,
+                encoder.encode("Jane.wilson123"),
+                LocalDate.of(1978, 12, 3),
+                patientPermissions
+        );
+        userRepository.save(patient3);
+
+        PatientEntity patient4 = new PatientEntity(
+                "Mike",
+                "Johnson",
+                "mike.johnson@example.com",
+                "+1765432109",
+                GenderEnum.M,
+                encoder.encode("Mike.johnson123"),
+                LocalDate.of(1995, 4, 18),
+                patientPermissions
+        );
+        userRepository.save(patient4);
+    }
+
+    private void createSampleAppointments() {
+        // Get saved users for appointments
+        EmployeeEntity doctor1 = (EmployeeEntity) userRepository.findByEmail("doctor@gmail.com").orElseThrow();
+        EmployeeEntity doctor2 = (EmployeeEntity) userRepository.findByEmail("emma.smith@clinic.com").orElseThrow();
+        PatientEntity patient1 = (PatientEntity) userRepository.findByEmail("abdo.abdo3003@gmail.com").orElseThrow();
+        PatientEntity patient2 = (PatientEntity) userRepository.findByEmail("john.doe@example.com").orElseThrow();
+        PatientEntity patient3 = (PatientEntity) userRepository.findByEmail("jane.wilson@example.com").orElseThrow();
+        PatientEntity patient4 = (PatientEntity) userRepository.findByEmail("mike.johnson@example.com").orElseThrow();
+
+        // Past appointments (completed)
+        AppointmentEntity appointment1 = new AppointmentEntity(
+                doctor1, patient1,
+                LocalDateTime.now().minusDays(7).withHour(10).withMinute(0).withSecond(0),
+                60
+        );
+        appointment1.setEndDateTime(appointment1.getStartDateTime().plusMinutes(60));
+        appointment1.setStatus(AppointmentStatus.COMPLETED);
+        appointment1.setReason("Regular checkup and blood pressure monitoring");
+        appointmentRepository.save(appointment1);
+
+        AppointmentEntity appointment2 = new AppointmentEntity(
+                doctor2, patient2,
+                LocalDateTime.now().minusDays(5).withHour(14).withMinute(30).withSecond(0),
+                45
+        );
+        appointment2.setEndDateTime(appointment2.getStartDateTime().plusMinutes(45));
+        appointment2.setStatus(AppointmentStatus.COMPLETED);
+        appointment2.setReason("Follow-up consultation for diabetes management");
+        appointmentRepository.save(appointment2);
+
+        AppointmentEntity appointment3 = new AppointmentEntity(
+                doctor1, patient3,
+                LocalDateTime.now().minusDays(3).withHour(9).withMinute(15).withSecond(0),
+                30
+        );
+        appointment3.setEndDateTime(appointment3.getStartDateTime().plusMinutes(30));
+        appointment3.setStatus(AppointmentStatus.COMPLETED);
+        appointment3.setReason("Annual physical examination");
+        appointmentRepository.save(appointment3);
+
+        // Current/Future appointments (scheduled)
+        AppointmentEntity appointment4 = new AppointmentEntity(
+                doctor1, patient1,
+                LocalDateTime.now().plusDays(2).withHour(11).withMinute(0).withSecond(0),
+                60
+        );
+        appointment4.setEndDateTime(appointment4.getStartDateTime().plusMinutes(60));
+        appointment4.setStatus(AppointmentStatus.SCHEDULED);
+        appointment4.setReason("Cardiology consultation - chest pain evaluation");
+        appointmentRepository.save(appointment4);
+
+        AppointmentEntity appointment5 = new AppointmentEntity(
+                doctor2, patient4,
+                LocalDateTime.now().plusDays(3).withHour(15).withMinute(0).withSecond(0),
+                90
+        );
+        appointment5.setEndDateTime(appointment5.getStartDateTime().plusMinutes(90));
+        appointment5.setStatus(AppointmentStatus.SCHEDULED);
+        appointment5.setReason("Comprehensive health assessment for new patient");
+        appointmentRepository.save(appointment5);
+
+        AppointmentEntity appointment6 = new AppointmentEntity(
+                doctor1, patient2,
+                LocalDateTime.now().plusDays(5).withHour(8).withMinute(30).withSecond(0),
+                45
+        );
+        appointment6.setEndDateTime(appointment6.getStartDateTime().plusMinutes(45));
+        appointment6.setStatus(AppointmentStatus.SCHEDULED);
+        appointment6.setReason("Hypertension monitoring and medication review");
+        appointmentRepository.save(appointment6);
+
+        AppointmentEntity appointment7 = new AppointmentEntity(
+                doctor2, patient3,
+                LocalDateTime.now().plusDays(7).withHour(13).withMinute(45).withSecond(0),
+                60
+        );
+        appointment7.setEndDateTime(appointment7.getStartDateTime().plusMinutes(60));
+        appointment7.setStatus(AppointmentStatus.SCHEDULED);
+        appointment7.setReason("Routine pediatric checkup and vaccinations");
+        appointmentRepository.save(appointment7);
+
+        // Some canceled appointments
+        AppointmentEntity appointment8 = new AppointmentEntity(
+                doctor1, patient4,
+                LocalDateTime.now().minusDays(1).withHour(16).withMinute(0).withSecond(0),
+                30
+        );
+        appointment8.setEndDateTime(appointment8.getStartDateTime().plusMinutes(30));
+        appointment8.setStatus(AppointmentStatus.CANCELED);
+        appointment8.setReason("Emergency consultation - patient canceled due to work conflict");
+        appointmentRepository.save(appointment8);
+
+        AppointmentEntity appointment9 = new AppointmentEntity(
+                doctor2, patient1,
+                LocalDateTime.now().plusDays(1).withHour(12).withMinute(0).withSecond(0),
+                75
+        );
+        appointment9.setEndDateTime(appointment9.getStartDateTime().plusMinutes(75));
+        appointment9.setStatus(AppointmentStatus.SCHEDULED);
+        appointment9.setReason("Specialist referral consultation for cardiac symptoms");
+        appointmentRepository.save(appointment9);
+
+        AppointmentEntity appointment10 = new AppointmentEntity(
+                doctor1, patient3,
+                LocalDateTime.now().plusDays(10).withHour(10).withMinute(30).withSecond(0),
+                60
+        );
+        appointment10.setEndDateTime(appointment10.getStartDateTime().plusMinutes(60));
+        appointment10.setStatus(AppointmentStatus.SCHEDULED);
+        appointment10.setReason("Follow-up after lab results review");
+        appointmentRepository.save(appointment10);
+
+        System.out.println("Created 10 sample appointments with various statuses and dates");
+    }
+
+    private void printUserCredentials() {
+        System.out.println("Users created:");
+        System.out.println("- Admin: admin1@gmail.com / Admin1@gmail.com");
+        System.out.println("- Doctor (Cardiology): doctor@gmail.com / Doctor@gmail.com1");
+        System.out.println("- Doctor (Pediatrics): emma.smith@clinic.com / Emma.smith123");
+        System.out.println("- Patient 1: abdo.abdo3003@gmail.com / Abdo.abdo3003@gmail.com1");
+        System.out.println("- Patient 2: john.doe@example.com / John.doe123");
+        System.out.println("- Patient 3: jane.wilson@example.com / Jane.wilson123");
+        System.out.println("- Patient 4: mike.johnson@example.com / Mike.johnson123");
+        System.out.println("- Nurse: nurse@gmail.com / Nurse@gmail.com1");
+        System.out.println("- Receptionist: receptionist@gmail.com / Receptionist@gmail.com1");
+        System.out.println("- Lab Tech: labtech@gmail.com / LabTech@gmail.com1");
     }
 }

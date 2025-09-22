@@ -1,7 +1,6 @@
 import React from 'react';
 import { User } from '../../types/auth';
 import { Appointment } from '../../types/appointment';
-import { searchService } from '../../services/searchService';
 import { appointmentService } from '../../services/appointmentService';
 import CalendarForm from './CalendarForm';
 import CalendarResults from './CalendarResults';
@@ -34,36 +33,42 @@ function DoctorCalendarTab({
                                onError,
                                onLoading
                            }: DoctorCalendarTabProps) {
-    const loadDoctorCalendar = async (doctorName: string, startDate: string, endDate: string) => {
+
+    const handleCalendarSubmit = async (data: {
+        name: string;
+        email: string;
+        startDate: string;
+        endDate: string;
+        status: string;
+    }) => {
         onLoading(true);
 
         try {
-            // Search for doctor by name using searchService
-            const doctorResults = await searchService.searchDoctors(doctorName, 1);
-            if (doctorResults.results.length === 0)
-                throw new Error('Doctor not found with that name');
+            // Use appointmentService to search doctor appointments
+            const searchParams = {
+                doctorEmail: data.email,
+                ...(data.startDate && { startDate: data.startDate }),
+                ...(data.endDate && { endDate: data.endDate }),
+                ...(data.status && { statusEnum: data.status as 'SCHEDULED' | 'COMPLETED' | 'CANCELED' })
+            };
 
-            const doctorEmail = doctorResults.results[0].email;
+            const appointments = await appointmentService.searchDoctorAppointments(searchParams);
 
-            // Use appointmentService to get doctor calendar
-            const data = await appointmentService.getDoctorCalendar(doctorEmail, startDate, endDate);
-            onCalendarLoaded(data);
+            const calendarData: CalendarView = {
+                doctorName: data.name,
+                doctorEmail: data.email,
+                startDate: data.startDate || '',
+                endDate: data.endDate || '',
+                appointments
+            };
+
+            onCalendarLoaded(calendarData);
         } catch (err: any) {
             console.error('Error loading doctor calendar:', err);
-            onError('Failed to load doctor calendar');
+            onError(err.message || 'Failed to load doctor calendar');
         } finally {
             onLoading(false);
         }
-    };
-
-    const handleCalendarSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        const name = formData.get('name') as string;
-        const startDate = formData.get('startDate') as string;
-        const endDate = formData.get('endDate') as string;
-
-        loadDoctorCalendar(name, startDate, endDate);
     };
 
     const getDefaultName = () => {
@@ -86,6 +91,7 @@ function DoctorCalendarTab({
                 namePlaceholder="Enter doctor name"
                 defaultName={getDefaultName()}
                 buttonText="Load Calendar"
+                searchType="doctor"
             />
 
             {calendarView && (

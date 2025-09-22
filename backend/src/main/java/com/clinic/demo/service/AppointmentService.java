@@ -1,11 +1,15 @@
 package com.clinic.demo.service;
 
+import com.clinic.demo.DTO.AppSearchStatusInBetweenDTO;
 import com.clinic.demo.DTO.AppointmentRequestDTO;
 import com.clinic.demo.DTO.FinalizingAppointmentDTO;
+import com.clinic.demo.DTO.calenderDTO.AppointmentDTO;
+import com.clinic.demo.Mapper.AppointmentMapper;
 import com.clinic.demo.exception.LocalDateTimeException;
 import com.clinic.demo.models.entity.AppointmentEntity;
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
+import com.clinic.demo.models.enums.AppointmentStatus;
 import com.clinic.demo.models.enums.UserTypeEnum;
 import com.clinic.demo.repository.AppointmentRepository;
 import com.clinic.demo.repository.ScheduleRepository;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,7 +77,7 @@ public class AppointmentService {
 
         treatmentService.createTreatmentsForAppointment(finalizingAppointmentDTO.treatments(), appointment);
 
-        appointment.setStatus("done");
+        appointment.setStatus(AppointmentStatus.COMPLETED);
         appointmentRepository.save(appointment);
     }
 
@@ -94,7 +99,7 @@ public class AppointmentService {
     private boolean patientHasOpenAppointment(PatientEntity patient) {
         List<AppointmentEntity> allAppointments = appointmentRepository.findAllByPatient(patient);
         return allAppointments.stream()
-                .anyMatch(appointment -> !appointment.isDone());
+                .anyMatch(appointment -> !appointment.getStatus().equals(AppointmentStatus.COMPLETED));
     }
 
     private boolean isDoctorWorking(EmployeeEntity employee, LocalDateTime dateTime) {
@@ -111,7 +116,7 @@ public class AppointmentService {
 
         LocalDateTime endDateTime = startDateTime.plusMinutes(durationInMins);
         List<AppointmentEntity> doctorAppointments = appointmentRepository
-                .findAllByDoctorAndIsDoneIsFalseAndStartDateTimeBeforeAndEndDateTimeAfter(employee, startDateTime, endDateTime);
+                .findByStatusAndDoctor_EmailAndStartDateTimeBetween(AppointmentStatus.SCHEDULED, employee.getEmail(), startDateTime, endDateTime);
 
         return doctorAppointments.stream()
                 .noneMatch(appointment ->
@@ -120,4 +125,40 @@ public class AppointmentService {
                 );
     }
 
+    public List<AppointmentDTO> searchAppointments(AppSearchStatusInBetweenDTO dto) {
+        // Validate users if emails are provided
+        if (dto.patientEmail() != null && !dto.patientEmail().trim().isEmpty())
+            userValidationService.validateAndGetPatient(dto.patientEmail());
+
+        if (dto.doctorEmail() != null && !dto.doctorEmail().trim().isEmpty())
+            userValidationService.validateAndGetDoctor(dto.doctorEmail());
+
+        // Convert dates to LocalDateTime if provided, otherwise null
+        LocalDateTime startDateTime = dto.startDate() != null ? dto.startDate().atStartOfDay() : null;
+        LocalDateTime endDateTime = dto.endDate() != null ? dto.endDate().atTime(LocalTime.MAX) : null;
+
+        return appointmentRepository.findAppointmentsWithOptionalFilters(
+                        dto.patientEmail(),
+                        dto.doctorEmail(),
+                        dto.statusEnum(),
+                        startDateTime,
+                        endDateTime)
+                .stream()
+                .map(AppointmentMapper::toDTO)
+                .toList();
+    }
+
+    public List<AppointmentDTO> getAllAppointments() {
+        return appointmentRepository.findAll().stream().map(AppointmentMapper::toDTO).toList();
+    }
+
+    public List<AppointmentEntity> findAllAppointmentsByPatient(String patientEmail) {
+        PatientEntity patient = userValidationService.validateAndGetPatient(patientEmail);
+        return appointmentRepository.findAllByPatient(patient);
+    }
+
+    public List<AppointmentEntity> findAllAppointmentsByDoctor(String doctorEmail) {
+        EmployeeEntity doctor = userValidationService.validateAndGetDoctor(doctorEmail);
+        return appointmentRepository.findAllByDoctor(doctor);
+    }
 }

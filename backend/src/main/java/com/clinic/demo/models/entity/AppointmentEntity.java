@@ -2,6 +2,7 @@ package com.clinic.demo.models.entity;
 
 import com.clinic.demo.models.entity.user.EmployeeEntity;
 import com.clinic.demo.models.entity.user.PatientEntity;
+import com.clinic.demo.models.enums.AppointmentStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ public class AppointmentEntity {
         this.patient = patient;
         this.startDateTime = startDateTime;
         this.durationInMins = durationInMins;
+        this.status = AppointmentStatus.SCHEDULED; // Default status
     }
 
     @Id
@@ -52,7 +54,11 @@ public class AppointmentEntity {
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<TreatmentEntity> treatment;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AppointmentStatus status;
 
-    private boolean isDone;
+    @Column(name = "reason", nullable = false)
+    private String reason;
+
 }
