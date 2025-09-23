@@ -20,12 +20,13 @@ import java.util.UUID;
 @Entity
 public class AppointmentEntity {
 
-    public AppointmentEntity(EmployeeEntity doctor, PatientEntity patient, LocalDateTime startDateTime, int durationInMins) {
+    public AppointmentEntity(EmployeeEntity doctor, PatientEntity patient, LocalDateTime startDateTime, int durationInMins, String reason) {
         this.doctor = doctor;
         this.patient = patient;
         this.startDateTime = startDateTime;
         this.durationInMins = durationInMins;
-        this.status = AppointmentStatus.SCHEDULED; // Default status
+        this.status = AppointmentStatus.SCHEDULED;
+        this.reason = reason;
     }
 
     @Id
@@ -55,10 +56,10 @@ public class AppointmentEntity {
     private List<TreatmentEntity> treatment;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(nullable = false)
     private AppointmentStatus status;
 
-    @Column(name = "reason", nullable = false)
+    @Column(nullable = false)
     private String reason;
 
 }

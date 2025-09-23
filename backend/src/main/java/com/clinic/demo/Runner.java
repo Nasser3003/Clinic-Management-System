@@ -357,7 +357,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment1 = new AppointmentEntity(
                 doctor1, patient1,
                 LocalDateTime.now().minusDays(7).withHour(10).withMinute(0).withSecond(0),
-                60
+                60, "asasdda"
         );
         appointment1.setEndDateTime(appointment1.getStartDateTime().plusMinutes(60));
         appointment1.setStatus(AppointmentStatus.COMPLETED);
@@ -367,7 +367,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment2 = new AppointmentEntity(
                 doctor2, patient2,
                 LocalDateTime.now().minusDays(5).withHour(14).withMinute(30).withSecond(0),
-                45
+                45, "asasdda"
         );
         appointment2.setEndDateTime(appointment2.getStartDateTime().plusMinutes(45));
         appointment2.setStatus(AppointmentStatus.COMPLETED);
@@ -377,7 +377,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment3 = new AppointmentEntity(
                 doctor1, patient3,
                 LocalDateTime.now().minusDays(3).withHour(9).withMinute(15).withSecond(0),
-                30
+                30, "asasdda"
         );
         appointment3.setEndDateTime(appointment3.getStartDateTime().plusMinutes(30));
         appointment3.setStatus(AppointmentStatus.COMPLETED);
@@ -388,7 +388,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment4 = new AppointmentEntity(
                 doctor1, patient1,
                 LocalDateTime.now().plusDays(2).withHour(11).withMinute(0).withSecond(0),
-                60
+                60, "asasdda"
         );
         appointment4.setEndDateTime(appointment4.getStartDateTime().plusMinutes(60));
         appointment4.setStatus(AppointmentStatus.SCHEDULED);
@@ -398,7 +398,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment5 = new AppointmentEntity(
                 doctor2, patient4,
                 LocalDateTime.now().plusDays(3).withHour(15).withMinute(0).withSecond(0),
-                90
+                90, "asasdda"
         );
         appointment5.setEndDateTime(appointment5.getStartDateTime().plusMinutes(90));
         appointment5.setStatus(AppointmentStatus.SCHEDULED);
@@ -408,7 +408,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment6 = new AppointmentEntity(
                 doctor1, patient2,
                 LocalDateTime.now().plusDays(5).withHour(8).withMinute(30).withSecond(0),
-                45
+                45, "asasdda"
         );
         appointment6.setEndDateTime(appointment6.getStartDateTime().plusMinutes(45));
         appointment6.setStatus(AppointmentStatus.SCHEDULED);
@@ -418,7 +418,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment7 = new AppointmentEntity(
                 doctor2, patient3,
                 LocalDateTime.now().plusDays(7).withHour(13).withMinute(45).withSecond(0),
-                60
+                60, "asasdda"
         );
         appointment7.setEndDateTime(appointment7.getStartDateTime().plusMinutes(60));
         appointment7.setStatus(AppointmentStatus.SCHEDULED);
@@ -429,7 +429,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment8 = new AppointmentEntity(
                 doctor1, patient4,
                 LocalDateTime.now().minusDays(1).withHour(16).withMinute(0).withSecond(0),
-                30
+                30, "asasdda"
         );
         appointment8.setEndDateTime(appointment8.getStartDateTime().plusMinutes(30));
         appointment8.setStatus(AppointmentStatus.CANCELED);
@@ -439,7 +439,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment9 = new AppointmentEntity(
                 doctor2, patient1,
                 LocalDateTime.now().plusDays(1).withHour(12).withMinute(0).withSecond(0),
-                75
+                75, "asasdda"
         );
         appointment9.setEndDateTime(appointment9.getStartDateTime().plusMinutes(75));
         appointment9.setStatus(AppointmentStatus.SCHEDULED);
@@ -449,7 +449,7 @@ public class Runner implements CommandLineRunner {
         AppointmentEntity appointment10 = new AppointmentEntity(
                 doctor1, patient3,
                 LocalDateTime.now().plusDays(10).withHour(10).withMinute(30).withSecond(0),
-                60
+                60, "asasdda"
         );
         appointment10.setEndDateTime(appointment10.getStartDateTime().plusMinutes(60));
         appointment10.setStatus(AppointmentStatus.SCHEDULED);

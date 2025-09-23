@@ -21,5 +21,8 @@ public record AppointmentRequestDTO(
         @NotNull(message = "Appointment date and time is required")
         @Future(message = "Appointment must be scheduled in the future")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        LocalDateTime dateTime
+        LocalDateTime dateTime,
+
+        @NotBlank(message = "reason is required")
+        String reason
 ) {}

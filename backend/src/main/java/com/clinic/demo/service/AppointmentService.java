@@ -62,13 +62,14 @@ public class AppointmentService {
         if (!isDoctorAvailable(doctor, dateTime, duration))
             throw new IllegalArgumentException("Doctor is not available at the requested time");
 
-        AppointmentEntity newAppointment = new AppointmentEntity(doctor, patient, dateTime, duration);
+        AppointmentEntity newAppointment = new AppointmentEntity(doctor, patient, dateTime, duration, requestDTO.reason());
         appointmentRepository.save(newAppointment);
     }
 
     public void cancelAppointment(String appointmentId) {
         AppointmentEntity appointment = findAppointmentById(appointmentId);
-        appointmentRepository.delete(appointment);
+        appointment.setStatus(AppointmentStatus.CANCELED);
+        appointmentRepository.save(appointment);
     }
 
     @Transactional
@@ -126,16 +127,17 @@ public class AppointmentService {
     }
 
     public List<AppointmentDTO> searchAppointments(AppSearchStatusInBetweenDTO dto) {
-        // Validate users if emails are provided
         if (dto.patientEmail() != null && !dto.patientEmail().trim().isEmpty())
             userValidationService.validateAndGetPatient(dto.patientEmail());
 
         if (dto.doctorEmail() != null && !dto.doctorEmail().trim().isEmpty())
             userValidationService.validateAndGetDoctor(dto.doctorEmail());
 
-        // Convert dates to LocalDateTime if provided, otherwise null
-        LocalDateTime startDateTime = dto.startDate() != null ? dto.startDate().atStartOfDay() : null;
-        LocalDateTime endDateTime = dto.endDate() != null ? dto.endDate().atTime(LocalTime.MAX) : null;
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        if (dto.startDate() != null) startDateTime = dto.startDate();
+        if (dto.endDate() != null) endDateTime = dto.endDate();
 
         return appointmentRepository.findAppointmentsWithOptionalFilters(
                         dto.patientEmail(),

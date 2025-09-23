@@ -2,13 +2,13 @@ package com.clinic.demo.DTO;
 
 import com.clinic.demo.models.enums.AppointmentStatus;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record AppSearchStatusInBetweenDTO(
         String doctorEmail,
         String patientEmail,
-        AppointmentStatus statusEnum,
-        LocalDate startDate,  // Can be null
-        LocalDate endDate     // Can be null
+        AppointmentStatus statusEnum, // can be null
+        LocalDateTime startDate,  // Can be null
+        LocalDateTime endDate     // Can be null
 ) {
 }
