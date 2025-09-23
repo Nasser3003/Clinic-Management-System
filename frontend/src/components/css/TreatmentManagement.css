@@ -125,6 +125,7 @@
     flex-direction: column;
     min-width: 120px;
     flex: 1;
+    position: relative;
 }
 
 .filter-group label {
@@ -136,6 +137,7 @@
     align-items: center;
     gap: 0.25rem;
     white-space: nowrap;
+    height: auto;
 }
 
 .field-icon {
@@ -145,16 +147,19 @@
     flex-shrink: 0;
 }
 
+/* Consistent input styling */
 .filter-input.compact,
-.filter-select.compact {
+.filter-select.compact,
+.search-input {
+    height: 2rem;
     padding: 0.375rem 0.5rem;
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
     font-size: 0.8125rem;
     transition: all 0.2s ease;
     background-color: white;
-    height: 2rem;
     box-sizing: border-box;
+    margin: 0;
 }
 
 .filter-select.compact {
@@ -168,10 +173,142 @@
 }
 
 .filter-input.compact:focus,
-.filter-select.compact:focus {
+.filter-select.compact:focus,
+.search-input:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+/* Search container styling */
+.search-container {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+
+
+.search-input {
+    width: 100%;
+    padding-right: 2rem;
+}
+
+.search-input[readonly] {
+    background-color: #f9fafb;
+    color: #374151;
+    cursor: default;
+}
+
+.clear-selection-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background-color: #6b7280;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    margin: 0;
+}
+
+.clear-selection-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Search dropdown */
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+    box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.08);
+    z-index: 20;
+    max-height: 180px;
+    overflow-y: auto;
+    margin: 0;
+}
+
+.search-loading {
+    padding: 0.5rem 0.75rem;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.search-no-results {
+    padding: 0.5rem 0.75rem;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.search-option {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+}
+
+.search-option:hover {
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    border-bottom-color: #bfdbfe;
+}
+
+.search-option:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+}
+
+.search-option:last-child {
+    border-bottom: none;
+}
+
+.option-main {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.0625rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.specialty-tag {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.0625rem 0.25rem;
+    border-radius: 0.1875rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+.option-sub {
+    color: #6b7280;
+    font-size: 0.6875rem;
 }
 
 .filter-actions.compact {
@@ -234,7 +371,6 @@
     height: 0.875rem;
 }
 
-/* Text highlighting for search results */
 mark {
     background-color: #fef3c7;
     color: #92400e;
@@ -558,6 +694,7 @@ mark {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
 }
 
 .form-select {
@@ -584,6 +721,146 @@ mark {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.75rem;
     margin-bottom: 0.75rem;
+}
+
+/* ==================================================
+   SELECTION SECTION (PATIENT/DOCTOR SEARCH)
+   ================================================== */
+
+.selection-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.search-group label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.required-indicator {
+    color: #ef4444;
+    margin-left: 0.125rem;
+}
+
+.selected-user-display {
+    margin-bottom: 1rem;
+}
+
+.selected-user-display label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.375rem;
+}
+
+.selected-user-display .user-info {
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    border: 1px solid #a5b4fc;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+}
+
+.selected-user-display .user-info strong {
+    color: #1e40af;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.selected-user-display .user-info span {
+    color: #3730a3;
+    font-size: 0.6875rem;
+}
+
+/* ==================================================
+   APPOINTMENT SEARCH
+   ================================================== */
+
+.appointment-search-autocomplete {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.appointment-search-autocomplete .search-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+}
+
+.appointment-search-autocomplete .appointment-select-wrapper {
+    position: relative;
+}
+
+.appointment-search-autocomplete .appointment-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 0.875rem 0.875rem;
+    padding-right: 2rem;
+}
+
+.appointment-search-autocomplete .appointment-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+.appointment-search-autocomplete .appointment-select:disabled {
+    background-color: #f9fafb;
+    cursor: not-allowed;
+    color: #6b7280;
+}
+
+.appointment-search-autocomplete .appointment-loading {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.appointment-search-autocomplete .appointment-count {
+    color: #6b7280;
+    font-size: 0.6875rem;
+    margin-top: 0.1875rem;
 }
 
 /* ==================================================
@@ -639,10 +916,6 @@ mark {
     font-weight: 700;
 }
 
-/* ==================================================
-   TREATMENT ITEMS
-   ================================================== */
-
 .treatment-item {
     background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%);
     border-radius: 0.5rem;
@@ -696,6 +969,199 @@ mark {
     font-weight: 500;
     color: #1e40af;
     text-align: center;
+}
+
+/* ==================================================
+   NOTES AND FILES SECTION
+   ================================================== */
+
+.notes-files-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+}
+
+.notes-section {
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #bfdbfe;
+}
+
+.notes-section h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.notes-section h4:before {
+    content: '📝';
+    font-size: 0.875rem;
+}
+
+.notes-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    background-color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    resize: vertical;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.notes-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+.files-section {
+    background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #bbf7d0;
+}
+
+.files-section h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #166534;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.files-section h4:before {
+    content: '📁';
+    font-size: 0.875rem;
+}
+
+.file-upload-area {
+    margin-bottom: 0.75rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.75rem;
+    border: 2px dashed #10b981;
+    border-radius: 0.375rem;
+    background-color: #f0fdf4;
+    color: #166534;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.file-upload-label:hover {
+    border-color: #059669;
+}
+
+.file-upload-label:hover .upload-icon {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
+.file-upload-label span {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.upload-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.file-types {
+    font-size: 0.6875rem !important;
+    color: #047857;
+    font-weight: 400 !important;
+}
+
+.uploaded-files {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.375rem 0.5rem;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.375rem;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.file-icon {
+    width: 1rem;
+    height: 1rem;
+    color: #166534;
+    flex-shrink: 0;
+}
+
+.file-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #166534;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 0.6875rem;
+    color: #047857;
+    flex-shrink: 0;
+}
+
+.remove-file-btn {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background-color: #dc2626;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.remove-file-btn:hover {
+    background-color: #b91c1c;
+    transform: scale(1.05);
 }
 
 /* ==================================================
@@ -838,166 +1304,6 @@ mark {
 }
 
 /* ==================================================
-   PATIENT AND DOCTOR SEARCH SECTION
-   ================================================== */
-
-.selection-section {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid #e2e8f0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.search-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-}
-
-.search-group label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.search-container {
-    position: relative;
-    width: 100%;
-}
-
-.search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-input {
-    width: 100%;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.8125rem;
-    transition: all 0.2s ease;
-    background-color: white;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-    transform: translateY(-1px);
-}
-
-.search-input[readonly] {
-    background-color: #f9fafb;
-    color: #374151;
-    cursor: default;
-}
-
-.clear-selection-btn {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    border: none;
-    background-color: #6b7280;
-    color: white;
-    border-radius: 50%;
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-.clear-selection-btn:hover {
-    background-color: #dc2626;
-    transform: translateY(-50%) scale(1.05);
-}
-
-.search-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: white;
-    border: 1px solid #d1d5db;
-    border-top: none;
-    border-radius: 0 0 0.375rem 0.375rem;
-    box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.08);
-    z-index: 20;
-    max-height: 180px;
-    overflow-y: auto;
-}
-
-.search-option {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
-    transition: all 0.2s ease;
-}
-
-.search-option:hover {
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-    border-bottom-color: #bfdbfe;
-}
-
-.search-option:last-child {
-    border-bottom: none;
-}
-
-.option-main {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.0625rem;
-}
-
-.option-sub {
-    font-size: 0.6875rem;
-    color: #6b7280;
-}
-
-/* ==================================================
-   SELECTED DOCTOR DISPLAY (FOR DOCTOR ROLE)
-   ================================================== */
-
-.selected-doctor-display {
-    padding: 0.5rem 0.75rem;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    border: 1px solid #a5b4fc;
-    border-radius: 0.375rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.1875rem;
-}
-
-.selected-doctor-display strong {
-    color: #1e40af;
-    font-size: 0.8125rem;
-    font-weight: 600;
-}
-
-.selected-doctor-display span {
-    color: #3730a3;
-    font-size: 0.6875rem;
-}
-
-/* ==================================================
    SEARCH DROPDOWN SCROLLBAR
    ================================================== */
 
@@ -1019,26 +1325,62 @@ mark {
 }
 
 /* ==================================================
-   EMPTY STATES FOR SEARCH
-   ================================================== */
-
-.no-results {
-    padding: 0.75rem;
-    text-align: center;
-    color: #6b7280;
-    font-size: 0.8125rem;
-    font-style: italic;
-}
-
-/* ==================================================
-   RESPONSIVE DESIGN FOR SEARCH
+   RESPONSIVE DESIGN
    ================================================== */
 
 @media (max-width: 768px) {
+    .tab-content {
+        padding: 1rem;
+    }
+
+    .filters-grid.compact {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .filter-group {
+        min-width: auto;
+        flex: none;
+    }
+
     .selection-section {
         grid-template-columns: 1fr;
         padding: 0.75rem;
         gap: 0.75rem;
+    }
+
+    .notes-files-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .treatments-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .cost-breakdown {
+        grid-template-columns: 1fr;
+    }
+
+    .treatment-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .payment-update-form .form-actions {
+        flex-direction: row;
     }
 
     .search-input {
@@ -1071,643 +1413,6 @@ mark {
 }
 
 @media (max-width: 640px) {
-    .selection-section {
-        padding: 0.5rem;
-    }
-
-    .search-group label {
-        font-size: 0.8125rem;
-    }
-
-    .selected-doctor-display {
-        padding: 0.375rem 0.5rem;
-    }
-
-    .selected-doctor-display strong {
-        font-size: 0.8125rem;
-    }
-
-    .selected-doctor-display span {
-        font-size: 0.6875rem;
-    }
-}
-
-/* ==================================================
-   ACCESSIBILITY & FOCUS STATES FOR SEARCH
-   ================================================== */
-
-.search-option:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: -2px;
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-}
-
-.clear-selection-btn:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 1px;
-}
-
-/* Click outside to close dropdown */
-@media (prefers-reduced-motion: reduce) {
-    .search-input,
-    .clear-selection-btn,
-    .search-option {
-        transition: none;
-    }
-
-    .search-input:focus,
-    .clear-selection-btn:hover,
-    .search-option:hover {
-        transform: none;
-    }
-}
-
-/* ==================================================
-   PATIENT NOTES SECTION
-   ================================================== */
-
-.notes-section {
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #bfdbfe;
-    margin-top: 0.75rem;
-}
-
-.notes-section h4 {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #1e40af;
-    margin: 0 0 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.notes-section h4:before {
-    content: '📝';
-    font-size: 0.875rem;
-}
-
-/* ==================================================
-   FILE UPLOAD SECTION
-   ================================================== */
-
-/* ==================================================
-   NOTES AND FILES CONTAINER (SIDE BY SIDE)
-   ================================================== */
-
-.notes-files-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 1.25rem;
-    margin-top: 0.75rem;
-}
-
-/* ==================================================
-   USER SEARCH AUTOCOMPLETE (INTEGRATED WITH EXISTING STYLES)
-   ================================================== */
-
-.user-search-autocomplete {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-}
-
-.user-search-autocomplete .search-label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin: 0;
-}
-
-.required-indicator {
-    color: #ef4444;
-    margin-left: 0.125rem;
-}
-
-.user-search-autocomplete .search-input-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.user-search-autocomplete .search-input {
-    width: 100%;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.8125rem;
-    transition: all 0.2s ease;
-    background-color: white;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-}
-
-.user-search-autocomplete .search-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-    transform: translateY(-1px);
-}
-
-.user-search-autocomplete .search-input.error {
-    border-color: #ef4444;
-}
-
-.user-search-autocomplete .search-input:read-only {
-    background-color: #f9fafb;
-    color: #374151;
-    cursor: default;
-}
-
-.user-search-autocomplete .clear-selection-btn {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    border: none;
-    background-color: #6b7280;
-    color: white;
-    border-radius: 50%;
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-.user-search-autocomplete .clear-selection-btn:hover {
-    background-color: #dc2626;
-    transform: translateY(-50%) scale(1.05);
-}
-
-.user-search-autocomplete .search-error {
-    color: #ef4444;
-    font-size: 0.6875rem;
-    margin-top: 0.1875rem;
-}
-
-.user-search-autocomplete .search-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    border: 1px solid #d1d5db;
-    border-top: none;
-    border-radius: 0 0 0.375rem 0.375rem;
-    box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.08);
-    z-index: 20;
-    max-height: 180px;
-    overflow-y: auto;
-}
-
-.user-search-autocomplete .search-loading {
-    padding: 0.5rem 0.75rem;
-    color: #6b7280;
-    font-size: 0.8125rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.user-search-autocomplete .search-no-results {
-    padding: 0.5rem 0.75rem;
-    color: #6b7280;
-    font-size: 0.8125rem;
-    text-align: center;
-    font-style: italic;
-}
-
-.user-search-autocomplete .search-option {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
-    transition: all 0.2s ease;
-}
-
-.user-search-autocomplete .search-option:hover {
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-    border-bottom-color: #bfdbfe;
-}
-
-.user-search-autocomplete .search-option:last-child {
-    border-bottom: none;
-}
-
-.user-search-autocomplete .option-main {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.0625rem;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.user-search-autocomplete .specialty-tag {
-    background: #dbeafe;
-    color: #1e40af;
-    padding: 0.0625rem 0.25rem;
-    border-radius: 0.1875rem;
-    font-size: 0.6875rem;
-    font-weight: 500;
-}
-
-.user-search-autocomplete .option-sub {
-    color: #6b7280;
-    font-size: 0.6875rem;
-}
-
-/* ==================================================
-   APPOINTMENT SEARCH AUTOCOMPLETE (INTEGRATED)
-   ================================================== */
-
-.appointment-search-autocomplete {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-    margin-bottom: 1rem;
-}
-
-.appointment-search-autocomplete .search-label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin: 0;
-}
-
-.appointment-search-autocomplete .appointment-select-wrapper {
-    position: relative;
-}
-
-.appointment-search-autocomplete .appointment-select {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.8125rem;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 0.875rem 0.875rem;
-    padding-right: 2rem;
-}
-
-.appointment-search-autocomplete .appointment-select:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-    transform: translateY(-1px);
-}
-
-.appointment-search-autocomplete .appointment-select:disabled {
-    background-color: #f9fafb;
-    cursor: not-allowed;
-    color: #6b7280;
-}
-
-.appointment-search-autocomplete .appointment-select.error {
-    border-color: #ef4444;
-}
-
-.appointment-search-autocomplete .appointment-loading {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-.appointment-search-autocomplete .search-error {
-    color: #ef4444;
-    font-size: 0.6875rem;
-    margin-top: 0.1875rem;
-}
-
-.appointment-search-autocomplete .appointment-count {
-    color: #6b7280;
-    font-size: 0.6875rem;
-    margin-top: 0.1875rem;
-}
-
-/* ==================================================
-   SELECTED USER DISPLAY (FOR READ-ONLY USERS LIKE DOCTORS)
-   ================================================== */
-
-.selected-user-display {
-    margin-bottom: 1rem;
-}
-
-.selected-user-display label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin-bottom: 0.375rem;
-}
-
-.selected-user-display .user-info {
-    padding: 0.5rem 0.75rem;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    border: 1px solid #a5b4fc;
-    border-radius: 0.375rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.1875rem;
-}
-
-.selected-user-display .user-info strong {
-    color: #1e40af;
-    font-size: 0.8125rem;
-    font-weight: 600;
-}
-
-.selected-user-display .user-info span {
-    color: #3730a3;
-    font-size: 0.6875rem;
-}
-/* ==================================================
-   PATIENT NOTES SECTION (LEFT SIDE)
-   ================================================== */
-
-.notes-section {
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #bfdbfe;
-}
-
-.notes-section h4 {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #1e40af;
-    margin: 0 0 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.notes-section h4:before {
-    content: '📝';
-    font-size: 0.875rem;
-}
-
-.notes-textarea {
-    width: 100%;
-    min-height: 120px;
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.8125rem;
-    background-color: white;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    resize: vertical;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-.notes-textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-    transform: translateY(-1px);
-}
-
-/* ==================================================
-   FILE UPLOAD SECTION (RIGHT SIDE)
-   ================================================== */
-
-.files-section {
-    background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #bbf7d0;
-}
-
-.files-section h4 {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #166534;
-    margin: 0 0 0.75rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.files-section h4:before {
-    content: '📁';
-    font-size: 0.875rem;
-}
-
-.files-section {
-    background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #bbf7d0;
-    margin-top: 0.75rem;
-}
-
-.files-section h4 {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #166534;
-    margin: 0 0 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.files-section h4:before {
-    content: '📁';
-    font-size: 0.875rem;
-}
-
-.file-upload-area {
-    margin-bottom: 0.75rem;
-}
-
-.file-input {
-    display: none;
-}
-
-.file-upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    padding: 0.75rem;
-    border: 2px dashed #10b981;
-    border-radius: 0.375rem;
-    background-color: #f0fdf4;
-    color: #166534;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-}
-
-.file-upload-label:hover {
-    border-color: #059669;
-}
-
-.file-upload-label span {
-    font-size: 0.8125rem;
-    font-weight: 500;
-}
-
-.upload-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-.file-types {
-    font-size: 0.6875rem !important;
-    color: #047857;
-    font-weight: 400 !important;
-}
-
-.uploaded-files {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.375rem 0.5rem;
-    background-color: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 0.375rem;
-}
-
-.file-info {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    flex: 1;
-    min-width: 0;
-}
-
-.file-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #166534;
-    flex-shrink: 0;
-}
-
-.file-name {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #166534;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.file-size {
-    font-size: 0.6875rem;
-    color: #047857;
-    flex-shrink: 0;
-}
-
-.remove-file-btn {
-    width: 1.25rem;
-    height: 1.25rem;
-    border: none;
-    background-color: #dc2626;
-    color: white;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.remove-file-btn:hover {
-    background-color: #b91c1c;
-    transform: scale(1.05);
-}
-
-/* Improved file upload visual feedback */
-.file-upload-label:hover .upload-icon {
-    transform: translateY(-2px);
-    transition: transform 0.2s ease;
-}
-
-/* ==================================================
-   RESPONSIVE DESIGN
-   ================================================== */
-
-@media (max-width: 768px) {
-    .tab-content {
-        padding: 1rem;
-    }
-
-    .filters-grid.compact {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .filter-group {
-        min-width: auto;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .treatments-header {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: stretch;
-    }
-
-    .form-actions {
-        flex-direction: column;
-    }
-
-    .cost-breakdown {
-        grid-template-columns: 1fr;
-    }
-
-    .treatment-header {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: flex-start;
-    }
-
-    .payment-update-form .form-actions {
-        flex-direction: row;
-    }
-}
-
-@media (max-width: 640px) {
     .treatment-management {
         padding: 0.375rem;
     }
@@ -1736,16 +1441,35 @@ mark {
         padding: 0.5rem 0.75rem;
         font-size: 0.8125rem;
     }
+
+    .selection-section {
+        padding: 0.5rem;
+    }
+
+    .search-group label {
+        font-size: 0.8125rem;
+    }
+
+    .selected-user-display {
+        padding: 0.375rem 0.5rem;
+    }
+
+    .selected-user-display strong {
+        font-size: 0.8125rem;
+    }
+
+    .selected-user-display span {
+        font-size: 0.6875rem;
+    }
 }
 
 /* ==================================================
    ACCESSIBILITY & FOCUS STATES
    ================================================== */
 
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    transform: translateY(-1px);
+.clear-selection-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1756,7 +1480,10 @@ mark {
     .confirm-btn,
     .cancel-btn,
     .clear-filters-btn,
-    .remove-treatment-btn {
+    .remove-treatment-btn,
+    .search-input,
+    .clear-selection-btn,
+    .search-option {
         transition: none;
     }
 
@@ -1767,7 +1494,10 @@ mark {
     .confirm-btn:hover,
     .cancel-btn:hover,
     .clear-filters-btn:hover,
-    .remove-treatment-btn:hover {
+    .remove-treatment-btn:hover,
+    .search-input:focus,
+    .clear-selection-btn:hover,
+    .search-option:hover {
         transform: none;
     }
 
@@ -1778,6 +1508,10 @@ mark {
     .loading-spinner {
         animation: none;
         border-top-color: #6b7280;
+    }
+
+    .file-upload-label:hover .upload-icon {
+        transform: none;
     }
 }
 
@@ -1793,7 +1527,10 @@ mark {
 
     .form-input,
     .form-select,
-    .form-textarea {
+    .form-textarea,
+    .filter-input.compact,
+    .filter-select.compact,
+    .search-input {
         border: 2px solid #000;
     }
 }

@@ -401,19 +401,8 @@ function AddTreatmentForm({
             <div className="selection-section">
                 {/* Doctor Selection */}
                 {isDoctor ? (
-                    <div className="selected-user-display">
-                        <label>Doctor</label>
-                        <div className="user-info">
-                            <strong>Dr. {selectedDoctor?.firstName} {selectedDoctor?.lastName}</strong>
-                            <span>{selectedDoctor?.email}</span>
-                        </div>
-                    </div>
-                ) : (
                     <div className="search-group">
                         <label>
-                            <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
-                            </svg>
                             Select Doctor
                             <span className="required-indicator">*</span>
                         </label>
@@ -424,7 +413,7 @@ function AddTreatmentForm({
                                     value={getDoctorDisplayValue()}
                                     onChange={handleDoctorInputChange}
                                     placeholder="Search for a doctor..."
-                                    className="search-input"
+                                    className="form-input"
                                     autoComplete="off"
                                     readOnly={!!selectedDoctor}
                                     required
@@ -433,10 +422,56 @@ function AddTreatmentForm({
                                     <button
                                         type="button"
                                         onClick={handleClearDoctor}
-                                        className="clear-selection-btn"
+                                        className="clear-search-btn"
                                         title="Clear selection"
                                     >
-                                        ×
+                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd"
+                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                  clipRule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                            <AutocompleteDropdown
+                                suggestions={doctorSuggestions}
+                                isSearching={searchingDoctors}
+                                isVisible={showDoctorDropdown}
+                                onSelect={handleDoctorSelect}
+                                type="doctor"
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="search-group">
+                        <label>
+                            Select Doctor
+                            <span className="required-indicator">*</span>
+                        </label>
+                        <div className="search-container" ref={doctorInputRef}>
+                            <div className="search-input-wrapper">
+                                <input
+                                    type="text"
+                                    value={getDoctorDisplayValue()}
+                                    onChange={handleDoctorInputChange}
+                                    placeholder="Search for a doctor..."
+                                    className="form-input"
+                                    autoComplete="off"
+                                    readOnly={!!selectedDoctor}
+                                    required
+                                />
+                                {selectedDoctor && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearDoctor}
+                                        className="clear-search-btn"
+                                        title="Clear selection"
+                                    >
+                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd"
+                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                  clipRule="evenodd"></path>
+                                        </svg>
                                     </button>
                                 )}
                             </div>
@@ -454,9 +489,6 @@ function AddTreatmentForm({
                 {/* Patient Selection */}
                 <div className="search-group">
                     <label>
-                        <svg className="field-icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
                         Select Patient
                         <span className="required-indicator">*</span>
                     </label>
@@ -467,7 +499,7 @@ function AddTreatmentForm({
                                 value={getPatientDisplayValue()}
                                 onChange={handlePatientInputChange}
                                 placeholder="Search for a patient..."
-                                className="search-input"
+                                className="form-input"
                                 autoComplete="off"
                                 readOnly={!!selectedPatient}
                                 required
@@ -476,10 +508,14 @@ function AddTreatmentForm({
                                 <button
                                     type="button"
                                     onClick={handleClearPatient}
-                                    className="clear-selection-btn"
+                                    className="clear-search-btn"
                                     title="Clear selection"
                                 >
-                                    ×
+                                    <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"></path>
+                                    </svg>
                                 </button>
                             )}
                         </div>

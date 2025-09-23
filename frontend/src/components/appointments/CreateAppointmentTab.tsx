@@ -156,6 +156,22 @@ function CreateAppointmentTab({
             setSelectedPatientEmail('');
     };
 
+    // Clear doctor selection
+    const handleClearDoctor = () => {
+        setAppointmentForm(prev => ({ ...prev, doctorName: '' }));
+        setSelectedDoctorEmail('');
+        setDoctorSuggestions([]);
+        setShowDoctorDropdown(false);
+    };
+
+    // Clear patient selection
+    const handleClearPatient = () => {
+        setAppointmentForm(prev => ({ ...prev, patientName: '' }));
+        setSelectedPatientEmail('');
+        setPatientSuggestions([]);
+        setShowPatientDropdown(false);
+    };
+
     // Auto-fill doctor name if user is a doctor
     useEffect(() => {
         if (isDoctor && user?.firstName && user?.lastName) {
@@ -264,17 +280,33 @@ function CreateAppointmentTab({
                     <div className="form-group">
                         <label htmlFor="doctorName">Doctor Name</label>
                         <div className="autocomplete-container" ref={doctorInputRef}>
-                            <input
-                                id="doctorName"
-                                type="text"
-                                className="form-input"
-                                value={appointmentForm.doctorName}
-                                onChange={handleDoctorInputChange}
-                                placeholder="Enter doctor name"
-                                required
-                                disabled={isDoctor}
-                                autoComplete="off"
-                            />
+                            <div className="search-input-wrapper">
+                                <input
+                                    id="doctorName"
+                                    type="text"
+                                    className="form-input"
+                                    value={appointmentForm.doctorName}
+                                    onChange={handleDoctorInputChange}
+                                    placeholder="Enter doctor name"
+                                    required
+                                    readOnly={!!selectedDoctorEmail}
+                                    autoComplete="off"
+                                />
+                                {selectedDoctorEmail && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearDoctor}
+                                        className="clear-search-btn"
+                                        title="Clear selection"
+                                    >
+                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd"
+                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                  clipRule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
                             <AutocompleteDropdown
                                 suggestions={doctorSuggestions}
                                 isSearching={searchingDoctors}
@@ -288,16 +320,33 @@ function CreateAppointmentTab({
                     <div className="form-group">
                         <label htmlFor="patientName">Patient Name</label>
                         <div className="autocomplete-container" ref={patientInputRef}>
-                            <input
-                                id="patientName"
-                                type="text"
-                                className="form-input"
-                                value={appointmentForm.patientName}
-                                onChange={handlePatientInputChange}
-                                placeholder="Enter patient name"
-                                required
-                                autoComplete="off"
-                            />
+                            <div className="search-input-wrapper">
+                                <input
+                                    id="patientName"
+                                    type="text"
+                                    className="form-input"
+                                    value={appointmentForm.patientName}
+                                    onChange={handlePatientInputChange}
+                                    placeholder="Enter patient name"
+                                    required
+                                    readOnly={!!selectedPatientEmail}
+                                    autoComplete="off"
+                                />
+                                {selectedPatientEmail && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearPatient}
+                                        className="clear-search-btn"
+                                        title="Clear selection"
+                                    >
+                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd"
+                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                  clipRule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
                             <AutocompleteDropdown
                                 suggestions={patientSuggestions}
                                 isSearching={searchingPatients}

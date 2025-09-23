@@ -104,6 +104,14 @@ function CalendarForm({
             setSelectedEmail('');
     };
 
+    // Clear selection
+    const handleClearSelection = () => {
+        setFormData(prev => ({ ...prev, name: '' }));
+        setSelectedEmail('');
+        setSuggestions([]);
+        setShowDropdown(false);
+    };
+
     // Handle other input changes
     const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -162,16 +170,31 @@ function CalendarForm({
                 <div className="form-group">
                     <label>{nameLabel}</label>
                     <div className="autocomplete-container" ref={nameInputRef}>
-                        <input
-                            type="text"
-                            name="name"
-                            required
-                            placeholder={namePlaceholder}
-                            className="form-input"
-                            value={formData.name}
-                            onChange={handleNameChange}
-                            autoComplete="off"
-                        />
+                            <input
+                                type="text"
+                                name="name"
+                                required
+                                placeholder={namePlaceholder}
+                                className="form-input"
+                                value={formData.name}
+                                onChange={handleNameChange}
+                                readOnly={!!selectedEmail}
+                                autoComplete="off"
+                            />
+                            {selectedEmail && (
+                                <button
+                                    type="button"
+                                    onClick={handleClearSelection}
+                                    className="clear-search-btn"
+                                    title="Clear selection"
+                                >
+                                    <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            )}
                         <AutocompleteDropdown
                             suggestions={suggestions}
                             isSearching={searching}

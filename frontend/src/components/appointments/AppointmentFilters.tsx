@@ -136,6 +136,22 @@ function AppointmentFilters({
             setSelectedPatientEmail('');
     };
 
+    // Clear doctor selection
+    const handleClearDoctor = () => {
+        setFilters(prev => ({ ...prev, doctorName: '' }));
+        setSelectedDoctorEmail('');
+        setDoctorSuggestions([]);
+        setShowDoctorDropdown(false);
+    };
+
+    // Clear patient selection
+    const handleClearPatient = () => {
+        setFilters(prev => ({ ...prev, patientName: '' }));
+        setSelectedPatientEmail('');
+        setPatientSuggestions([]);
+        setShowPatientDropdown(false);
+    };
+
     // Clear all filters
     const clearFilters = () => {
         setFilters({
@@ -175,14 +191,31 @@ function AppointmentFilters({
                         <div className="filter-group">
                             <label>Doctor Name</label>
                             <div className="autocomplete-container" ref={doctorInputRef}>
-                                <input
-                                    type="text"
-                                    value={filters.doctorName}
-                                    onChange={handleDoctorInputChange}
-                                    placeholder="Search doctor name..."
-                                    className="filter-input"
-                                    autoComplete="off"
-                                />
+                                <div className="search-input-wrapper">
+                                    <input
+                                        type="text"
+                                        value={filters.doctorName}
+                                        onChange={handleDoctorInputChange}
+                                        placeholder="Search doctor name..."
+                                        className="filter-input"
+                                        readOnly={!!selectedDoctorEmail}
+                                        autoComplete="off"
+                                    />
+                                    {selectedDoctorEmail && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearDoctor}
+                                            className="clear-search-btn"
+                                            title="Clear selection"
+                                        >
+                                            <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd"
+                                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                      clipRule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
                                 <AutocompleteDropdown
                                     suggestions={doctorSuggestions}
                                     isSearching={searchingDoctors}
@@ -196,14 +229,31 @@ function AppointmentFilters({
                         <div className="filter-group">
                             <label>Patient Name</label>
                             <div className="autocomplete-container" ref={patientInputRef}>
-                                <input
-                                    type="text"
-                                    value={filters.patientName}
-                                    onChange={handlePatientInputChange}
-                                    placeholder="Search patient name..."
-                                    className="filter-input"
-                                    autoComplete="off"
-                                />
+                                <div className="search-input-wrapper">
+                                    <input
+                                        type="text"
+                                        value={filters.patientName}
+                                        onChange={handlePatientInputChange}
+                                        placeholder="Search patient name..."
+                                        className="filter-input"
+                                        readOnly={!!selectedPatientEmail}
+                                        autoComplete="off"
+                                    />
+                                    {selectedPatientEmail && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearPatient}
+                                            className="clear-search-btn"
+                                            title="Clear selection"
+                                        >
+                                            <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd"
+                                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                      clipRule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
                                 <AutocompleteDropdown
                                     suggestions={patientSuggestions}
                                     isSearching={searchingPatients}

@@ -20,6 +20,27 @@
     }
 }
 
+/* Read-only input styling */
+.form-input[readonly] {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Optional: Add visual indication that field is read-only */
+.form-input[readonly] {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+}
+
+/* Search input wrapper for selected items */
+.search-input-wrapper input[readonly] {
+    cursor: default;
+    user-select: none;
+}
+
 /* ==================================================
    APPOINTMENTS HEADER
    ================================================== */

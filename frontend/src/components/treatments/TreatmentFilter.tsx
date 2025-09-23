@@ -198,7 +198,6 @@ function TreatmentFilters({
                                 Doctor
                             </label>
                             <div className="search-container" ref={doctorInputRef}>
-                                <div className="search-input-wrapper">
                                     <input
                                         type="text"
                                         value={getDoctorDisplayValue()}
@@ -212,13 +211,12 @@ function TreatmentFilters({
                                         <button
                                             type="button"
                                             onClick={handleClearDoctor}
-                                            className="clear-selection-btn"
+                                            className="clear-search-btn"
                                             title="Clear selection"
                                         >
                                             ×
                                         </button>
                                     )}
-                                </div>
                                 <AutocompleteDropdown
                                     suggestions={doctorSuggestions}
                                     isSearching={searchingDoctors}
@@ -237,7 +235,6 @@ function TreatmentFilters({
                                 Patient
                             </label>
                             <div className="search-container" ref={patientInputRef}>
-                                <div className="search-input-wrapper">
                                     <input
                                         type="text"
                                         value={getPatientDisplayValue()}
@@ -251,13 +248,12 @@ function TreatmentFilters({
                                         <button
                                             type="button"
                                             onClick={handleClearPatient}
-                                            className="clear-selection-btn"
+                                            className="clear-search-btn"
                                             title="Clear selection"
                                         >
                                             ×
                                         </button>
                                     )}
-                                </div>
                                 <AutocompleteDropdown
                                     suggestions={patientSuggestions}
                                     isSearching={searchingPatients}
