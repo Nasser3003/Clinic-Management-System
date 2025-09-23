@@ -9,6 +9,14 @@ interface TreatmentManagement {
     installmentPeriodInMonths: number;
 }
 
+interface Prescription {
+    medicationName: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions?: string;
+}
+
 interface TreatmentFormData {
     appointmentId: string;
     treatments: TreatmentManagement[];
@@ -70,6 +78,14 @@ function AddTreatmentForm({
             installmentPeriodInMonths: 0
         }]
     });
+
+    const [prescriptions, setPrescriptions] = useState<Prescription[]>([{
+        medicationName: '',
+        dosage: '',
+        frequency: '',
+        duration: '',
+        instructions: ''
+    }]);
 
     const [patientNotes, setPatientNotes] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -301,6 +317,32 @@ function AddTreatmentForm({
         }));
     };
 
+    const handleAddPrescription = () => {
+        setPrescriptions(prev => [
+            ...prev,
+            {
+                medicationName: '',
+                dosage: '',
+                frequency: '',
+                duration: '',
+                instructions: ''
+            }
+        ]);
+    };
+
+    const handleRemovePrescription = (index: number) => {
+        if (prescriptions.length > 1)
+            setPrescriptions(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handlePrescriptionChange = (index: number, field: keyof Prescription, value: string) => {
+        setPrescriptions(prev =>
+            prev.map((prescription, i) =>
+                i === index ? { ...prescription, [field]: value } : prescription
+            )
+        );
+    };
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
@@ -322,6 +364,13 @@ function AddTreatmentForm({
                 installmentPeriodInMonths: 0
             }]
         });
+        setPrescriptions([{
+            medicationName: '',
+            dosage: '',
+            frequency: '',
+            duration: '',
+            instructions: ''
+        }]);
         setPatientNotes('');
         setUploadedFiles([]);
         setSelectedAppointment(null);
@@ -349,6 +398,23 @@ function AddTreatmentForm({
 
         if (treatmentForm.treatments.some(t => t.amountPaid > t.cost))
             throw new Error('Amount paid cannot exceed treatment cost');
+
+        // Validate prescriptions - only check required fields if any prescription has data
+        const filledPrescriptions = prescriptions.filter(p =>
+            p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
+        );
+
+        if (filledPrescriptions.some(p => !p.medicationName.trim()))
+            throw new Error('Please provide medication name for all prescriptions');
+
+        if (filledPrescriptions.some(p => !p.dosage.trim()))
+            throw new Error('Please provide dosage for all prescriptions');
+
+        if (filledPrescriptions.some(p => !p.frequency.trim()))
+            throw new Error('Please provide frequency for all prescriptions');
+
+        if (filledPrescriptions.some(p => !p.duration.trim()))
+            throw new Error('Please provide duration for all prescriptions');
     };
 
     const handleSubmitTreatments = async (e: React.FormEvent) => {
@@ -360,9 +426,15 @@ function AddTreatmentForm({
 
             const formData = new FormData();
 
+            // Filter out empty prescriptions
+            const validPrescriptions = prescriptions.filter(p =>
+                p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
+            );
+
             // Create the DTO structure that matches your backend
             const treatmentData = {
                 treatments: treatmentForm.treatments,
+                prescriptions: validPrescriptions,
                 filePaths: [], // Will be populated by backend
                 visitNotes: patientNotes.trim() || null
             };
@@ -669,6 +741,100 @@ function AddTreatmentForm({
                         className="add-treatment-btn"
                     >
                         Add Another Treatment
+                    </button>
+                </div>
+
+                {/* Prescriptions Section */}
+                <div className="prescriptions-section">
+                    <div className="prescriptions-header">
+                        <h4>Prescriptions</h4>
+                        <p>Add medications prescribed to the patient</p>
+                    </div>
+
+                    {prescriptions.map((prescription, index) => (
+                        <div key={index} className="prescription-item">
+                            <div className="prescription-item-header">
+                                <h5>Prescription {index + 1}</h5>
+                                {prescriptions.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemovePrescription(index)}
+                                        className="remove-prescription-btn"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Medication Name</label>
+                                    <input
+                                        type="text"
+                                        value={prescription.medicationName}
+                                        onChange={(e) => handlePrescriptionChange(index, 'medicationName', e.target.value)}
+                                        placeholder="Enter medication name..."
+                                        className="form-input"
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Dosage</label>
+                                    <input
+                                        type="text"
+                                        value={prescription.dosage}
+                                        onChange={(e) => handlePrescriptionChange(index, 'dosage', e.target.value)}
+                                        placeholder="e.g., 500mg"
+                                        className="form-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Frequency</label>
+                                    <input
+                                        type="text"
+                                        value={prescription.frequency}
+                                        onChange={(e) => handlePrescriptionChange(index, 'frequency', e.target.value)}
+                                        placeholder="e.g., Twice daily"
+                                        className="form-input"
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Duration</label>
+                                    <input
+                                        type="text"
+                                        value={prescription.duration}
+                                        onChange={(e) => handlePrescriptionChange(index, 'duration', e.target.value)}
+                                        placeholder="e.g., 7 days"
+                                        className="form-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group full-width">
+                                    <label>Special Instructions</label>
+                                    <textarea
+                                        value={prescription.instructions || ''}
+                                        onChange={(e) => handlePrescriptionChange(index, 'instructions', e.target.value)}
+                                        placeholder="Additional instructions for the patient..."
+                                        className="form-textarea compact"
+                                        rows={2}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <button
+                        type="button"
+                        onClick={handleAddPrescription}
+                        className="add-prescription-btn"
+                    >
+                        Add Another Prescription
                     </button>
                 </div>
 

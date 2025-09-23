@@ -188,10 +188,6 @@
     padding: 0;
 }
 
-
-
-
-
 .search-input {
     width: 100%;
     padding-right: 2rem;
@@ -972,6 +968,125 @@ mark {
 }
 
 /* ==================================================
+   PRESCRIPTIONS SECTION
+   ================================================== */
+
+.prescriptions-section {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    margin-top: 1rem;
+}
+
+.prescriptions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.prescriptions-header h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.prescriptions-header h4:before {
+    content: '💊';
+    font-size: 0.875rem;
+}
+
+.prescriptions-header p {
+    color: #6b7280;
+    font-size: 0.8125rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.add-prescription-btn {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.add-prescription-btn:hover {
+    background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+    transform: translateY(-1px);
+}
+
+.add-prescription-btn:before {
+    content: '+';
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.prescription-item {
+    background: linear-gradient(135deg, #f8faff 0%, #f1f5f9 100%);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.08);
+}
+
+.prescription-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.prescription-item-header h5 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.prescription-item-header h5:before {
+    content: '🏥';
+    font-size: 0.75rem;
+}
+
+.remove-prescription-btn {
+    background-color: #fdf2f8;
+    color: #be185d;
+    border: 1px solid #f9a8d4;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-prescription-btn:hover {
+    background-color: #f9a8d4;
+    color: #9d174d;
+    transform: translateY(-1px);
+}
+
+/* ==================================================
    NOTES AND FILES SECTION
    ================================================== */
 
@@ -1304,6 +1419,49 @@ mark {
 }
 
 /* ==================================================
+   SEARCH INPUT WRAPPER STYLES
+   ================================================== */
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background-color: #6b7280;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    margin: 0;
+    padding: 0;
+}
+
+.clear-search-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.clear-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/* ==================================================
    SEARCH DROPDOWN SCROLLBAR
    ================================================== */
 
@@ -1359,7 +1517,8 @@ mark {
         grid-template-columns: 1fr;
     }
 
-    .treatments-header {
+    .treatments-header,
+    .prescriptions-header {
         flex-direction: column;
         gap: 0.75rem;
         align-items: stretch;
@@ -1388,7 +1547,8 @@ mark {
         font-size: 0.8125rem;
     }
 
-    .clear-selection-btn {
+    .clear-selection-btn,
+    .clear-search-btn {
         width: 1.125rem;
         height: 1.125rem;
         right: 0.375rem;
@@ -1425,7 +1585,8 @@ mark {
         padding: 1rem;
     }
 
-    .treatment-item {
+    .treatment-item,
+    .prescription-item {
         padding: 0.75rem;
     }
 
@@ -1467,7 +1628,8 @@ mark {
    ACCESSIBILITY & FOCUS STATES
    ================================================== */
 
-.clear-selection-btn:focus {
+.clear-selection-btn:focus,
+.clear-search-btn:focus {
     outline: 2px solid #3b82f6;
     outline-offset: 1px;
 }
@@ -1476,13 +1638,16 @@ mark {
     .treatment-card,
     .update-payment-btn,
     .add-treatment-btn,
+    .add-prescription-btn,
     .submit-btn,
     .confirm-btn,
     .cancel-btn,
     .clear-filters-btn,
     .remove-treatment-btn,
+    .remove-prescription-btn,
     .search-input,
     .clear-selection-btn,
+    .clear-search-btn,
     .search-option {
         transition: none;
     }
@@ -1490,13 +1655,16 @@ mark {
     .treatment-card:hover,
     .update-payment-btn:hover,
     .add-treatment-btn:hover,
+    .add-prescription-btn:hover,
     .submit-btn:hover,
     .confirm-btn:hover,
     .cancel-btn:hover,
     .clear-filters-btn:hover,
     .remove-treatment-btn:hover,
+    .remove-prescription-btn:hover,
     .search-input:focus,
     .clear-selection-btn:hover,
+    .clear-search-btn:hover,
     .search-option:hover {
         transform: none;
     }
@@ -1521,6 +1689,7 @@ mark {
     .filters-section,
     .treatment-form,
     .treatment-item,
+    .prescription-item,
     .tab-content {
         border: 2px solid #000;
     }

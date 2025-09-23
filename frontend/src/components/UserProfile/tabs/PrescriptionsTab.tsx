@@ -8,8 +8,8 @@ interface Prescription {
     medicationName: string;
     dosage: string;
     instructions: string;
-    quantity: string;
-    refills: number;
+    duration: string;
+    frequency: string;
     status: 'active' | 'expired' | 'discontinued';
     documents?: Document[];
 }
@@ -36,8 +36,8 @@ const PrescriptionsTab: React.FC = () => {
             medicationName: 'Lisinopril',
             dosage: '10mg',
             instructions: 'Take once daily in the morning with or without food',
-            quantity: '30 tablets',
-            refills: 5,
+            duration: '30 days',
+            frequency: 'Once daily',
             status: 'active',
             documents: [
                 { id: '1', name: 'Prescription_Lisinopril.pdf', type: 'PDF', url: '#', size: '125 KB' }
@@ -50,8 +50,8 @@ const PrescriptionsTab: React.FC = () => {
             medicationName: 'Metformin',
             dosage: '500mg',
             instructions: 'Take twice daily with meals',
-            quantity: '60 tablets',
-            refills: 3,
+            duration: '90 days',
+            frequency: 'Twice daily',
             status: 'active',
             documents: [
                 { id: '2', name: 'Prescription_Metformin.pdf', type: 'PDF', url: '#', size: '110 KB' },
@@ -65,8 +65,8 @@ const PrescriptionsTab: React.FC = () => {
             medicationName: 'Ibuprofen',
             dosage: '400mg',
             instructions: 'Take as needed for pain, maximum 3 times daily',
-            quantity: '20 tablets',
-            refills: 0,
+            duration: '7 days',
+            frequency: 'As needed',
             status: 'expired',
             documents: [
                 { id: '4', name: 'Prescription_Ibuprofen.pdf', type: 'PDF', url: '#', size: '95 KB' }
@@ -79,8 +79,8 @@ const PrescriptionsTab: React.FC = () => {
             medicationName: 'Amoxicillin',
             dosage: '250mg',
             instructions: 'Take three times daily for 10 days',
-            quantity: '30 capsules',
-            refills: 0,
+            duration: '10 days',
+            frequency: 'Three times daily',
             status: 'discontinued',
             documents: []
         }
@@ -149,7 +149,7 @@ const PrescriptionsTab: React.FC = () => {
                     </select>
                 </div>
             </div>
-            
+
             <div className="prescriptions-list">
                 {filteredPrescriptions.map((prescription) => (
                     <div
@@ -170,15 +170,15 @@ const PrescriptionsTab: React.FC = () => {
                                 <span className="date-written">{formatDate(prescription.dateWritten)}</span>
                             </div>
                         </div>
-                        
+
                         <div className="prescription-preview">
                             <p className="instructions-preview">{prescription.instructions}</p>
                             <div className="prescription-details">
-                                <span className="quantity">Qty: {prescription.quantity}</span>
-                                <span className="refills">Refills: {prescription.refills}</span>
+                                <span className="quantity">Duration: {prescription.duration}</span>
+                                <span className="refills">Frequency: {prescription.frequency}</span>
                             </div>
                         </div>
-                        
+
                         <div className="prescription-footer">
                             {prescription.documents && prescription.documents.length > 0 && (
                                 <div className="document-indicator">
@@ -207,7 +207,7 @@ const PrescriptionsTab: React.FC = () => {
                     </div>
                     <h3>No Prescriptions Found</h3>
                     <p>
-                        {filterStatus === 'all' 
+                        {filterStatus === 'all'
                             ? 'Your prescriptions will appear here when they are written by your doctors.'
                             : `No ${filterStatus} prescriptions found. Try changing the filter.`
                         }
@@ -247,15 +247,15 @@ const PrescriptionsTab: React.FC = () => {
                                         <span className="detail-value">{selectedPrescription.dosage}</span>
                                     </div>
                                     <div className="detail-item">
-                                        <span className="detail-label">Quantity</span>
-                                        <span className="detail-value">{selectedPrescription.quantity}</span>
+                                        <span className="detail-label">Duration</span>
+                                        <span className="detail-value">{selectedPrescription.duration}</span>
                                     </div>
                                     <div className="detail-item">
-                                        <span className="detail-label">Refills</span>
-                                        <span className="detail-value">{selectedPrescription.refills}</span>
+                                        <span className="detail-label">Frequency</span>
+                                        <span className="detail-value">{selectedPrescription.frequency}</span>
                                     </div>
                                 </div>
-                                
+
                                 <div className="instructions-section">
                                     <h5>Instructions</h5>
                                     <p>{selectedPrescription.instructions}</p>
@@ -266,7 +266,7 @@ const PrescriptionsTab: React.FC = () => {
                                 <div className="documents-section">
                                     <div className="documents-header">
                                         <h4>Related Documents</h4>
-                                        <button 
+                                        <button
                                             className="toggle-documents-btn"
                                             onClick={handleViewDocuments}
                                         >
