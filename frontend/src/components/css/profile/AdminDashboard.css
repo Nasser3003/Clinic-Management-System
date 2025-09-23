@@ -117,7 +117,7 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     border: 1px solid #e5e7eb;
     border-bottom: none;
-    margin-bottom: 0;
+    margin-bottom: 2rem;
 }
 
 .admin-dashboard .tabs-header {
@@ -142,14 +142,20 @@
 }
 
 .admin-dashboard .tab-button:hover {
-    color: #2563eb;
     background-color: #f8fafc;
 }
 
-.admin-dashboard .tab-button.active {
+.admin-dashboard {
     color: #2563eb;
     border-bottom-color: #2563eb;
     background-color: #f8fafc;
+}
+
+
+.tab-button.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 /* ==================================================

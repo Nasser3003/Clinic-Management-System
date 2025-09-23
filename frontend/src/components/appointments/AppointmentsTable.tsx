@@ -59,6 +59,12 @@ function AppointmentsTable({
         return email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
+    const truncateReason = (reason: string, maxLength: number = 50) => {
+        if (!reason) return 'No reason provided';
+        if (reason.length <= maxLength) return reason;
+        return reason.substring(0, maxLength) + '...';
+    };
+
     return (
         <div className="appointments-table">
             <table className="appointments-grid">
@@ -67,6 +73,7 @@ function AppointmentsTable({
                     <th>Date & Time</th>
                     <th>Doctor</th>
                     <th>Patient</th>
+                    <th>Reason</th>
                     <th>Duration</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -87,6 +94,11 @@ function AppointmentsTable({
                         </td>
                         <td data-label="Doctor">{getDisplayName(appointment.doctorName)}</td>
                         <td data-label="Patient">{getDisplayName(appointment.patientName)}</td>
+                        <td data-label="Reason">
+                            <div className="appointment-reason" title={appointment.reason || 'No reason provided'}>
+                                {truncateReason(appointment.reason)}
+                            </div>
+                        </td>
                         <td data-label="Duration">{appointment.duration} min</td>
                         <td data-label="Status">
                             <span className={`status-badge ${getStatusColor(appointment.status)}`}>

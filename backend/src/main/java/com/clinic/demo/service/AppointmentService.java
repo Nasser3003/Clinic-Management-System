@@ -100,7 +100,7 @@ public class AppointmentService {
     private boolean patientHasOpenAppointment(PatientEntity patient) {
         List<AppointmentEntity> allAppointments = appointmentRepository.findAllByPatient(patient);
         return allAppointments.stream()
-                .anyMatch(appointment -> !appointment.getStatus().equals(AppointmentStatus.COMPLETED));
+                .anyMatch(appointment -> appointment.getStatus().equals(AppointmentStatus.SCHEDULED));
     }
 
     private boolean isDoctorWorking(EmployeeEntity employee, LocalDateTime dateTime) {
