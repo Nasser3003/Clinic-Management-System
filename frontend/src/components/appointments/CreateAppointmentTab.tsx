@@ -206,7 +206,7 @@ function CreateAppointmentTab({
             if (!appointmentForm.dateTime)
                 throw new Error('Please select date and time for the appointment.');
 
-            // If no email selected (user typed without selecting), search for exact match
+            // If no email selected (user typed without selecting), search for the exact match
             if (!doctorEmail && appointmentForm.doctorName) {
                 const doctorResults = await searchService.searchDoctors(appointmentForm.doctorName, 1);
                 if (doctorResults.results.length === 0)
