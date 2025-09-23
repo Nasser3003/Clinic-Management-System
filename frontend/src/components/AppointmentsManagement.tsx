@@ -6,8 +6,6 @@ import HeroHeader from "./common/HeroHeader";
 import api from '../services/api';
 import CreateAppointmentTab from './appointments/CreateAppointmentTab';
 import AllAppointmentsTab from './appointments/AllAppointmentsTab';
-import DoctorCalendarTab from './appointments/DoctorCalendarTab';
-import PatientCalendarTab from "./appointments/PatientCalendarTab";
 import TabNavigation from "./appointments/TabNavigation";
 import {Appointment} from '../types/appointment';
 
@@ -150,30 +148,6 @@ function AppointmentsManagement() {
                         isDoctor={isDoctor}
                         onCancelAppointment={cancelAppointment}
                         onCompleteAppointment={completeAppointment}
-                    />
-                )}
-
-                {activeTab === 'doctor-calendar' && (
-                    <DoctorCalendarTab
-                        calendarView={calendarView}
-                        loading={loading}
-                        isDoctor={isDoctor}
-                        user={user}
-                        onCalendarLoaded={handleCalendarLoaded}
-                        onError={handleError}
-                        onLoading={handleLoading}
-                    />
-                )}
-
-                {activeTab === 'patient-calendar' && (
-                    <PatientCalendarTab
-                        calendarView={calendarView}
-                        loading={loading}
-                        isPatient={isPatient}
-                        user={user}
-                        onCalendarLoaded={handleCalendarLoaded}
-                        onError={handleError}
-                        onLoading={handleLoading}
                     />
                 )}
             </div>

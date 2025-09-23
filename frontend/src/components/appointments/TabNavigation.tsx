@@ -26,22 +26,6 @@ function TabNavigation({ activeTab, setActiveTab, isAdmin, isEmployee, isDoctor 
                 >
                     All Appointments
                 </button>
-                {(isAdmin || isEmployee || isDoctor) && (
-                    <button
-                        className={`tab-button ${activeTab === 'doctor-calendar' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('doctor-calendar')}
-                    >
-                        Doctor Calendar
-                    </button>
-                )}
-                {(isAdmin || isEmployee) && (
-                    <button
-                        className={`tab-button ${activeTab === 'patient-calendar' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('patient-calendar')}
-                    >
-                        Patient Calendar
-                    </button>
-                )}
             </div>
         </div>
     );
