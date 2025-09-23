@@ -49,7 +49,6 @@ export const appointmentService = {
         });
         return response.data;
     },
-
     getAvailableSlots: async (doctorEmail: string, date: string, duration: number = 30): Promise<AvailableTimeSlot[]> => {
         const response = await api.get('/calendar/available-slots', {
             params: { doctorEmail, date, duration }

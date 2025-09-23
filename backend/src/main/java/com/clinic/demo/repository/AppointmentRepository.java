@@ -58,4 +58,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             @Param("status") AppointmentStatus status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
-    );}
+    );
+
+    List<AppointmentEntity> findByDoctorEmailAndPatientEmailAndStatus(String doctorEmail, String patientEmail, AppointmentStatus status);
+}

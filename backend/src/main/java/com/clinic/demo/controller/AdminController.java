@@ -85,7 +85,7 @@ public class AdminController {
     }
 
     @GetMapping("/search/patient")
-    public ResponseEntity<SearchResponseDTO<PatientDTO>> searchDoctors(
+    public ResponseEntity<SearchResponseDTO<PatientDTO>> searchPatient(
             @RequestParam(name = "q") String searchTerm,
             @RequestParam(name = "limit", required = false, defaultValue = "5") int limit) {
 

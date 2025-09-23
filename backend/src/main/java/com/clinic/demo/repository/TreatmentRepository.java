@@ -14,4 +14,5 @@ public interface TreatmentRepository extends JpaRepository<TreatmentEntity, Long
     Optional<TreatmentEntity> findByCostLessThan(Long costsLessThan);
     List<TreatmentEntity> findAllByPatient(PatientEntity patientEntity);
     Optional<TreatmentEntity> findAllByDoctor(EmployeeEntity employeeEntity);
+    List<TreatmentEntity> findAllByPatientAndDoctor(PatientEntity patientEntity, EmployeeEntity employeeEntity);
 }

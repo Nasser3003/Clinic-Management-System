@@ -43,23 +43,29 @@ public class AppointmentController {
         return appointmentService.getAllAppointments();
     }
 
-    @GetMapping("/search")
-    public List<AppointmentDTO> searchAppointments(AppSearchStatusInBetweenDTO dto) {
+    // Changed to POST with @RequestBody since you're sending complex search criteria
+    @PostMapping("/search")
+    public List<AppointmentDTO> searchAppointments(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
-    @GetMapping("/search/doctor")
-    public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+    @PostMapping("/search/doctor")
+    public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
-    @GetMapping("/search/patient")
-    public List<AppointmentDTO> getAppointmentsByPatientStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+    @PostMapping("/search/patient")
+    public List<AppointmentDTO> getAppointmentsByPatientStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
-    @GetMapping("/search/doctor-and-patient")
-    public List<AppointmentDTO> getAppointmentsByPatientAndDoctorStatusAndIsBetween(AppSearchStatusInBetweenDTO dto) {
+    @PostMapping("/search/doctor-and-patient")
+    public List<AppointmentDTO> getAppointmentsByPatientAndDoctorStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
+    }
+
+    @PostMapping("/search/doctor-patient/scheduled")
+    public List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(@RequestBody AppSearchStatusInBetweenDTO dto) {
+        return appointmentService.getTreatmentDoctorPatientEmailScheduled(dto);
     }
 }

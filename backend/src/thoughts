@@ -28,3 +28,8 @@ when to use dto? do i use dto all the time or no?
 secure endpoints at controller level? bussiness logic level? or both?
 
 repo.flush() ?
+
+writing the full strcture of the program and how apis gonna interact saves tremendous time later on
+ theoratical is as imnportant as practical.
+
+ when to reatrun dtos,when not to.

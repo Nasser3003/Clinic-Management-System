@@ -150,6 +150,22 @@ public class AppointmentService {
                 .toList();
     }
 
+    public  List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(AppSearchStatusInBetweenDTO dto) {
+        String doctorEmail = dto.doctorEmail();
+        String patientEmail = dto.patientEmail();
+        return getTreatmentDoctorPatientEmailAndStatus(doctorEmail, patientEmail, AppointmentStatus.SCHEDULED);
+    }
+
+    private List<AppointmentDTO> getTreatmentDoctorPatientEmailAndStatus(
+            String doctorEmail, String patientEmail, AppointmentStatus status) {
+        return appointmentRepository
+                .findByDoctorEmailAndPatientEmailAndStatus(doctorEmail, patientEmail, status)
+                .stream()
+                .map(AppointmentMapper::toDTO)
+                .toList();
+    }
+
+
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentRepository.findAll().stream().map(AppointmentMapper::toDTO).toList();
     }

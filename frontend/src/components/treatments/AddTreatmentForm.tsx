@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { SearchResult, searchService } from '../../services/searchService';
+import React, {useEffect, useRef, useState} from 'react';
+import {SearchResult, searchService} from '../../services/searchService';
 import AutocompleteDropdown from '../AutoCompleteDropdown';
 
 interface TreatmentManagement {
@@ -187,27 +187,46 @@ function AddTreatmentForm({
 
         setLoadingAppointments(true);
         try {
-            const response = await fetch(`/api/appointments?patientEmail=${selectedPatient.email}&doctorEmail=${selectedDoctor.email}&status=COMPLETED`, {
+            const response = await fetch('http://localhost:3001/appointments/search/doctor-patient/scheduled', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    doctorEmail: selectedDoctor.email,
+                    patientEmail: selectedPatient.email,
+                    statusEnum: 'SCHEDULED',
+                    startDate: null,
+                    endDate: null
+                })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setAppointments(data);
+                if (data && data.length > 0) {
+                    setAppointments(data);
+                    // Auto-select the first (and likely only) scheduled appointment
+                    setSelectedAppointment(data[0]);
+                } else {
+                    console.log('No scheduled appointments found');
+                    setAppointments([]);
+                    setSelectedAppointment(null);
+                }
             } else {
                 console.error('Failed to load appointments');
                 setAppointments([]);
+                setSelectedAppointment(null);
             }
         } catch (err) {
             console.error('Error loading appointments:', err);
             setAppointments([]);
+            setSelectedAppointment(null);
         } finally {
             setLoadingAppointments(false);
         }
     };
+
 
     // Handle patient selection
     const handlePatientSelect = (patient: SearchResult) => {
