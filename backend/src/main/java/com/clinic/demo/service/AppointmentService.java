@@ -18,20 +18,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class AppointmentService {
+
     private final AppointmentRepository appointmentRepository;
     private final UserValidationService userValidationService;
     private final TreatmentService treatmentService;
     private final ScheduleRepository scheduleRepository;
-
+    private final FileUploadService fileUploadService;
 
     @Value("${appointment.min.hours.in.advance:24}")
     private int minHoursInAdvance;
@@ -39,14 +41,14 @@ public class AppointmentService {
     @Value("${appointment.max.months.in.advance:6}")
     private int maxMonthsInAdvance;
 
-
     public void scheduleAppointment(AppointmentRequestDTO requestDTO) {
         String doctorEmail = requestDTO.doctorEmail();
         String patientEmail = requestDTO.patientEmail();
         int duration = requestDTO.duration();
         LocalDateTime dateTime = requestDTO.dateTime();
 
-        if (dateTime == null) throw new IllegalArgumentException("Appointment date and time must not be null");
+        if (dateTime == null)
+            throw new IllegalArgumentException("Appointment date and time must not be null");
 
         appointmentDateTimeLimitations(dateTime);
 
@@ -73,11 +75,18 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void completeAppointment(String appointmentId, FinalizingAppointmentDTO finalizingAppointmentDTO) {
+    public void completeAppointment(String appointmentId, FinalizingAppointmentDTO finalizingAppointmentDTO, List<MultipartFile> files) throws IOException {
         AppointmentEntity appointment = findAppointmentById(appointmentId);
 
-        treatmentService.createTreatmentsForAppointment(finalizingAppointmentDTO.treatments(), appointment);
+        List<String> filePaths = fileUploadService.saveTreatmentFiles(files, appointment.getPatient().getEmail());
 
+        FinalizingAppointmentDTO updatedDTO = new FinalizingAppointmentDTO(
+                finalizingAppointmentDTO.treatments(),
+                filePaths,
+                finalizingAppointmentDTO.visitNotes()
+        );
+
+        treatmentService.createTreatmentsForAppointment(updatedDTO.treatments(), appointment);
         appointment.setStatus(AppointmentStatus.COMPLETED);
         appointmentRepository.save(appointment);
     }
@@ -90,11 +99,11 @@ public class AppointmentService {
     private void appointmentDateTimeLimitations(LocalDateTime dateTime) {
         LocalDateTime tomorrow = LocalDateTime.now().plusHours(minHoursInAdvance);
         if (dateTime.isBefore(tomorrow))
-            throw new LocalDateTimeException("Cannot schedule appointment less than 24 hours in advance");
+            throw new LocalDateTimeException("Cannot schedule appointment less than " + minHoursInAdvance + " hours in advance");
 
         LocalDateTime maxFutureDate = LocalDateTime.now().plusMonths(maxMonthsInAdvance);
         if (dateTime.isAfter(maxFutureDate))
-            throw new LocalDateTimeException("Cannot schedule appointment more than 6 months in advance");
+            throw new LocalDateTimeException("Cannot schedule appointment more than " + maxMonthsInAdvance + " months in advance");
     }
 
     private boolean patientHasOpenAppointment(PatientEntity patient) {
@@ -111,7 +120,7 @@ public class AppointmentService {
                 .anyMatch(a -> a.getDayOfWeek().equals(dateTime.getDayOfWeek()));
     }
 
-    private boolean isDoctorAvailable(EmployeeEntity employee, LocalDateTime startDateTime, int durationInMins)  {
+    private boolean isDoctorAvailable(EmployeeEntity employee, LocalDateTime startDateTime, int durationInMins) {
         if (employee.getUserType() != UserTypeEnum.DOCTOR)
             throw new IllegalArgumentException("User with email " + employee.getEmail() + " is not a doctor");
 
@@ -133,11 +142,8 @@ public class AppointmentService {
         if (dto.doctorEmail() != null && !dto.doctorEmail().trim().isEmpty())
             userValidationService.validateAndGetDoctor(dto.doctorEmail());
 
-        LocalDateTime startDateTime = null;
-        LocalDateTime endDateTime = null;
-
-        if (dto.startDate() != null) startDateTime = dto.startDate();
-        if (dto.endDate() != null) endDateTime = dto.endDate();
+        LocalDateTime startDateTime = dto.startDate();
+        LocalDateTime endDateTime = dto.endDate();
 
         return appointmentRepository.findAppointmentsWithOptionalFilters(
                         dto.patientEmail(),
@@ -150,7 +156,7 @@ public class AppointmentService {
                 .toList();
     }
 
-    public  List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(AppSearchStatusInBetweenDTO dto) {
         String doctorEmail = dto.doctorEmail();
         String patientEmail = dto.patientEmail();
         return getTreatmentDoctorPatientEmailAndStatus(doctorEmail, patientEmail, AppointmentStatus.SCHEDULED);
@@ -164,7 +170,6 @@ public class AppointmentService {
                 .map(AppointmentMapper::toDTO)
                 .toList();
     }
-
 
     public List<AppointmentDTO> getAllAppointments() {
         return appointmentRepository.findAll().stream().map(AppointmentMapper::toDTO).toList();

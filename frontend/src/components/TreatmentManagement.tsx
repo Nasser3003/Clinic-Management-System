@@ -33,18 +33,11 @@ interface TreatmentFilters {
     visitNotesKeyword: string;
 }
 
-interface SubmitData {
-    appointmentId: string;
-    formData: FormData;
-    resetForm: () => void;
-}
-
 function TreatmentManagement() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'view-treatments' | 'add-treatment'>('view-treatments');
     const [treatments, setTreatments] = useState<Treatment[]>([]);
     const [loading, setLoading] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -129,37 +122,6 @@ function TreatmentManagement() {
         }
     };
 
-    const handleSubmitTreatments = async (data: SubmitData) => {
-        const { appointmentId, formData, resetForm } = data;
-        setSubmitting(true);
-        setError('');
-        setSuccess('');
-
-        try {
-            const response = await fetch(`/api/treatments/appointment/${appointmentId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: formData
-            });
-
-            if (response.ok) {
-                setSuccess('Treatments, notes, and files added successfully!');
-                resetForm();
-                setActiveTab('view-treatments');
-            } else {
-                const errorData = await response.text();
-                throw new Error(errorData || 'Failed to add treatments');
-            }
-        } catch (err: any) {
-            console.error('Error adding treatments:', err);
-            setError(err.message || 'Failed to add treatments');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
     const handleClearFilters = () => {
         setFilters({
             patientEmail: '',
@@ -170,6 +132,12 @@ function TreatmentManagement() {
             prescriptionKeyword: '',
             visitNotesKeyword: ''
         });
+    };
+
+    const handleTreatmentSuccess = () => {
+        setSuccess('Treatments, notes, and files added successfully!');
+        setActiveTab('view-treatments');
+        loadTreatments();
     };
 
     // Clear messages after 5 seconds
@@ -261,8 +229,8 @@ function TreatmentManagement() {
                             isDoctor={isDoctor}
                             isEmployee={isEmployee}
                             currentUser={user}
-                            onSubmit={handleSubmitTreatments}
-                            submitting={submitting}
+                            submitting={false}
+                            onSuccess={handleTreatmentSuccess}
                         />
                     )}
                 </div>

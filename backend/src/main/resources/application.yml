@@ -9,8 +9,8 @@ spring:
     active: development # Profile for logback configuration
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 10MB
+      max-request-size: 10MB
       enabled: true
 
   # Web Application Configuration
@@ -31,8 +31,8 @@ spring:
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
-#      ddl-auto: create-drop
-       ddl-auto: update
+      ddl-auto: create-drop
+    #       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -65,3 +65,18 @@ appointment:
     months:
       in:
         advance: 6
+
+# File Upload Configuration
+app:
+  file:
+    upload:
+      root-directory: ${user.home}/clinic-files
+      avatars:
+        directory: avatars
+        max-size: 5MB
+        allowed-extensions: jpg,jpeg,png,webp
+      treatments:
+        directory: treatments
+        max-size: 10MB
+        allowed-extensions: pdf,jpg,jpeg,png,doc,docx,txt
+      default-avatar: src/main/resources/static/default-avatar.png

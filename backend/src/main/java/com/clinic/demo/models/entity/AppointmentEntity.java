@@ -27,6 +27,7 @@ public class AppointmentEntity {
         this.durationInMins = durationInMins;
         this.status = AppointmentStatus.SCHEDULED;
         this.reason = reason;
+
     }
 
     @Id
@@ -54,6 +55,13 @@ public class AppointmentEntity {
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<TreatmentEntity> treatment;
+
+    @Column(name = "visit_notes", length = 1000)
+    private String visitNotes;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "file_path")
+    private List<String> filePaths;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

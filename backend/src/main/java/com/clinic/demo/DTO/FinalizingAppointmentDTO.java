@@ -7,6 +7,8 @@ import java.util.List;
 public record FinalizingAppointmentDTO(
 
         @NotNull(message = "Treatments list is required")
-        List<TreatmentDetails> treatments
+        List<TreatmentDetails> treatments,
+        List<String> filePaths,
+        String visitNotes
 ) {
 }

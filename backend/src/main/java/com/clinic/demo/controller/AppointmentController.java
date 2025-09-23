@@ -7,9 +7,12 @@ import com.clinic.demo.DTO.calenderDTO.AppointmentDTO;
 import com.clinic.demo.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -32,9 +35,13 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment cancelled successfully");
     }
 
-    @PatchMapping("/{appointmentId}/complete")
-    public ResponseEntity<String> completeAppointment(@PathVariable String appointmentId, @RequestBody FinalizingAppointmentDTO finalizingAppointmentDTO) {
-        appointmentService.completeAppointment(appointmentId, finalizingAppointmentDTO);
+    @PatchMapping(value = "/{appointmentId}/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> completeAppointment(
+            @PathVariable String appointmentId,
+            @RequestPart("data") FinalizingAppointmentDTO finalizingAppointmentDTO,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
+
+        appointmentService.completeAppointment(appointmentId, finalizingAppointmentDTO, files);
         return ResponseEntity.ok("Appointment completed successfully");
     }
 

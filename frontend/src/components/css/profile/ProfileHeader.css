@@ -11,13 +11,13 @@
     box-shadow: var(--shadow-primary);
 }
 
-.header-content {
+.profile-header-content {
     display: flex;
     align-items: center;
     gap: var(--spacing-3xl);
 }
 
-.header-info {
+.profile-header-info {
     flex: 1;
     margin-left: 3rem;
 }
@@ -62,13 +62,13 @@
         padding: var(--spacing-xl);
     }
 
-    .header-content {
+    .profile-header-content {
         flex-direction: column;
         text-align: center;
         gap: var(--spacing-xl);
     }
 
-    .header-info {
+    .profile-header-info {
         margin-left: 0;
     }
 

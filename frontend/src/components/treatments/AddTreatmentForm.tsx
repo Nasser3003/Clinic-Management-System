@@ -14,12 +14,6 @@ interface TreatmentFormData {
     treatments: TreatmentManagement[];
 }
 
-interface SubmitData {
-    appointmentId: string;
-    formData: FormData;
-    resetForm: () => void;
-}
-
 interface Appointment {
     id: string;
     patientName: string;
@@ -34,8 +28,8 @@ interface AddTreatmentFormProps {
     isDoctor: boolean;
     isEmployee: boolean;
     currentUser: any;
-    onSubmit: (data: SubmitData) => Promise<void>;
     submitting: boolean;
+    onSuccess?: () => void;
 }
 
 function AddTreatmentForm({
@@ -43,8 +37,8 @@ function AddTreatmentForm({
                               isDoctor,
                               isEmployee,
                               currentUser,
-                              onSubmit,
-                              submitting
+                              submitting,
+                              onSuccess
                           }: AddTreatmentFormProps) {
     const [selectedPatient, setSelectedPatient] = useState<SearchResult | null>(null);
     const [selectedDoctor, setSelectedDoctor] = useState<SearchResult | null>(null);
@@ -66,24 +60,25 @@ function AddTreatmentForm({
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loadingAppointments, setLoadingAppointments] = useState(false);
 
-    // Refs for click outside handling
-    const patientInputRef = useRef<HTMLDivElement>(null);
-    const doctorInputRef = useRef<HTMLDivElement>(null);
-
+    // Form states
     const [treatmentForm, setTreatmentForm] = useState<TreatmentFormData>({
         appointmentId: '',
-        treatments: [
-            {
-                treatmentDescription: '',
-                cost: 0,
-                amountPaid: 0,
-                installmentPeriodInMonths: 0
-            }
-        ]
+        treatments: [{
+            treatmentDescription: '',
+            cost: 0,
+            amountPaid: 0,
+            installmentPeriodInMonths: 0
+        }]
     });
 
     const [patientNotes, setPatientNotes] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // Refs for click outside handling
+    const patientInputRef = useRef<HTMLDivElement>(null);
+    const doctorInputRef = useRef<HTMLDivElement>(null);
 
     // Handle clicks outside dropdown
     useEffect(() => {
@@ -206,10 +201,8 @@ function AddTreatmentForm({
                 const data = await response.json();
                 if (data && data.length > 0) {
                     setAppointments(data);
-                    // Auto-select the first (and likely only) scheduled appointment
                     setSelectedAppointment(data[0]);
                 } else {
-                    console.log('No scheduled appointments found');
                     setAppointments([]);
                     setSelectedAppointment(null);
                 }
@@ -227,28 +220,22 @@ function AddTreatmentForm({
         }
     };
 
-
-    // Handle patient selection
     const handlePatientSelect = (patient: SearchResult) => {
         setSelectedPatient(patient);
         setPatientSearchQuery('');
         setShowPatientDropdown(false);
         setPatientSuggestions([]);
-        // Reset appointment when patient changes
         setSelectedAppointment(null);
     };
 
-    // Handle doctor selection
     const handleDoctorSelect = (doctor: SearchResult) => {
         setSelectedDoctor(doctor);
         setDoctorSearchQuery('');
         setShowDoctorDropdown(false);
         setDoctorSuggestions([]);
-        // Reset appointment when doctor changes
         setSelectedAppointment(null);
     };
 
-    // Handle patient input change
     const handlePatientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPatientSearchQuery(e.target.value);
         if (selectedPatient) {
@@ -257,7 +244,6 @@ function AddTreatmentForm({
         }
     };
 
-    // Handle doctor input change
     const handleDoctorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDoctorSearchQuery(e.target.value);
         if (selectedDoctor) {
@@ -266,7 +252,6 @@ function AddTreatmentForm({
         }
     };
 
-    // Clear patient selection
     const handleClearPatient = () => {
         setSelectedPatient(null);
         setPatientSearchQuery('');
@@ -275,7 +260,6 @@ function AddTreatmentForm({
         setSelectedAppointment(null);
     };
 
-    // Clear doctor selection
     const handleClearDoctor = () => {
         setSelectedDoctor(null);
         setDoctorSearchQuery('');
@@ -328,62 +312,94 @@ function AddTreatmentForm({
         setUploadedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
+    const resetForm = () => {
+        setTreatmentForm({
+            appointmentId: '',
+            treatments: [{
+                treatmentDescription: '',
+                cost: 0,
+                amountPaid: 0,
+                installmentPeriodInMonths: 0
+            }]
+        });
+        setPatientNotes('');
+        setUploadedFiles([]);
+        setSelectedAppointment(null);
+        setPatientSearchQuery('');
+        setDoctorSearchQuery('');
+        if (!isDoctor) {
+            setSelectedPatient(null);
+            setSelectedDoctor(null);
+        }
+        setSubmitError(null);
+    };
+
+    const validateForm = () => {
+        if (!treatmentForm.appointmentId)
+            throw new Error('Please select an appointment');
+
+        if (treatmentForm.treatments.some(t => !t.treatmentDescription.trim()))
+            throw new Error('Please provide description for all treatments');
+
+        if (treatmentForm.treatments.some(t => t.cost <= 0))
+            throw new Error('Treatment cost must be greater than 0');
+
+        if (treatmentForm.treatments.some(t => t.amountPaid < 0))
+            throw new Error('Amount paid cannot be negative');
+
+        if (treatmentForm.treatments.some(t => t.amountPaid > t.cost))
+            throw new Error('Amount paid cannot exceed treatment cost');
+    };
+
     const handleSubmitTreatments = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitError(null);
 
-        // Validation
-        if (!treatmentForm.appointmentId) {
-            throw new Error('Please select an appointment');
-        }
+        try {
+            validateForm();
 
-        if (treatmentForm.treatments.some(t => !t.treatmentDescription.trim())) {
-            throw new Error('Please provide description for all treatments');
-        }
+            const formData = new FormData();
 
-        if (treatmentForm.treatments.some(t => t.cost <= 0)) {
-            throw new Error('Treatment cost must be greater than 0');
-        }
+            // Create the DTO structure that matches your backend
+            const treatmentData = {
+                treatments: treatmentForm.treatments,
+                filePaths: [], // Will be populated by backend
+                visitNotes: patientNotes.trim() || null
+            };
 
-        if (treatmentForm.treatments.some(t => t.amountPaid < 0)) {
-            throw new Error('Amount paid cannot be negative');
-        }
+            // Add JSON data as a blob with the correct part name
+            formData.append('data', new Blob([JSON.stringify(treatmentData)], {
+                type: 'application/json'
+            }));
 
-        if (treatmentForm.treatments.some(t => t.amountPaid > t.cost)) {
-            throw new Error('Amount paid cannot exceed treatment cost');
-        }
+            // Add files with the correct part name
+            uploadedFiles.forEach((file) => {
+                formData.append('files', file);
+            });
 
-        const formData = new FormData();
-        formData.append('treatments', JSON.stringify(treatmentForm.treatments));
-        if (patientNotes.trim()) formData.append('patientNotes', patientNotes);
+            setIsSubmitting(true);
 
-        uploadedFiles.forEach((file, index) => {
-            formData.append(`file_${index}`, file);
-        });
+            const response = await fetch(`http://localhost:3001/appointments/${treatmentForm.appointmentId}/complete`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: formData
+            });
 
-        await onSubmit({
-            appointmentId: treatmentForm.appointmentId,
-            formData,
-            resetForm: () => {
-                setTreatmentForm({
-                    appointmentId: '',
-                    treatments: [{
-                        treatmentDescription: '',
-                        cost: 0,
-                        amountPaid: 0,
-                        installmentPeriodInMonths: 0
-                    }]
-                });
-                setPatientNotes('');
-                setUploadedFiles([]);
-                setSelectedAppointment(null);
-                setPatientSearchQuery('');
-                setDoctorSearchQuery('');
-                if (!isDoctor) {
-                    setSelectedPatient(null);
-                    setSelectedDoctor(null);
-                }
+            if (response.ok) {
+                resetForm();
+                onSuccess?.();
+            } else {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to add treatment');
             }
-        });
+        } catch (error) {
+            console.error('Error submitting treatment:', error);
+            setSubmitError(error instanceof Error ? error.message : 'An unexpected error occurred');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const formatCurrency = (amount: number) => {
@@ -416,42 +432,48 @@ function AddTreatmentForm({
                 <p>Add treatment details for a completed appointment</p>
             </div>
 
+            {submitError && (
+                <div className="error-message">
+                    {submitError}
+                </div>
+            )}
+
             {/* Patient and Doctor Selection using AutocompleteDropdown */}
             <div className="selection-section">
                 {/* Doctor Selection */}
-                {isDoctor ? (
-                    <div className="search-group">
-                        <label>
-                            Select Doctor
-                            <span className="required-indicator">*</span>
-                        </label>
-                        <div className="search-container" ref={doctorInputRef}>
-                            <div className="search-input-wrapper">
-                                <input
-                                    type="text"
-                                    value={getDoctorDisplayValue()}
-                                    onChange={handleDoctorInputChange}
-                                    placeholder="Search for a doctor..."
-                                    className="form-input"
-                                    autoComplete="off"
-                                    readOnly={!!selectedDoctor}
-                                    required
-                                />
-                                {selectedDoctor && (
-                                    <button
-                                        type="button"
-                                        onClick={handleClearDoctor}
-                                        className="clear-search-btn"
-                                        title="Clear selection"
-                                    >
-                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd"
-                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                  clipRule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                )}
-                            </div>
+                <div className="search-group">
+                    <label>
+                        Select Doctor
+                        <span className="required-indicator">*</span>
+                    </label>
+                    <div className="search-container" ref={doctorInputRef}>
+                        <div className="search-input-wrapper">
+                            <input
+                                type="text"
+                                value={getDoctorDisplayValue()}
+                                onChange={handleDoctorInputChange}
+                                placeholder="Search for a doctor..."
+                                className="form-input"
+                                autoComplete="off"
+                                readOnly={!!selectedDoctor || isDoctor}
+                                required
+                            />
+                            {selectedDoctor && !isDoctor && (
+                                <button
+                                    type="button"
+                                    onClick={handleClearDoctor}
+                                    className="clear-search-btn"
+                                    title="Clear selection"
+                                >
+                                    <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        {!isDoctor && (
                             <AutocompleteDropdown
                                 suggestions={doctorSuggestions}
                                 isSearching={searchingDoctors}
@@ -459,51 +481,9 @@ function AddTreatmentForm({
                                 onSelect={handleDoctorSelect}
                                 type="doctor"
                             />
-                        </div>
+                        )}
                     </div>
-                ) : (
-                    <div className="search-group">
-                        <label>
-                            Select Doctor
-                            <span className="required-indicator">*</span>
-                        </label>
-                        <div className="search-container" ref={doctorInputRef}>
-                            <div className="search-input-wrapper">
-                                <input
-                                    type="text"
-                                    value={getDoctorDisplayValue()}
-                                    onChange={handleDoctorInputChange}
-                                    placeholder="Search for a doctor..."
-                                    className="form-input"
-                                    autoComplete="off"
-                                    readOnly={!!selectedDoctor}
-                                    required
-                                />
-                                {selectedDoctor && (
-                                    <button
-                                        type="button"
-                                        onClick={handleClearDoctor}
-                                        className="clear-search-btn"
-                                        title="Clear selection"
-                                    >
-                                        <svg className="clear-icon" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd"
-                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                  clipRule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                )}
-                            </div>
-                            <AutocompleteDropdown
-                                suggestions={doctorSuggestions}
-                                isSearching={searchingDoctors}
-                                isVisible={showDoctorDropdown}
-                                onSelect={handleDoctorSelect}
-                                type="doctor"
-                            />
-                        </div>
-                    </div>
-                )}
+                </div>
 
                 {/* Patient Selection */}
                 <div className="search-group">
@@ -577,7 +557,7 @@ function AddTreatmentForm({
                                     : loadingAppointments
                                         ? 'Loading appointments...'
                                         : appointments.length === 0
-                                            ? 'No completed appointments found'
+                                            ? 'No scheduled appointments found'
                                             : 'Choose an appointment'
                                 }
                             </option>
@@ -595,7 +575,7 @@ function AddTreatmentForm({
                     </div>
                     {appointments.length > 0 && (
                         <div className="appointment-count">
-                            {appointments.length} completed appointment{appointments.length !== 1 ? 's' : ''} available
+                            {appointments.length} scheduled appointment{appointments.length !== 1 ? 's' : ''} available
                         </div>
                     )}
                 </div>
@@ -755,10 +735,10 @@ function AddTreatmentForm({
                 <div className="form-actions">
                     <button
                         type="submit"
-                        disabled={submitting || !treatmentForm.appointmentId}
+                        disabled={isSubmitting || !treatmentForm.appointmentId}
                         className="submit-btn"
                     >
-                        {submitting ? 'Adding Treatments...' : 'Add Treatments'}
+                        {isSubmitting ? 'Adding Treatments...' : 'Add Treatments'}
                     </button>
                 </div>
             </form>
