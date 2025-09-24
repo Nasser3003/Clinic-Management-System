@@ -196,4 +196,14 @@ public class AppointmentService {
                 .map(AppointmentMapper::toDTO)
                 .toList();
     }
+
+    public List<AppointmentDTO> getAllScheduledAppointmentsNext30Days() {
+        LocalDateTime cutoff = LocalDateTime.now().plusDays(30);
+        return appointmentRepository
+                .findAllByStatusAndStartDateTimeBefore(AppointmentStatus.SCHEDULED, cutoff)
+                .stream()
+                .map(AppointmentMapper::toDTO)
+                .toList();
+    }
+
 }

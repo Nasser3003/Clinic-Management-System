@@ -8,7 +8,6 @@ import {adminService} from '../../services/adminService';
 import {appointmentService, AppointmentDTO} from '../../services/appointmentService';
 import {EmployeeDTO} from "../../types/admin";
 
-// Interface for patients with appointment data
 interface PatientWithAppointment extends EmployeeDTO {
     nextAppointment?: AppointmentDTO;
 }
@@ -23,9 +22,8 @@ function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // System stats - only fetch counts from API
     const [systemStats, setSystemStats] = useState({
-        totalAppointments: 0,
+        upcomingAppointments: 0,
         totalPatients: 0,
         totalDoctors: 0,
         totalStaff: 0,
@@ -33,7 +31,6 @@ function AdminDashboard() {
         monthlyRevenue: 0,
     });
 
-    // Mock data for recent users
     const recentUsers = [
         { id: '1', name: 'John Doe', email: 'john@email.com', userType: 'PATIENT', status: 'Active', createdAt: '2024-02-10' },
         { id: '2', name: 'Dr. Sarah Wilson', email: 'sarah@clinic.com', userType: 'DOCTOR', status: 'Active', createdAt: '2024-02-08' },
@@ -42,44 +39,33 @@ function AdminDashboard() {
         { id: '5', name: 'Lisa Brown', email: 'lisa@clinic.com', userType: 'RECEPTIONIST', status: 'Active', createdAt: '2024-02-09' },
     ];
 
-    // Fetch data from APIs
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                console.log('Fetching data...');
-
-                // Fetch all data in parallel
-                const [doctorsCount, patientsCount, staffCount, appointmentsCount, doctorsData, staffData, patientsData, appointmentsData] = await Promise.all([
+                const [doctorsCount, patientsCount, staffCount, doctorsData, staffData, patientsData, appointmentsData] = await Promise.all([
                     adminService.getActiveDoctorsCount(),
                     adminService.getActivePatientsCount(),
                     adminService.getActiveStaffCount(),
-                    adminService.getAppointmentsThisMonthCount(),
                     adminService.getAllDoctors(),
                     adminService.getAllStaff(),
                     adminService.getAllPatients(),
-                    appointmentService.getAllScheduledAppointments()
+                    appointmentService.getAllScheduledAppointments30Days()
                 ]);
 
-                console.log('Raw patients data:', patientsData);
-                console.log('Raw appointments data:', appointmentsData);
-
-                // Set system stats
                 setSystemStats(prev => ({
                     ...prev,
                     totalDoctors: doctorsCount || 0,
                     totalPatients: patientsCount || 0,
                     totalStaff: staffCount || 0,
-                    totalAppointments: appointmentsCount || 0
+                    upcomingAppointments: appointmentsData?.length || 0
                 }));
 
-                // Set doctors and staff
                 setDoctors(doctorsData || []);
                 setStaff(staffData || []);
 
-                // Map patients with their next appointments
                 if (patientsData && Array.isArray(patientsData)) {
                     const patientsWithAppointments = patientsData.map(patient => {
                         const nextAppointment = appointmentService.getNextAppointmentForPatient(
@@ -88,18 +74,14 @@ function AdminDashboard() {
                             appointmentsData || []
                         );
 
-                        console.log(`Patient: ${patient.firstName} ${patient.lastName}, Next appointment:`, nextAppointment);
-
                         return {
                             ...patient,
                             nextAppointment
                         };
                     });
 
-                    console.log('Patients with appointments:', patientsWithAppointments);
                     setPatients(patientsWithAppointments);
                 } else {
-                    console.error('Patients data is not valid:', patientsData);
                     setPatients([]);
                 }
 
@@ -116,37 +98,30 @@ function AdminDashboard() {
 
     const handleCreateUser = (userType: string) => {
         console.log('Create new user with userType:', userType);
-        // Navigate to user creation form
     };
 
     const handleEditUser = (userId: string) => {
         console.log('Edit user:', userId);
-        // Navigate to user edit form
     };
 
     const handleDeactivateUser = (userId: string) => {
         console.log('Deactivate user:', userId);
-        // API call to deactivate user
     };
 
     const handleViewMedicalHistory = (patientId: string) => {
         console.log('View medical history for patient:', patientId);
-        // Navigate to medical history
     };
 
     const handleViewAppointment = (patient: PatientWithAppointment) => {
         console.log('View appointment for patient:', patient.id, patient.nextAppointment);
-        // Navigate to appointment details or show appointment modal
     };
 
     const handleManagePermissions = (userId: string) => {
         console.log('Manage permissions for user:', userId);
-        // Navigate to permission management
     };
 
     const handleSystemAdminNavigation = (section: string) => {
         console.log('Navigate to system admin section:', section);
-        // Handle navigation to specific system administration sections
     };
 
     const handleDropdownToggle = () => {
@@ -166,12 +141,11 @@ function AdminDashboard() {
             />
 
             <div className="admin-dashboard">
-                {/* System Overview Stats */}
                 <div className="dashboard-grid admin-grid">
                     <DashboardCard
-                        title="Total Appointments"
-                        value={systemStats.totalAppointments || 0}
-                        description="This month"
+                        title="Upcoming Appointments"
+                        value={systemStats.upcomingAppointments || 0}
+                        description="Next 30 days"
                         color="blue"
                         icon={
                             <svg fill="currentColor" viewBox="0 0 20 20" style={{ width: '20px', height: '20px' }}>
@@ -240,7 +214,6 @@ function AdminDashboard() {
                     />
                 </div>
 
-                {/* Navigation Tabs */}
                 <div className="tabs-container">
                     <div className="tabs-header">
                         <button
@@ -276,7 +249,6 @@ function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Tab Content */}
                 <div className="admin-content">
                     {activeTab === 'overview' && (
                         <div className="overview-section">

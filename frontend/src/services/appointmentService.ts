@@ -9,7 +9,6 @@ export interface AppointmentSearchParams {
     endDate?: string;   // YYYY-MM-DD format
 }
 
-// Updated interface to match your actual API response
 export interface AppointmentDTO {
     id: string;
     doctorName: string;
@@ -32,6 +31,11 @@ export const appointmentService = {
 
     getAllScheduledAppointments: async (): Promise<AppointmentDTO[]> => {
         const response = await api.get('/appointments/all-scheduled');
+        return response.data;
+    },
+
+    getAllScheduledAppointments30Days: async (): Promise<AppointmentDTO[]> => {
+        const response = await api.get('/appointments/all-scheduled-30days');
         return response.data;
     },
 
@@ -63,7 +67,6 @@ export const appointmentService = {
         return response.data;
     },
 
-    // Helper method to get next appointment for a specific patient
     getNextAppointmentForPatient: (patientFirstName: string, patientLastName: string, appointments: AppointmentDTO[]): AppointmentDTO | undefined => {
         const fullPatientName = `${patientFirstName} ${patientLastName}`;
         const patientAppointments = appointments.filter(
@@ -84,7 +87,6 @@ export const appointmentService = {
         return sortedAppointments[0];
     },
 
-    // Helper method to format appointment date and time
     formatAppointmentDateTime: (appointment: AppointmentDTO): string => {
         try {
             const startDate = new Date(appointment.startDateTime);
@@ -121,7 +123,6 @@ export const appointmentService = {
         return response.data;
     },
 
-    // Updated to use the search endpoint
     getDoctorCalendar: async (doctorEmail: string, startDate?: string, endDate?: string): Promise<any> => {
         return appointmentService.searchDoctorAppointments({
             doctorEmail,
@@ -130,7 +131,6 @@ export const appointmentService = {
         });
     },
 
-    // New method for patient calendar
     getPatientCalendar: async (patientEmail: string, startDate?: string, endDate?: string): Promise<any> => {
         return appointmentService.searchPatientAppointments({
             patientEmail,

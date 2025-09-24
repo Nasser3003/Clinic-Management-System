@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,4 +64,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findByDoctorEmailAndPatientEmailAndStatus(String doctorEmail, String patientEmail, AppointmentStatus status);
 
     List<AppointmentEntity> findAllByStatus(AppointmentStatus status);
+
+    List<AppointmentEntity> findAllByStatusAndStartDateTimeBefore(AppointmentStatus appointmentStatus, LocalDateTime cutoff);
 }

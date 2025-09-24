@@ -55,6 +55,11 @@ public class AppointmentController {
         return appointmentService.findAllScheduledAppointments();
     }
 
+    @GetMapping("/all-scheduled-30days")
+    public List<AppointmentDTO> getAllScheduledAppointmentsNext30Days() {
+        return appointmentService.getAllScheduledAppointmentsNext30Days();
+    }
+
     @PostMapping("/search")
     public List<AppointmentDTO> searchAppointments(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
