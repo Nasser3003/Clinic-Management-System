@@ -162,8 +162,12 @@ public class AppointmentService {
         return getTreatmentDoctorPatientEmailAndStatus(doctorEmail, patientEmail, AppointmentStatus.SCHEDULED);
     }
 
-    private List<AppointmentDTO> getTreatmentDoctorPatientEmailAndStatus(
-            String doctorEmail, String patientEmail, AppointmentStatus status) {
+    public List<AppointmentDTO> findAllScheduledAppointments() {
+        return findAllByStatus(AppointmentStatus.SCHEDULED);
+    }
+
+    private List<AppointmentDTO> getTreatmentDoctorPatientEmailAndStatus(String doctorEmail, String patientEmail,
+                                                                         AppointmentStatus status) {
         return appointmentRepository
                 .findByDoctorEmailAndPatientEmailAndStatus(doctorEmail, patientEmail, status)
                 .stream()
@@ -183,5 +187,13 @@ public class AppointmentService {
     public List<AppointmentEntity> findAllAppointmentsByDoctor(String doctorEmail) {
         EmployeeEntity doctor = userValidationService.validateAndGetDoctor(doctorEmail);
         return appointmentRepository.findAllByDoctor(doctor);
+    }
+
+    private List<AppointmentDTO> findAllByStatus(AppointmentStatus status) {
+        return appointmentRepository
+                .findAllByStatus(status)
+                .stream()
+                .map(AppointmentMapper::toDTO)
+                .toList();
     }
 }

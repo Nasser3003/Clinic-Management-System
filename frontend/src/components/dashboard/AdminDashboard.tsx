@@ -5,7 +5,13 @@ import SystemAdministration from './SystemAdministrationTab';
 import '../css/dashboard/Dashboard.css';
 import HeroHeader from "../common/HeroHeader";
 import {adminService} from '../../services/adminService';
+import {appointmentService, AppointmentDTO} from '../../services/appointmentService';
 import {EmployeeDTO} from "../../types/admin";
+
+// Interface for patients with appointment data
+interface PatientWithAppointment extends EmployeeDTO {
+    nextAppointment?: AppointmentDTO;
+}
 
 function AdminDashboard() {
     const { user } = useAuth();
@@ -13,7 +19,9 @@ function AdminDashboard() {
     const [showStaffDropdown, setShowStaffDropdown] = useState(false);
     const [doctors, setDoctors] = useState<EmployeeDTO[]>([]);
     const [staff, setStaff] = useState<EmployeeDTO[]>([]);
-    const [patients, setPatients] = useState<EmployeeDTO[]>([]);
+    const [patients, setPatients] = useState<PatientWithAppointment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // System stats - only fetch counts from API
     const [systemStats, setSystemStats] = useState({
@@ -34,41 +42,76 @@ function AdminDashboard() {
         { id: '5', name: 'Lisa Brown', email: 'lisa@clinic.com', userType: 'RECEPTIONIST', status: 'Active', createdAt: '2024-02-09' },
     ];
 
-    // Filter data by user type
-    const patientData = recentUsers.filter(user => user.userType === 'PATIENT');
-
-    // Fetch counts from API on component mount
+    // Fetch data from APIs
     useEffect(() => {
-        const fetchCounts = async () => {
+        const fetchData = async () => {
             try {
-                const [doctorsCount, patientsCount, staffCount, appointmentsCount, doctorsData, staffData, patientsData] = await Promise.all([
+                setLoading(true);
+                setError(null);
+
+                console.log('Fetching data...');
+
+                // Fetch all data in parallel
+                const [doctorsCount, patientsCount, staffCount, appointmentsCount, doctorsData, staffData, patientsData, appointmentsData] = await Promise.all([
                     adminService.getActiveDoctorsCount(),
                     adminService.getActivePatientsCount(),
                     adminService.getActiveStaffCount(),
                     adminService.getAppointmentsThisMonthCount(),
                     adminService.getAllDoctors(),
                     adminService.getAllStaff(),
-                    adminService.getAllPatients()
+                    adminService.getAllPatients(),
+                    appointmentService.getAllScheduledAppointments()
                 ]);
 
+                console.log('Raw patients data:', patientsData);
+                console.log('Raw appointments data:', appointmentsData);
+
+                // Set system stats
                 setSystemStats(prev => ({
                     ...prev,
-                    totalDoctors: doctorsCount,
-                    totalPatients: patientsCount,
-                    totalStaff: staffCount,
-                    totalAppointments: appointmentsCount
+                    totalDoctors: doctorsCount || 0,
+                    totalPatients: patientsCount || 0,
+                    totalStaff: staffCount || 0,
+                    totalAppointments: appointmentsCount || 0
                 }));
 
-                setDoctors(doctorsData);
-                setStaff(staffData);
-                setPatients(patientsData);
+                // Set doctors and staff
+                setDoctors(doctorsData || []);
+                setStaff(staffData || []);
+
+                // Map patients with their next appointments
+                if (patientsData && Array.isArray(patientsData)) {
+                    const patientsWithAppointments = patientsData.map(patient => {
+                        const nextAppointment = appointmentService.getNextAppointmentForPatient(
+                            patient.firstName,
+                            patient.lastName,
+                            appointmentsData || []
+                        );
+
+                        console.log(`Patient: ${patient.firstName} ${patient.lastName}, Next appointment:`, nextAppointment);
+
+                        return {
+                            ...patient,
+                            nextAppointment
+                        };
+                    });
+
+                    console.log('Patients with appointments:', patientsWithAppointments);
+                    setPatients(patientsWithAppointments);
+                } else {
+                    console.error('Patients data is not valid:', patientsData);
+                    setPatients([]);
+                }
 
             } catch (error) {
-                console.error('Error fetching counts:', error);
+                console.error('Error fetching data:', error);
+                setError(`Failed to load data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchCounts();
+        fetchData();
     }, []);
 
     const handleCreateUser = (userType: string) => {
@@ -91,6 +134,11 @@ function AdminDashboard() {
         // Navigate to medical history
     };
 
+    const handleViewAppointment = (patient: PatientWithAppointment) => {
+        console.log('View appointment for patient:', patient.id, patient.nextAppointment);
+        // Navigate to appointment details or show appointment modal
+    };
+
     const handleManagePermissions = (userId: string) => {
         console.log('Manage permissions for user:', userId);
         // Navigate to permission management
@@ -101,7 +149,6 @@ function AdminDashboard() {
         // Handle navigation to specific system administration sections
     };
 
-    // Close dropdown when clicking outside
     const handleDropdownToggle = () => {
         setShowStaffDropdown(!showStaffDropdown);
     };
@@ -269,59 +316,93 @@ function AdminDashboard() {
                                     </button>
                                 </div>
                             </div>
-                            <div className="patients-table">
-                                <table className="admin-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Status</th>
-                                        <th>Registered</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {patients.map((patient) => (
-                                        <tr key={patient.id}>
-                                            <td data-label="Name">{patient.firstName} {patient.lastName}</td>
-                                            <td data-label="Email">{patient.email}</td>
-                                            <td data-label="Phone">+1 (555) 123-4567</td>
-                                            <td data-label="Status">
-                                                <span className={`status-badge ${patient.isEnabled ? 'active' : 'inactive'}`}>
-                                                    {patient.isEnabled ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </td>
-                                            <td data-label="Registered">
-                                                {new Date(patient.createDate).toLocaleDateString()}
-                                            </td>
-                                            <td data-label="Actions">
-                                                <div className="action-buttons">
-                                                    <button
-                                                        className="edit-btn"
-                                                        onClick={() => handleEditUser(patient.id)}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        className="view-btn"
-                                                        onClick={() => handleViewMedicalHistory(patient.id)}
-                                                    >
-                                                        Medical History
-                                                    </button>
-                                                    <button
-                                                        className="deactivate-btn"
-                                                        onClick={() => handleDeactivateUser(patient.id)}
-                                                    >
-                                                        Deactivate
-                                                    </button>
-                                                </div>
-                                            </td>
+
+                            {error && (
+                                <div className="error-message">
+                                    {error}
+                                </div>
+                            )}
+
+                            {loading ? (
+                                <div className="loading-state">
+                                    <p>Loading patients...</p>
+                                </div>
+                            ) : patients.length === 0 ? (
+                                <div className="empty-state">
+                                    <p>No patients found.</p>
+                                </div>
+                            ) : (
+                                <div className="patients-table">
+                                    <table className="admin-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Next Appointment</th>
+                                            <th>Registered</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                        {patients.map((patient) => (
+                                            <tr key={patient.id}>
+                                                <td data-label="Name">{patient.firstName} {patient.lastName}</td>
+                                                <td data-label="Email">{patient.email}</td>
+                                                <td data-label="Phone">{patient.phoneNumber || '+1 (555) 123-4567'}</td>
+                                                <td data-label="Next Appointment">
+                                                    {patient.nextAppointment ? (
+                                                        <div className="appointment-info">
+                                                            <div className="appointment-date">
+                                                                {appointmentService.formatAppointmentDateTime(patient.nextAppointment)}
+                                                            </div>
+                                                            <div className="appointment-doctor">
+                                                                {patient.nextAppointment.doctorName}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="no-appointment">No scheduled appointments</span>
+                                                    )}
+                                                </td>
+                                                <td data-label="Registered">
+                                                    {new Date(patient.createDate).toLocaleDateString()}
+                                                </td>
+                                                <td data-label="Actions">
+                                                    <div className="action-buttons">
+                                                        <button
+                                                            className="edit-btn"
+                                                            onClick={() => handleEditUser(patient.id)}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        {patient.nextAppointment && (
+                                                            <button
+                                                                className="view-btn"
+                                                                onClick={() => handleViewAppointment(patient)}
+                                                            >
+                                                                View
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            className="view-btn"
+                                                            onClick={() => handleViewMedicalHistory(patient.id)}
+                                                        >
+                                                            Medical History
+                                                        </button>
+                                                        <button
+                                                            className="deactivate-btn"
+                                                            onClick={() => handleDeactivateUser(patient.id)}
+                                                        >
+                                                            Deactivate
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     )}
 

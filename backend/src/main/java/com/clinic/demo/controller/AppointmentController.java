@@ -50,7 +50,11 @@ public class AppointmentController {
         return appointmentService.getAllAppointments();
     }
 
-    // Changed to POST with @RequestBody since you're sending complex search criteria
+    @GetMapping("/all-scheduled")
+    public List<AppointmentDTO> getAllScheduledAppointments() {
+        return appointmentService.findAllScheduledAppointments();
+    }
+
     @PostMapping("/search")
     public List<AppointmentDTO> searchAppointments(@RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);

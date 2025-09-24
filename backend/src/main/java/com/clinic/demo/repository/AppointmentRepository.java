@@ -61,4 +61,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     );
 
     List<AppointmentEntity> findByDoctorEmailAndPatientEmailAndStatus(String doctorEmail, String patientEmail, AppointmentStatus status);
+
+    List<AppointmentEntity> findAllByStatus(AppointmentStatus status);
 }
