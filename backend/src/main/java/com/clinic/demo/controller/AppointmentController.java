@@ -61,27 +61,30 @@ public class AppointmentController {
     }
 
     @PostMapping("/search")
-    public List<AppointmentDTO> searchAppointments(@RequestBody AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> searchAppointments(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
     @PostMapping("/search/doctor")
-    public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> getAppointmentsByDoctorStatusAndIsBetween(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
     @PostMapping("/search/patient")
-    public List<AppointmentDTO> getAppointmentsByPatientStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> getAppointmentsByPatientStatusAndIsBetween(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
     @PostMapping("/search/doctor-and-patient")
-    public List<AppointmentDTO> getAppointmentsByPatientAndDoctorStatusAndIsBetween(@RequestBody AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> getAppointmentsByPatientAndDoctorStatusAndIsBetween(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.searchAppointments(dto);
     }
 
     @PostMapping("/search/doctor-patient/scheduled")
-    public List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(@RequestBody AppSearchStatusInBetweenDTO dto) {
+    public List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.getTreatmentDoctorPatientEmailScheduled(dto);
     }
+
+
+
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import PaymentUpdateForm from './PaymentUpdateForm';
+import TreatmentPrescriptionManager from './TreatmentPrescriptionManager';
 import { Treatment } from '../../types/treatments';
 
 interface TreatmentListProps {
@@ -13,6 +14,7 @@ interface TreatmentListProps {
         visitNotesKeyword: string;
     };
     onUpdatePayment: (treatmentId: string, newAmount: number) => void;
+    onPrescriptionUpdate: (treatmentId: string, prescriptions: any[]) => void;
 }
 
 function TreatmentList({
@@ -22,7 +24,8 @@ function TreatmentList({
                            isAdmin,
                            isEmployee,
                            filters,
-                           onUpdatePayment
+                           onUpdatePayment,
+                           onPrescriptionUpdate
                        }: TreatmentListProps) {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
@@ -124,23 +127,6 @@ function TreatmentList({
                                     <span>Date: {formatDate(treatment.createdAt)}</span>
                                 </div>
 
-                                {treatment.prescriptions && treatment.prescriptions.length > 0 && (
-                                    <div className="prescriptions-info">
-                                        <span className="prescriptions-label">Prescriptions:</span>
-                                        <div className="prescriptions-list">
-                                            {treatment.prescriptions.map((prescription, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="prescription-item"
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: highlightText(prescription, searchKeywords)
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
                                 {treatment.visitNotes && (
                                     <div className="visit-notes-info">
                                         <span className="visit-notes-label">Visit Notes:</span>
@@ -196,6 +182,15 @@ function TreatmentList({
                                 </div>
                             )}
                         </div>
+
+                        {/* Prescription Management Section */}
+                        <TreatmentPrescriptionManager
+                            treatment={treatment}
+                            isDoctor={isDoctor}
+                            isAdmin={isAdmin}
+                            isEmployee={isEmployee}
+                            onPrescriptionUpdate={onPrescriptionUpdate}
+                        />
                     </div>
                 );
             })}

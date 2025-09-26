@@ -329,7 +329,7 @@ function AdminDashboard() {
                                                                 {appointmentService.formatAppointmentDateTime(patient.nextAppointment)}
                                                             </div>
                                                             <div className="appointment-doctor">
-                                                                {patient.nextAppointment.doctorName}
+                                                               Dr. {patient.nextAppointment.doctorName}
                                                             </div>
                                                         </div>
                                                     ) : (

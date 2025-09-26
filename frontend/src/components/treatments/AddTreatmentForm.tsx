@@ -2,19 +2,20 @@ import React, {useEffect, useRef, useState} from 'react';
 import {SearchResult, searchService} from '../../services/searchService';
 import AutocompleteDropdown from '../AutoCompleteDropdown';
 
-interface TreatmentManagement {
-    treatmentDescription: string;
-    cost: number;
-    amountPaid: number;
-    installmentPeriodInMonths: number;
-}
-
 interface Prescription {
     medicationName: string;
     dosage: string;
     frequency: string;
     duration: string;
     instructions?: string;
+}
+
+interface TreatmentManagement {
+    treatmentDescription: string;
+    cost: number;
+    amountPaid: number;
+    installmentPeriodInMonths: number;
+    prescriptions: Prescription[];
 }
 
 interface TreatmentFormData {
@@ -75,17 +76,23 @@ function AddTreatmentForm({
             treatmentDescription: '',
             cost: 0,
             amountPaid: 0,
-            installmentPeriodInMonths: 0
+            installmentPeriodInMonths: 0,
+            prescriptions: []
         }]
     });
 
-    const [prescriptions, setPrescriptions] = useState<Prescription[]>([{
+    // UI States
+    const [activeTreatmentIndex, setActiveTreatmentIndex] = useState(0);
+    const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
+    const [editingPrescriptionIndex, setEditingPrescriptionIndex] = useState<number | null>(null);
+    const [expandedPrescriptions, setExpandedPrescriptions] = useState<Set<number>>(new Set());
+    const [currentPrescription, setCurrentPrescription] = useState<Prescription>({
         medicationName: '',
         dosage: '',
         frequency: '',
         duration: '',
         instructions: ''
-    }]);
+    });
 
     const [patientNotes, setPatientNotes] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -285,6 +292,7 @@ function AddTreatmentForm({
     };
 
     const handleAddTreatment = () => {
+        const newIndex = treatmentForm.treatments.length;
         setTreatmentForm(prev => ({
             ...prev,
             treatments: [
@@ -293,10 +301,12 @@ function AddTreatmentForm({
                     treatmentDescription: '',
                     cost: 0,
                     amountPaid: 0,
-                    installmentPeriodInMonths: 0
+                    installmentPeriodInMonths: 0,
+                    prescriptions: []
                 }
             ]
         }));
+        setActiveTreatmentIndex(newIndex);
     };
 
     const handleRemoveTreatment = (index: number) => {
@@ -305,10 +315,16 @@ function AddTreatmentForm({
                 ...prev,
                 treatments: prev.treatments.filter((_, i) => i !== index)
             }));
+            // Adjust active treatment index if needed
+            if (index === activeTreatmentIndex && index > 0) {
+                setActiveTreatmentIndex(index - 1);
+            } else if (index < activeTreatmentIndex) {
+                setActiveTreatmentIndex(activeTreatmentIndex - 1);
+            }
         }
     };
 
-    const handleTreatmentChange = (index: number, field: keyof TreatmentManagement, value: string | number) => {
+    const handleTreatmentChange = (index: number, field: keyof Omit<TreatmentManagement, 'prescriptions'>, value: string | number) => {
         setTreatmentForm(prev => ({
             ...prev,
             treatments: prev.treatments.map((treatment, i) =>
@@ -317,30 +333,105 @@ function AddTreatmentForm({
         }));
     };
 
-    const handleAddPrescription = () => {
-        setPrescriptions(prev => [
+    const handleSelectTreatment = (index: number) => {
+        setActiveTreatmentIndex(index);
+        setShowPrescriptionForm(false);
+        setEditingPrescriptionIndex(null);
+    };
+
+    // Prescription handlers
+    const handleShowPrescriptionForm = () => {
+        setCurrentPrescription({
+            medicationName: '',
+            dosage: '',
+            frequency: '',
+            duration: '',
+            instructions: ''
+        });
+        setEditingPrescriptionIndex(null);
+        setShowPrescriptionForm(true);
+    };
+
+    const handleEditPrescription = (prescriptionIndex: number) => {
+        const prescription = treatmentForm.treatments[activeTreatmentIndex].prescriptions[prescriptionIndex];
+        setCurrentPrescription(prescription);
+        setEditingPrescriptionIndex(prescriptionIndex);
+        setShowPrescriptionForm(true);
+    };
+
+    const handleSavePrescription = () => {
+        if (!currentPrescription.medicationName.trim()) return;
+
+        setTreatmentForm(prev => ({
             ...prev,
-            {
-                medicationName: '',
-                dosage: '',
-                frequency: '',
-                duration: '',
-                instructions: ''
-            }
-        ]);
-    };
-
-    const handleRemovePrescription = (index: number) => {
-        if (prescriptions.length > 1)
-            setPrescriptions(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const handlePrescriptionChange = (index: number, field: keyof Prescription, value: string) => {
-        setPrescriptions(prev =>
-            prev.map((prescription, i) =>
-                i === index ? { ...prescription, [field]: value } : prescription
+            treatments: prev.treatments.map((treatment, i) =>
+                i === activeTreatmentIndex
+                    ? {
+                        ...treatment,
+                        prescriptions: editingPrescriptionIndex !== null
+                            ? treatment.prescriptions.map((p, j) =>
+                                j === editingPrescriptionIndex ? currentPrescription : p
+                            )
+                            : [...treatment.prescriptions, currentPrescription]
+                    }
+                    : treatment
             )
-        );
+        }));
+
+        setShowPrescriptionForm(false);
+        setEditingPrescriptionIndex(null);
+        setCurrentPrescription({
+            medicationName: '',
+            dosage: '',
+            frequency: '',
+            duration: '',
+            instructions: ''
+        });
+    };
+
+    const handleCancelPrescription = () => {
+        setShowPrescriptionForm(false);
+        setEditingPrescriptionIndex(null);
+        setCurrentPrescription({
+            medicationName: '',
+            dosage: '',
+            frequency: '',
+            duration: '',
+            instructions: ''
+        });
+    };
+
+    const handleDeletePrescription = (prescriptionIndex: number) => {
+        setTreatmentForm(prev => ({
+            ...prev,
+            treatments: prev.treatments.map((treatment, i) =>
+                i === activeTreatmentIndex
+                    ? {
+                        ...treatment,
+                        prescriptions: treatment.prescriptions.filter((_, j) => j !== prescriptionIndex)
+                    }
+                    : treatment
+            )
+        }));
+
+        // Remove from expanded set
+        setExpandedPrescriptions(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(prescriptionIndex);
+            return newSet;
+        });
+    };
+
+    const togglePrescriptionExpansion = (prescriptionIndex: number) => {
+        setExpandedPrescriptions(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(prescriptionIndex)) {
+                newSet.delete(prescriptionIndex);
+            } else {
+                newSet.add(prescriptionIndex);
+            }
+            return newSet;
+        });
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -361,21 +452,19 @@ function AddTreatmentForm({
                 treatmentDescription: '',
                 cost: 0,
                 amountPaid: 0,
-                installmentPeriodInMonths: 0
+                installmentPeriodInMonths: 0,
+                prescriptions: []
             }]
         });
-        setPrescriptions([{
-            medicationName: '',
-            dosage: '',
-            frequency: '',
-            duration: '',
-            instructions: ''
-        }]);
         setPatientNotes('');
         setUploadedFiles([]);
         setSelectedAppointment(null);
         setPatientSearchQuery('');
         setDoctorSearchQuery('');
+        setActiveTreatmentIndex(0);
+        setShowPrescriptionForm(false);
+        setEditingPrescriptionIndex(null);
+        setExpandedPrescriptions(new Set());
         if (!isDoctor) {
             setSelectedPatient(null);
             setSelectedDoctor(null);
@@ -399,22 +488,24 @@ function AddTreatmentForm({
         if (treatmentForm.treatments.some(t => t.amountPaid > t.cost))
             throw new Error('Amount paid cannot exceed treatment cost');
 
-        // Validate prescriptions - only check required fields if any prescription has data
-        const filledPrescriptions = prescriptions.filter(p =>
-            p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
-        );
+        // Validate prescriptions for each treatment
+        treatmentForm.treatments.forEach((treatment, treatmentIndex) => {
+            const filledPrescriptions = treatment.prescriptions.filter(p =>
+                p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
+            );
 
-        if (filledPrescriptions.some(p => !p.medicationName.trim()))
-            throw new Error('Please provide medication name for all prescriptions');
+            if (filledPrescriptions.some(p => !p.medicationName.trim()))
+                throw new Error(`Please provide medication name for all prescriptions in Treatment ${treatmentIndex + 1}`);
 
-        if (filledPrescriptions.some(p => !p.dosage.trim()))
-            throw new Error('Please provide dosage for all prescriptions');
+            if (filledPrescriptions.some(p => !p.dosage.trim()))
+                throw new Error(`Please provide dosage for all prescriptions in Treatment ${treatmentIndex + 1}`);
 
-        if (filledPrescriptions.some(p => !p.frequency.trim()))
-            throw new Error('Please provide frequency for all prescriptions');
+            if (filledPrescriptions.some(p => !p.frequency.trim()))
+                throw new Error(`Please provide frequency for all prescriptions in Treatment ${treatmentIndex + 1}`);
 
-        if (filledPrescriptions.some(p => !p.duration.trim()))
-            throw new Error('Please provide duration for all prescriptions');
+            if (filledPrescriptions.some(p => !p.duration.trim()))
+                throw new Error(`Please provide duration for all prescriptions in Treatment ${treatmentIndex + 1}`);
+        });
     };
 
     const handleSubmitTreatments = async (e: React.FormEvent) => {
@@ -426,15 +517,29 @@ function AddTreatmentForm({
 
             const formData = new FormData();
 
-            // Filter out empty prescriptions
-            const validPrescriptions = prescriptions.filter(p =>
-                p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
-            );
+            // Prepare treatments with their associated prescriptions
+            const treatmentsWithPrescriptions = treatmentForm.treatments.map(treatment => ({
+                treatmentDescription: treatment.treatmentDescription,
+                cost: treatment.cost,
+                amountPaid: treatment.amountPaid,
+                installmentPeriodInMonths: treatment.installmentPeriodInMonths,
+                prescriptions: treatment.prescriptions.filter(p =>
+                    p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
+                )
+            }));
+
+            // Flatten all prescriptions for the backend
+            const allPrescriptions = treatmentsWithPrescriptions.flatMap(treatment => treatment.prescriptions);
 
             // Create the DTO structure that matches your backend
             const treatmentData = {
-                treatments: treatmentForm.treatments,
-                prescriptions: validPrescriptions,
+                treatments: treatmentsWithPrescriptions.map(t => ({
+                    treatmentDescription: t.treatmentDescription,
+                    cost: t.cost,
+                    amountPaid: t.amountPaid,
+                    installmentPeriodInMonths: t.installmentPeriodInMonths
+                })),
+                prescriptions: allPrescriptions,
                 filePaths: [], // Will be populated by backend
                 visitNotes: patientNotes.trim() || null
             };
@@ -497,6 +602,27 @@ function AddTreatmentForm({
         return doctorSearchQuery;
     };
 
+    const getPrescriptionSummary = (prescription: Prescription) => {
+        return (
+            <div className="prescription-details-brief">
+                <div className="prescription-detail-item">
+                    <span className="prescription-detail-label">Dosage</span>
+                    <span className="prescription-detail-value">{prescription.dosage}</span>
+                </div>
+                <div className="prescription-detail-item">
+                    <span className="prescription-detail-label">Frequency</span>
+                    <span className="prescription-detail-value">{prescription.frequency}</span>
+                </div>
+                <div className="prescription-detail-item">
+                    <span className="prescription-detail-label">Duration</span>
+                    <span className="prescription-detail-value">{prescription.duration}</span>
+                </div>
+            </div>
+        );
+    };
+
+    const activeTreatment = treatmentForm.treatments[activeTreatmentIndex];
+
     return (
         <div className="add-treatment-section">
             <div className="section-header">
@@ -510,9 +636,8 @@ function AddTreatmentForm({
                 </div>
             )}
 
-            {/* Patient and Doctor Selection using AutocompleteDropdown */}
+            {/* Patient and Doctor Selection */}
             <div className="selection-section">
-                {/* Doctor Selection */}
                 <div className="search-group">
                     <label>
                         Select Doctor
@@ -557,7 +682,6 @@ function AddTreatmentForm({
                     </div>
                 </div>
 
-                {/* Patient Selection */}
                 <div className="search-group">
                     <label>
                         Select Patient
@@ -652,195 +776,253 @@ function AddTreatmentForm({
                     )}
                 </div>
 
-                {/* Treatment Details */}
-                <div className="treatments-section">
-                    <div className="treatments-header">
-                        <h4>Treatment Details</h4>
-                    </div>
+                {/* Two-Column Treatment Layout */}
+                <div className="treatment-layout">
+                    {/* Left Panel: Treatments */}
+                    <div className="treatment-panel">
+                        <div className="panel-header">
+                            📋 Treatments
+                            <button
+                                type="button"
+                                onClick={handleAddTreatment}
+                                className="add-treatment-btn-header"
+                            >
+                                Add Treatment
+                            </button>
+                        </div>
 
-                    {treatmentForm.treatments.map((treatment, index) => (
-                        <div key={index} className="treatment-item">
-                            <div className="treatment-item-header">
-                                <h5>Treatment {index + 1}</h5>
-                                {treatmentForm.treatments.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveTreatment(index)}
-                                        className="remove-treatment-btn"
-                                    >
-                                        Remove
-                                    </button>
-                                )}
-                            </div>
+                        {treatmentForm.treatments.map((treatment, index) => (
+                            <div
+                                key={index}
+                                className={`treatment-card ${index === activeTreatmentIndex ? 'active' : ''}`}
+                                onClick={() => handleSelectTreatment(index)}
+                            >
+                                <div className="treatment-card-header">
+                                    <div className="treatment-title">Treatment {index + 1}</div>
+                                    {treatmentForm.treatments.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveTreatment(index);
+                                            }}
+                                            className="remove-treatment-btn-small"
+                                        >
+                                            Remove
+                                        </button>
+                                    )}
+                                </div>
 
-                            <div className="form-row">
-                                <div className="form-group full-width">
-                                    <label>Treatment Description</label>
+                                <div className="treatment-description">
                                     <textarea
                                         value={treatment.treatmentDescription}
                                         onChange={(e) => handleTreatmentChange(index, 'treatmentDescription', e.target.value)}
-                                        placeholder="Describe the treatment provided..."
-                                        required
+                                        placeholder="Describe the treatment..."
                                         className="form-textarea compact"
                                         rows={3}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Total Cost ($)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={treatment.cost}
-                                        onChange={(e) => handleTreatmentChange(index, 'cost', parseFloat(e.target.value) || 0)}
                                         required
-                                        className="form-input"
+                                        onFocus={() => handleSelectTreatment(index)}
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label>Amount Paid ($)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        max={treatment.cost}
-                                        value={treatment.amountPaid}
-                                        onChange={(e) => handleTreatmentChange(index, 'amountPaid', parseFloat(e.target.value) || 0)}
-                                        className="form-input"
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Installment Period (Months)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={treatment.installmentPeriodInMonths}
-                                        onChange={(e) => handleTreatmentChange(index, 'installmentPeriodInMonths', parseInt(e.target.value) || 0)}
-                                        className="form-input"
-                                        placeholder="0 for one-time payment"
-                                    />
+                                <div className="treatment-meta">
+                                    <div className="cost-grid">
+                                        <div className="cost-field">
+                                            <label>Cost ($)</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={treatment.cost}
+                                                onChange={(e) => handleTreatmentChange(index, 'cost', parseFloat(e.target.value) || 0)}
+                                                className="form-input small"
+                                                required
+                                                onFocus={() => handleSelectTreatment(index)}
+                                            />
+                                        </div>
+                                        <div className="cost-field">
+                                            <label>Paid ($)</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                max={treatment.cost}
+                                                value={treatment.amountPaid}
+                                                onChange={(e) => handleTreatmentChange(index, 'amountPaid', parseFloat(e.target.value) || 0)}
+                                                className="form-input small"
+                                                onFocus={() => handleSelectTreatment(index)}
+                                            />
+                                        </div>
+                                        <div className="cost-field">
+                                            <label>Installments</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={treatment.installmentPeriodInMonths}
+                                                onChange={(e) => handleTreatmentChange(index, 'installmentPeriodInMonths', parseInt(e.target.value) || 0)}
+                                                className="form-input small"
+                                                placeholder="0"
+                                                onFocus={() => handleSelectTreatment(index)}
+                                            />
+                                        </div>
+                                    </div>
+                                    {treatment.cost > 0 && (
+                                        <div className="balance-display">
+                                            Balance: {formatCurrency(treatment.cost - treatment.amountPaid)}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-
-                            {treatment.cost > 0 && (
-                                <div className="cost-summary">
-                                    <span>Remaining Balance: {formatCurrency(treatment.cost - treatment.amountPaid)}</span>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-
-                    <button
-                        type="button"
-                        onClick={handleAddTreatment}
-                        className="add-treatment-btn"
-                    >
-                        Add Another Treatment
-                    </button>
-                </div>
-
-                {/* Prescriptions Section */}
-                <div className="prescriptions-section">
-                    <div className="prescriptions-header">
-                        <h4>Prescriptions</h4>
-                        <p>Add medications prescribed to the patient</p>
+                        ))}
                     </div>
 
-                    {prescriptions.map((prescription, index) => (
-                        <div key={index} className="prescription-item">
-                            <div className="prescription-item-header">
-                                <h5>Prescription {index + 1}</h5>
-                                {prescriptions.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemovePrescription(index)}
-                                        className="remove-prescription-btn"
-                                    >
-                                        Remove
-                                    </button>
-                                )}
-                            </div>
+                    {/* Right Panel: Prescriptions */}
+                    <div className="prescription-panel">
+                        <div className="panel-header">
+                            💊 Prescriptions for Treatment {activeTreatmentIndex + 1}
+                        </div>
 
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Medication Name</label>
-                                    <input
-                                        type="text"
-                                        value={prescription.medicationName}
-                                        onChange={(e) => handlePrescriptionChange(index, 'medicationName', e.target.value)}
-                                        placeholder="Enter medication name..."
-                                        className="form-input"
-                                    />
+                        {/* Add Prescription Form */}
+                        {showPrescriptionForm && (
+                            <div className="prescription-form">
+                                <div className="prescription-form-header">
+                                    <h6>{editingPrescriptionIndex !== null ? 'Edit Prescription' : 'Add New Prescription'}</h6>
                                 </div>
-
-                                <div className="form-group">
-                                    <label>Dosage</label>
-                                    <input
-                                        type="text"
-                                        value={prescription.dosage}
-                                        onChange={(e) => handlePrescriptionChange(index, 'dosage', e.target.value)}
-                                        placeholder="e.g., 500mg"
-                                        className="form-input"
-                                    />
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>Medication Name</label>
+                                        <input
+                                            type="text"
+                                            value={currentPrescription.medicationName}
+                                            onChange={(e) => setCurrentPrescription(prev => ({ ...prev, medicationName: e.target.value }))}
+                                            placeholder="Enter medication..."
+                                            className="form-input"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Dosage</label>
+                                        <input
+                                            type="text"
+                                            value={currentPrescription.dosage}
+                                            onChange={(e) => setCurrentPrescription(prev => ({ ...prev, dosage: e.target.value }))}
+                                            placeholder="e.g., 500mg"
+                                            className="form-input"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Frequency</label>
+                                        <input
+                                            type="text"
+                                            value={currentPrescription.frequency}
+                                            onChange={(e) => setCurrentPrescription(prev => ({ ...prev, frequency: e.target.value }))}
+                                            placeholder="e.g., 2x daily"
+                                            className="form-input"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Duration</label>
+                                        <input
+                                            type="text"
+                                            value={currentPrescription.duration}
+                                            onChange={(e) => setCurrentPrescription(prev => ({ ...prev, duration: e.target.value }))}
+                                            placeholder="e.g., 7 days"
+                                            className="form-input"
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div className="form-row">
                                 <div className="form-group">
-                                    <label>Frequency</label>
-                                    <input
-                                        type="text"
-                                        value={prescription.frequency}
-                                        onChange={(e) => handlePrescriptionChange(index, 'frequency', e.target.value)}
-                                        placeholder="e.g., Twice daily"
-                                        className="form-input"
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Duration</label>
-                                    <input
-                                        type="text"
-                                        value={prescription.duration}
-                                        onChange={(e) => handlePrescriptionChange(index, 'duration', e.target.value)}
-                                        placeholder="e.g., 7 days"
-                                        className="form-input"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group full-width">
                                     <label>Special Instructions</label>
                                     <textarea
-                                        value={prescription.instructions || ''}
-                                        onChange={(e) => handlePrescriptionChange(index, 'instructions', e.target.value)}
-                                        placeholder="Additional instructions for the patient..."
+                                        value={currentPrescription.instructions || ''}
+                                        onChange={(e) => setCurrentPrescription(prev => ({ ...prev, instructions: e.target.value }))}
+                                        placeholder="Additional instructions..."
                                         className="form-textarea compact"
                                         rows={2}
                                     />
                                 </div>
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        onClick={handleCancelPrescription}
+                                        className="btn-secondary"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSavePrescription}
+                                        className="btn-primary"
+                                    >
+                                        {editingPrescriptionIndex !== null ? 'Update Prescription' : 'Save Prescription'}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )}
 
-                    <button
-                        type="button"
-                        onClick={handleAddPrescription}
-                        className="add-prescription-btn"
-                    >
-                        Add Another Prescription
-                    </button>
+                        {/* Existing Prescriptions */}
+                        <div className="prescriptions-list">
+                            {activeTreatment.prescriptions.map((prescription, prescriptionIndex) => (
+                                <div key={prescriptionIndex} className="prescription-item">
+                                    <div
+                                        className="prescription-header"
+                                        onClick={() => togglePrescriptionExpansion(prescriptionIndex)}
+                                    >
+                                        <div className="prescription-header-top">
+                                            <div className="prescription-name-section">
+                                                <span className={`expand-arrow ${expandedPrescriptions.has(prescriptionIndex) ? 'expanded' : ''}`}>
+                                                    ▶
+                                                </span>
+                                                <div className="prescription-name">{prescription.medicationName}</div>
+                                            </div>
+                                            <div className="prescription-actions" onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleEditPrescription(prescriptionIndex)}
+                                                    className="btn-small btn-edit"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeletePrescription(prescriptionIndex)}
+                                                    className="btn-small btn-delete"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {getPrescriptionSummary(prescription)}
+                                    </div>
+                                    <div className={`prescription-details ${expandedPrescriptions.has(prescriptionIndex) ? 'expanded' : ''}`}>
+                                        {prescription.instructions && (
+                                            <div className="prescription-instructions">
+                                                <div className="prescription-instructions-label">Special Instructions</div>
+                                                <div className="prescription-instructions-value">{prescription.instructions}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {!showPrescriptionForm && (
+                            <button
+                                type="button"
+                                onClick={handleShowPrescriptionForm}
+                                className="add-prescription-btn"
+                            >
+                                + Add Prescription
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Notes and Files Section */}
                 <div className="notes-files-container">
-                    {/* Notes Section */}
                     <div className="notes-section">
                         <h4>Patient Notes</h4>
                         <textarea
@@ -851,7 +1033,6 @@ function AddTreatmentForm({
                         />
                     </div>
 
-                    {/* File Upload Section */}
                     <div className="files-section">
                         <h4>Attach Files</h4>
                         <div className="file-upload-area">

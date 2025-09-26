@@ -31,7 +31,6 @@ public class BaseUserEntity implements UserDetails {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    // Basic Information
     @Column(nullable = false, length = 100)
     private String firstName;
 
@@ -58,29 +57,24 @@ public class BaseUserEntity implements UserDetails {
     @Column(nullable = false)
     private UserTypeEnum userType;
 
-    // Optional Profile Information
     @Column(length = 100)
     private String title; // Dr., Mr., Mrs., etc.
 
     @Column(length = 500)
     private String avatarPath;
 
-    // Authentication
     @Column(nullable = false)
     private String password;
 
-    // Emergency Contact
     @Column(length = 100)
     private String emergencyContactName;
 
     @Column(length = 20)
     private String emergencyContactNumber;
 
-    // Additional Notes
     @Column(length = 1000)
     private String notes;
 
-    // Audit Fields
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createDate;

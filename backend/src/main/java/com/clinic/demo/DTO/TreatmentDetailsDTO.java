@@ -1,13 +1,14 @@
 package com.clinic.demo.DTO;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
-public record TreatmentDetails(
-        @NotNull(message = "Treatment ID is required")
-        @Min(value = 1, message = "Treatment ID must be a positive number")
-        int treatmentId, // this is the treatment description from a static list of treatments fetched by id.
+import java.util.List;
+
+public record TreatmentDetailsDTO(
 
         @NotNull(message = "Amount paid is required")
         @PositiveOrZero(message = "Amount paid must be zero or positive")
@@ -21,11 +22,14 @@ public record TreatmentDetails(
         @PositiveOrZero(message = "Installment period must be zero or positive")
         int installmentPeriodInMonths,
 
-        String treatmentDescription
+        String treatmentDescription,
+
+        @Valid
+        List<PrescriptionDTO> prescriptions
 
 
 ) {
-    public TreatmentDetails {
+    public TreatmentDetailsDTO {
         if (amountPaid > cost) throw new IllegalArgumentException("Amount paid cannot exceed total cost");
     }
 }

@@ -198,25 +198,25 @@ function TreatmentFilters({
                                 Doctor
                             </label>
                             <div className="search-container" ref={doctorInputRef}>
-                                    <input
-                                        type="text"
-                                        value={getDoctorDisplayValue()}
-                                        onChange={handleDoctorInputChange}
-                                        placeholder="Search doctor..."
-                                        className="filter-input compact search-input"
-                                        autoComplete="off"
-                                        readOnly={!!selectedDoctor}
-                                    />
-                                    {selectedDoctor && (
-                                        <button
-                                            type="button"
-                                            onClick={handleClearDoctor}
-                                            className="clear-search-btn"
-                                            title="Clear selection"
-                                        >
-                                            ×
-                                        </button>
-                                    )}
+                                <input
+                                    type="text"
+                                    value={getDoctorDisplayValue()}
+                                    onChange={handleDoctorInputChange}
+                                    placeholder="Search doctor..."
+                                    className={`filter-input compact search-input ${selectedDoctor ? 'selected-input' : ''}`}
+                                    autoComplete="off"
+                                    disabled={!!selectedDoctor}
+                                />
+                                {selectedDoctor && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearDoctor}
+                                        className="clear-search-btn"
+                                        title="Clear selection"
+                                    >
+                                        ×
+                                    </button>
+                                )}
                                 <AutocompleteDropdown
                                     suggestions={doctorSuggestions}
                                     isSearching={searchingDoctors}
@@ -235,25 +235,25 @@ function TreatmentFilters({
                                 Patient
                             </label>
                             <div className="search-container" ref={patientInputRef}>
-                                    <input
-                                        type="text"
-                                        value={getPatientDisplayValue()}
-                                        onChange={handlePatientInputChange}
-                                        placeholder="Search patient..."
-                                        className="filter-input compact search-input"
-                                        autoComplete="off"
-                                        readOnly={!!selectedPatient}
-                                    />
-                                    {selectedPatient && (
-                                        <button
-                                            type="button"
-                                            onClick={handleClearPatient}
-                                            className="clear-search-btn"
-                                            title="Clear selection"
-                                        >
-                                            ×
-                                        </button>
-                                    )}
+                                <input
+                                    type="text"
+                                    value={getPatientDisplayValue()}
+                                    onChange={handlePatientInputChange}
+                                    placeholder="Search patient..."
+                                    className={`filter-input compact search-input ${selectedPatient ? 'selected-input' : ''}`}
+                                    autoComplete="off"
+                                    disabled={!!selectedPatient}
+                                />
+                                {selectedPatient && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearPatient}
+                                        className="clear-search-btn"
+                                        title="Clear selection"
+                                    >
+                                        ×
+                                    </button>
+                                )}
                                 <AutocompleteDropdown
                                     suggestions={patientSuggestions}
                                     isSearching={searchingPatients}

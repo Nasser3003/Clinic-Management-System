@@ -5,33 +5,8 @@ import HeroHeader from './common/HeroHeader';
 import TreatmentFilters from './treatments/TreatmentFilter';
 import TreatmentList from './treatments/TreatmentList';
 import AddTreatmentForm from './treatments/AddTreatmentForm';
+import { Treatment, TreatmentFilters as TreatmentFiltersType, Prescription } from '../types/treatments';
 import './css/TreatmentManagement.css';
-
-interface Treatment {
-    id: string;
-    doctorName: string;
-    patientName: string;
-    appointmentId: string;
-    treatmentDescription: string;
-    cost: number;
-    amountPaid: number;
-    remainingBalance: number;
-    installmentPeriodInMonths: number;
-    createdAt: string;
-    updatedAt: string;
-    prescriptions?: string[];
-    visitNotes?: string;
-}
-
-interface TreatmentFilters {
-    patientEmail: string;
-    doctorEmail: string;
-    paid: string;
-    startDate: string;
-    endDate: string;
-    prescriptionKeyword: string;
-    visitNotesKeyword: string;
-}
 
 function TreatmentManagement() {
     const { user } = useAuth();
@@ -41,7 +16,7 @@ function TreatmentManagement() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    const [filters, setFilters] = useState<TreatmentFilters>({
+    const [filters, setFilters] = useState<TreatmentFiltersType>({
         patientEmail: '',
         doctorEmail: '',
         paid: '',
@@ -56,9 +31,8 @@ function TreatmentManagement() {
     const isEmployee = ['NURSE', 'RECEPTIONIST', 'EMPLOYEE'].includes(user?.userType || '');
 
     useEffect(() => {
-        if (activeTab === 'view-treatments') {
+        if (activeTab === 'view-treatments')
             loadTreatments();
-        }
     }, [activeTab, filters]);
 
     const loadTreatments = async () => {
@@ -119,6 +93,29 @@ function TreatmentManagement() {
         } catch (err: any) {
             console.error('Error updating payment:', err);
             setError('Failed to update payment');
+        }
+    };
+
+    const handlePrescriptionUpdate = async (treatmentId: string, prescriptions: Prescription[]) => {
+        try {
+            const response = await fetch(`/api/treatments/${treatmentId}/prescriptions`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prescriptions })
+            });
+
+            if (response.ok) {
+                setSuccess('Prescriptions updated successfully!');
+                loadTreatments();
+            } else {
+                throw new Error('Failed to update prescriptions');
+            }
+        } catch (err: any) {
+            console.error('Error updating prescriptions:', err);
+            setError('Failed to update prescriptions');
         }
     };
 
@@ -219,6 +216,7 @@ function TreatmentManagement() {
                                     visitNotesKeyword: filters.visitNotesKeyword
                                 }}
                                 onUpdatePayment={handleUpdatePayment}
+                                onPrescriptionUpdate={handlePrescriptionUpdate}
                             />
                         </div>
                     )}
