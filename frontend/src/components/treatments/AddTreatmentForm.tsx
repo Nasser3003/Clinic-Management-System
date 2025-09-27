@@ -517,39 +517,43 @@ function AddTreatmentForm({
 
             const formData = new FormData();
 
-            // Prepare treatments with their associated prescriptions
-            const treatmentsWithPrescriptions = treatmentForm.treatments.map(treatment => ({
+            // Convert frontend prescriptions to backend format
+            const convertPrescription = (prescription: Prescription) => ({
+                name: prescription.medicationName,  // Change medicationName to name
+                dosage: prescription.dosage,
+                duration: prescription.duration,
+                frequency: prescription.frequency,
+                instructions: prescription.instructions
+            });
+
+            // Prepare treatments with their prescriptions embedded
+            const treatmentsForBackend = treatmentForm.treatments.map(treatment => ({
                 treatmentDescription: treatment.treatmentDescription,
                 cost: treatment.cost,
                 amountPaid: treatment.amountPaid,
                 installmentPeriodInMonths: treatment.installmentPeriodInMonths,
-                prescriptions: treatment.prescriptions.filter(p =>
-                    p.medicationName.trim() || p.dosage.trim() || p.frequency.trim() || p.duration.trim()
-                )
+                // Include prescriptions inside each treatment
+                prescriptions: treatment.prescriptions
+                    .filter(p => p.medicationName.trim()) // Only include prescriptions with medication names
+                    .map(convertPrescription)
             }));
 
-            // Flatten all prescriptions for the backend
-            const allPrescriptions = treatmentsWithPrescriptions.flatMap(treatment => treatment.prescriptions);
-
-            // Create the DTO structure that matches your backend
+            // Create the DTO structure that matches your backend TreatmentDetailsDTO
             const treatmentData = {
-                treatments: treatmentsWithPrescriptions.map(t => ({
-                    treatmentDescription: t.treatmentDescription,
-                    cost: t.cost,
-                    amountPaid: t.amountPaid,
-                    installmentPeriodInMonths: t.installmentPeriodInMonths
-                })),
-                prescriptions: allPrescriptions,
+                treatments: treatmentsForBackend,
+                // Remove the separate prescriptions array - they're now embedded in treatments
                 filePaths: [], // Will be populated by backend
                 visitNotes: patientNotes.trim() || null
             };
 
-            // Add JSON data as a blob with the correct part name
+            console.log('Sending treatment data:', treatmentData); // Debug log
+
+            // Add JSON data as a blob
             formData.append('data', new Blob([JSON.stringify(treatmentData)], {
                 type: 'application/json'
             }));
 
-            // Add files with the correct part name
+            // Add files
             uploadedFiles.forEach((file) => {
                 formData.append('files', file);
             });
