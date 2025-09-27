@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/appointments")
-@CrossOrigin("*")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -84,6 +83,8 @@ public class AppointmentController {
     public List<AppointmentDTO> getTreatmentDoctorPatientEmailScheduled(@Valid @RequestBody AppSearchStatusInBetweenDTO dto) {
         return appointmentService.getTreatmentDoctorPatientEmailScheduled(dto);
     }
+
+
 
 
 

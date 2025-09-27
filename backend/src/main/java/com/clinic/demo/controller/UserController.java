@@ -12,7 +12,6 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/user")
-@CrossOrigin("*") // need to change in the future
 public class  UserController {
 
     private final UserService userService;

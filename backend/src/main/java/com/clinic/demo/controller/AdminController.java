@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin")
-@CrossOrigin("*") // will need in the future
 public class AdminController {
 
     private final UserService userService;

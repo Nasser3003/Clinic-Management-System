@@ -14,7 +14,6 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/schedules")
-@CrossOrigin("*") // will need in the future
 public class EmployeeSchedulerController {
 
     private final ScheduleService scheduleService;

@@ -17,11 +17,19 @@ public class PrescriptionEntity {
     @JoinColumn(name = "treatment_id", nullable = false)
     private TreatmentEntity treatment;
 
-
+    @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
+
+    @Column(name = "duration", columnDefinition = "VARCHAR(100)")
     private String duration;
+
+    @Column(name = "dosage", columnDefinition = "VARCHAR(100)")
     private String dosage;
+
+    @Column(name = "frequency", columnDefinition = "VARCHAR(100)")
     private String frequency;
+
+    @Column(name = "special_instruction", columnDefinition = "TEXT")
     private String specialInstruction;
 
     public PrescriptionEntity(TreatmentEntity treatment, String name, String dosage, String duration, String frequency, String specialInstruction) {

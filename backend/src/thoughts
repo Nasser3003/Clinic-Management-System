@@ -1,5 +1,7 @@
 issue with persisting the data, @transactional
 
+circular dependency
+
 thoughts about the project
 
 issue with permission

@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/timeoffs")
-@CrossOrigin("*")
 public class TimeOffController {
 
     private final TimeOffService timeOffService;

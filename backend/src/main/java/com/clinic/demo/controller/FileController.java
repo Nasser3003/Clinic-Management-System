@@ -16,7 +16,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class FileController {
 
     private final AvatarService avatarService;

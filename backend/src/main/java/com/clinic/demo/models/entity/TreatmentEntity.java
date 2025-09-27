@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -45,6 +46,9 @@ public class TreatmentEntity {
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientEntity patient;
+
+    @OneToMany(mappedBy = "treatment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PrescriptionEntity> prescriptions;
 
     @Column(nullable = false)
     private String treatment;
