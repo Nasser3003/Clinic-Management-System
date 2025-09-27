@@ -1,12 +1,4 @@
-interface Prescription {
-    id?: string;
-    medicationName: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-    instructions?: string;
-    treatmentId?: string;
-}
+import { Prescription } from '../../types/treatments';
 
 interface PrescriptionFormProps {
     prescription: Prescription;
@@ -40,13 +32,14 @@ function PrescriptionForm({
                 )}
             </div>
 
+            {/* First row: Medication Name and Dosage */}
             <div className="form-row">
                 <div className="form-group">
                     <label>Medication Name</label>
                     <input
                         type="text"
-                        value={prescription.medicationName}
-                        onChange={(e) => onUpdate(index, 'medicationName', e.target.value)}
+                        value={prescription.name}  // Changed from medicationName to name
+                        onChange={(e) => onUpdate(index, 'name', e.target.value)}  // Changed field name
                         placeholder="Enter medication name..."
                         className="form-input"
                         readOnly={isReadOnly}
@@ -68,6 +61,7 @@ function PrescriptionForm({
                 </div>
             </div>
 
+            {/* Second row: Frequency and Duration */}
             <div className="form-row">
                 <div className="form-group">
                     <label>Frequency</label>
@@ -96,18 +90,17 @@ function PrescriptionForm({
                 </div>
             </div>
 
-            <div className="form-row">
-                <div className="form-group full-width">
-                    <label>Special Instructions</label>
-                    <textarea
-                        value={prescription.instructions || ''}
-                        onChange={(e) => onUpdate(index, 'instructions', e.target.value)}
-                        placeholder="Additional instructions for the patient..."
-                        className="form-textarea compact"
-                        rows={2}
-                        readOnly={isReadOnly}
-                    />
-                </div>
+            {/* Third row: Instructions (full width) */}
+            <div className="form-group full-width">
+                <label>Special Instructions</label>
+                <textarea
+                    value={prescription.instructions || ''}
+                    onChange={(e) => onUpdate(index, 'instructions', e.target.value)}
+                    placeholder="Additional instructions for the patient..."
+                    className="form-textarea compact"
+                    rows={2}
+                    readOnly={isReadOnly}
+                />
             </div>
         </div>
     );

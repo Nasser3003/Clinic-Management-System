@@ -28,12 +28,18 @@ function TreatmentList({
                            onPrescriptionUpdate
                        }: TreatmentListProps) {
     const [expandedPrescriptions, setExpandedPrescriptions] = useState<Record<string, Set<number>>>({});
+    const [editingPrescriptions, setEditingPrescriptions] = useState<Set<string>>(new Set());
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD'
         }).format(amount);
+    };
+
+    const formatCurrencyCompact = (amount: number) => {
+        const formatted = formatCurrency(amount);
+        return formatted.replace('.00', '');
     };
 
     const formatDate = (dateString: string) => {
@@ -81,11 +87,10 @@ function TreatmentList({
             const treatmentExpanded = prev[treatmentId] || new Set();
             const newSet = new Set(treatmentExpanded);
 
-            if (newSet.has(prescriptionIndex)) {
+            if (newSet.has(prescriptionIndex))
                 newSet.delete(prescriptionIndex);
-            } else {
+            else
                 newSet.add(prescriptionIndex);
-            }
 
             return {
                 ...prev,
@@ -96,6 +101,22 @@ function TreatmentList({
 
     const isPrescriptionExpanded = (treatmentId: string, prescriptionIndex: number) => {
         return expandedPrescriptions[treatmentId]?.has(prescriptionIndex) || false;
+    };
+
+    const handlePrescriptionEditStart = (treatmentId: string) => {
+        setEditingPrescriptions(prev => new Set(prev).add(treatmentId));
+    };
+
+    const handlePrescriptionEditEnd = (treatmentId: string) => {
+        setEditingPrescriptions(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(treatmentId);
+            return newSet;
+        });
+    };
+
+    const isEditingPrescriptions = (treatmentId: string) => {
+        return editingPrescriptions.has(treatmentId);
     };
 
     if (loading) {
@@ -135,6 +156,7 @@ function TreatmentList({
             {treatments.map((treatment) => {
                 const paymentStatus = getPaymentStatus(treatment);
                 const searchKeywords = getSearchKeywords();
+                const isEditing = isEditingPrescriptions(treatment.id);
 
                 return (
                     <div key={treatment.id} className="treatment-card">
@@ -161,19 +183,19 @@ function TreatmentList({
                                 <div className="compact-cost-item">
                                     <div className="compact-cost-label">Total</div>
                                     <div className="compact-cost-value">
-                                        {formatCurrency(treatment.cost).replace('$', '$').replace('.00', '')}
+                                        {formatCurrencyCompact(treatment.cost)}
                                     </div>
                                 </div>
                                 <div className="compact-cost-item">
                                     <div className="compact-cost-label">Paid</div>
                                     <div className="compact-cost-value positive">
-                                        {formatCurrency(treatment.amountPaid).replace('$', '$').replace('.00', '')}
+                                        {formatCurrencyCompact(treatment.amountPaid)}
                                     </div>
                                 </div>
                                 <div className="compact-cost-item">
                                     <div className="compact-cost-label">Balance</div>
                                     <div className={`compact-cost-value ${treatment.remainingBalance > 0 ? 'outstanding' : 'positive'}`}>
-                                        {formatCurrency(treatment.remainingBalance).replace('$', '$').replace('.00', '')}
+                                        {formatCurrencyCompact(treatment.remainingBalance)}
                                     </div>
                                 </div>
                                 <div className="compact-cost-item">
@@ -198,8 +220,8 @@ function TreatmentList({
                         </div>
 
                         {/* Details section: Notes + Secondary Actions */}
-                        <div className="treatment-details">
-                            {treatment.visitNotes && (
+                        {treatment.visitNotes && (
+                            <div className="treatment-details">
                                 <div className="visit-notes-section">
                                     <div className="visit-notes-label">📝 Visit Notes</div>
                                     <div
@@ -214,65 +236,129 @@ function TreatmentList({
                                         }}
                                     />
                                 </div>
-                            )}
-
-                            <div className="treatment-actions">
-                                <TreatmentPrescriptionManager
-                                    treatment={treatment}
-                                    isDoctor={isDoctor}
-                                    isAdmin={isAdmin}
-                                    isEmployee={isEmployee}
-                                    onPrescriptionUpdate={onPrescriptionUpdate}
-                                />
                             </div>
-                        </div>
+                        )}
 
                         {/* Compact Prescriptions */}
                         {treatment.prescriptions && treatment.prescriptions.length > 0 && (
                             <div className="prescriptions-compact">
-                                <div className="prescriptions-header">
-                                    <div className="prescriptions-title">💊 Prescriptions</div>
-                                    <div className="prescriptions-count">
-                                        {treatment.prescriptions.length} medication{treatment.prescriptions.length !== 1 ? 's' : ''}
-                                    </div>
-                                </div>
-
-                                <div className="prescriptions-list">
-                                    {treatment.prescriptions.map((prescription, index) => (
-                                        <div key={index}>
-                                            <div
-                                                className={`prescription-pill ${isPrescriptionExpanded(treatment.id, index) ? 'expanded' : ''}`}
-                                                onClick={() => togglePrescriptionExpansion(treatment.id, index)}
-                                            >
-                                                {prescription.medicationName} {prescription.dosage}
+                                {/* Only show header when NOT editing */}
+                                {!isEditing && (
+                                    <div className="prescriptions-header">
+                                        <div className="prescriptions-title">💊 Prescriptions</div>
+                                        <div className="prescriptions-actions">
+                                            <div className="prescriptions-count">
+                                                {treatment.prescriptions.length} medication{treatment.prescriptions.length !== 1 ? 's' : ''}
                                             </div>
-
-                                            {isPrescriptionExpanded(treatment.id, index) && (
-                                                <div className="prescription-details expanded">
-                                                    <div className="prescription-detail-grid">
-                                                        <div className="prescription-detail-item">
-                                                            <div className="prescription-detail-label">Frequency</div>
-                                                            <div className="prescription-detail-value">{prescription.frequency}</div>
-                                                        </div>
-                                                        <div className="prescription-detail-item">
-                                                            <div className="prescription-detail-label">Duration</div>
-                                                            <div className="prescription-detail-value">{prescription.duration}</div>
-                                                        </div>
-                                                    </div>
-
-                                                    {prescription.instructions && (
-                                                        <div className="prescription-instructions">
-                                                            <div className="prescription-instructions-label">Instructions</div>
-                                                            <div className="prescription-instructions-value">
-                                                                {prescription.instructions}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            {/* Edit button placed horizontally in the header */}
+                                            {(isDoctor || isAdmin || isEmployee) && (
+                                                <button
+                                                    onClick={() => handlePrescriptionEditStart(treatment.id)}
+                                                    className="edit-prescriptions-btn compact"
+                                                >
+                                                    Edit Prescriptions
+                                                </button>
                                             )}
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                )}
+
+                                {/* Show prescription list only when NOT editing */}
+                                {!isEditing && (
+                                    <div className="prescriptions-list">
+                                        {treatment.prescriptions.map((prescription, index) => (
+                                            <div key={index}>
+                                                <div
+                                                    className={`prescription-pill ${isPrescriptionExpanded(treatment.id, index) ? 'expanded' : ''}`}
+                                                    onClick={() => togglePrescriptionExpansion(treatment.id, index)}
+                                                    title="Click to view details"
+                                                >
+                                                    {prescription.name} {prescription.dosage}
+                                                </div>
+
+                                                {isPrescriptionExpanded(treatment.id, index) && (
+                                                    <div className="prescription-details expanded">
+                                                        <div className="prescription-detail-grid">
+                                                            <div className="prescription-detail-item">
+                                                                <div className="prescription-detail-label">Medication Name</div>
+                                                                <div className="prescription-detail-value">{prescription.name}</div>
+                                                            </div>
+                                                            <div className="prescription-detail-item">
+                                                                <div className="prescription-detail-label">Dosage</div>
+                                                                <div className="prescription-detail-value">{prescription.dosage}</div>
+                                                            </div>
+                                                            <div className="prescription-detail-item">
+                                                                <div className="prescription-detail-label">Frequency</div>
+                                                                <div className="prescription-detail-value">{prescription.frequency}</div>
+                                                            </div>
+                                                            <div className="prescription-detail-item">
+                                                                <div className="prescription-detail-label">Duration</div>
+                                                                <div className="prescription-detail-value">{prescription.duration}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        {prescription.instructions && (
+                                                            <div className="prescription-instructions">
+                                                                <div className="prescription-instructions-label">Instructions</div>
+                                                                <div className="prescription-instructions-value">
+                                                                    {prescription.instructions}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Show edit form when editing */}
+                                {isEditing && (isDoctor || isAdmin || isEmployee) && (
+                                    <TreatmentPrescriptionManager
+                                        treatment={treatment}
+                                        isDoctor={isDoctor}
+                                        isAdmin={isAdmin}
+                                        isEmployee={isEmployee}
+                                        onPrescriptionUpdate={onPrescriptionUpdate}
+                                        onEditStart={() => handlePrescriptionEditStart(treatment.id)}
+                                        onEditEnd={() => handlePrescriptionEditEnd(treatment.id)}
+                                    />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Prescription Manager for treatments without prescriptions */}
+                        {(!treatment.prescriptions || treatment.prescriptions.length === 0) && (isDoctor || isAdmin || isEmployee) && (
+                            <div className="prescriptions-compact">
+                                {/* Only show header when NOT editing */}
+                                {!isEditing && (
+                                    <div className="prescriptions-header">
+                                        <div className="prescriptions-title">💊 Prescriptions</div>
+                                        <div className="prescriptions-actions">
+                                            <div className="prescriptions-count">No medications</div>
+                                            {/* Edit button placed horizontally in the header */}
+                                            <button
+                                                onClick={() => handlePrescriptionEditStart(treatment.id)}
+                                                className="edit-prescriptions-btn compact"
+                                            >
+                                                Add Prescriptions
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Show edit form when editing */}
+                                {isEditing && (
+                                    <TreatmentPrescriptionManager
+                                        treatment={treatment}
+                                        isDoctor={isDoctor}
+                                        isAdmin={isAdmin}
+                                        isEmployee={isEmployee}
+                                        onPrescriptionUpdate={onPrescriptionUpdate}
+                                        onEditStart={() => handlePrescriptionEditStart(treatment.id)}
+                                        onEditEnd={() => handlePrescriptionEditEnd(treatment.id)}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>

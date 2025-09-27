@@ -1,7 +1,7 @@
-// Updated types/treatments.ts
+// types/treatments.ts - Updated with correct field names
 export interface Prescription {
     id?: string;
-    medicationName: string;
+    name: string;  // Changed from medicationName to name
     dosage: string;
     frequency: string;
     duration: string;
@@ -16,7 +16,7 @@ export interface TreatmentManagement {
     cost: number;
     amountPaid: number;
     installmentPeriodInMonths: number;
-    prescriptions?: Prescription[]; // Added prescriptions to TreatmentManagement
+    prescriptions?: Prescription[];
 }
 
 export interface Treatment {
@@ -31,7 +31,7 @@ export interface Treatment {
     installmentPeriodInMonths: number;
     createdAt: string;
     updatedAt: string;
-    prescriptions: Prescription[]; // Changed from string[] to Prescription[]
+    prescriptions: Prescription[];
     visitNotes?: string;
 }
 

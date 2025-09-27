@@ -1,15 +1,7 @@
 import React from 'react';
 import PrescriptionForm from './PrescriptionForm';
+import { Prescription } from '../../types/treatments';  // Import from types file
 
-interface Prescription {
-    id?: string;
-    medicationName: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-    instructions?: string;
-    treatmentId?: string;
-}
 
 interface PrescriptionListProps {
     prescriptions: Prescription[];
@@ -28,24 +20,33 @@ function PrescriptionList({
                               title = "Prescriptions",
                               isReadOnly = false
                           }: PrescriptionListProps) {
+    const medicationCount = prescriptions.length;
+    const medicationText = `${medicationCount} medication${medicationCount !== 1 ? 's' : ''}`;
+
     return (
         <div className="prescriptions-section">
-            <div className="prescriptions-header">
-                <h4>{title}</h4>
-                <p>Medications prescribed for this treatment</p>
+            {/* Single header above all prescription cards */}
+            <div className="prescriptions-main-header">
+                <h4>
+                    {title}
+                    <span className="prescription-count">{medicationText}</span>
+                </h4>
             </div>
 
-            {prescriptions.map((prescription, index) => (
-                <PrescriptionForm
-                    key={index}
-                    prescription={prescription}
-                    index={index}
-                    onUpdate={onUpdate}
-                    onRemove={onRemove}
-                    canRemove={prescriptions.length > 1}
-                    isReadOnly={isReadOnly}
-                />
-            ))}
+            {/* Flex container for prescription items */}
+            <div className="prescriptions-flex-container">
+                {prescriptions.map((prescription, index) => (
+                    <PrescriptionForm
+                        key={index}
+                        prescription={prescription}
+                        index={index}
+                        onUpdate={onUpdate}
+                        onRemove={onRemove}
+                        canRemove={prescriptions.length > 1}
+                        isReadOnly={isReadOnly}
+                    />
+                ))}
+            </div>
 
             {!isReadOnly && (
                 <button
